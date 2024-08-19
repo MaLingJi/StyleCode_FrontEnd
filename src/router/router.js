@@ -1,0 +1,21 @@
+import { createRouter, createWebHistory } from "vue-router";
+
+import Home from "@/views/Home.vue";
+import NotFound from "@/views/NotFound.vue";
+import Forbidden from "@/views/Forbidden.vue";
+import Login from "@/views/secure/Login.vue";
+
+const routes = [
+    { name: "home-link", path: "/", component: Home },
+    { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },
+    { name: "403-link", path: "/403", component: Forbidden },
+
+    { name: "secure-login-link", path: "/secure/login", component: Login },
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: routes
+});
+
+export default router;
