@@ -6,6 +6,7 @@ import Forbidden from "@/views/Forbidden.vue";
 import Login from "@/views/secure/Login.vue";
 import Shop from "@/views/pages/shop.vue";
 import Forum from "@/views/pages/forum.vue";
+import backstage from "@/views/pages/backstage.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -15,6 +16,7 @@ const routes = [
   { name: "secure-login-link", path: "/secure/login", component: Login },
   { name: "shop-link", path: "/shop", component: Shop },
   { name: "forum-link", path: "/forum", component: Forum },
+  { name: "backstage-link", path: "/backstage", component: backstage },
 ];
 
 const router = createRouter({

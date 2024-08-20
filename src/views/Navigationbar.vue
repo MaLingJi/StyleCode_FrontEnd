@@ -17,6 +17,7 @@
                                     width="45px"></RouterLink>
                             <RouterLink to="/forum" class="ts-text is-undecorated is-big">論壇</RouterLink>
                             <RouterLink to="/shop" class="ts-text is-undecorated is-big">商城</RouterLink>
+                            <RouterLink to="/backstage" class="ts-text is-undecorated is-big">後台</RouterLink>
                             <!-- <a class="ts-text is-undecorated" href="#"><img src="../../public/favicon.ico"
                                 width="45px"></a>
                         <a class="ts-text is-undecorated is-big" href="#">論壇</a>
