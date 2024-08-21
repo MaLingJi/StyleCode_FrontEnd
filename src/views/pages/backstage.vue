@@ -11,7 +11,7 @@
     </head>
     <body>
         <!-- 頂部列 -->
-        <div class="ts-content is-tertiary is-fitted">
+        <!-- <div class="ts-content is-tertiary is-fitted">
             <div class="ts-container">
                 <div class="ts-tab">
                     <a href="#!" class="item">購物平台</a>
@@ -20,14 +20,14 @@
                     <a href="#!" class="item">通知</a>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- / 頂部列 -->
 
-        <div class="ts-divider"></div>
+        <!-- <div class="ts-divider"></div> -->
 
         <!-- 矚目看板 -->
         <div class="ts-content is-tertiary is-vertically-padded">
-            <div class="ts-container has-vertically-spaced-large">
+            <div class="ts-container">
                 <div class="ts-header is-big is-heavy">庫存管理</div>
                 <div class="ts-text is-secondary">編輯商品的相關金額與剩餘數量。</div>
             </div>
@@ -86,6 +86,21 @@
                             <a href="#!" class="item">付款方式</a>
                             <a href="#!" class="item">會員管理</a>
                             <a href="#!" class="item">機器人配置</a>
+                        </div>
+                        <div class="ts-divider has-top-spaced-small"></div>
+                        <div class="ts-content is-dense">
+                            <div class="ts-grid">
+                                <div class="column is-fluid">
+                                    <div class="ts-header">文章管理</div>
+                                </div>
+                                <div class="column">
+                                    <span class="ts-icon is-gears-icon"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-menu is-dense is-small has-bottom-spaced-small">
+                            <a href="#!" class="item">網站設定</a>
+                            <a href="#!" class="item">付款方式</a>
                         </div>
                     </div>
                 </div>
