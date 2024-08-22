@@ -41,13 +41,8 @@
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
-        <div class="ts-divider"></div>
-
-=======
     </div>
     <div class="ts-divider"></div>
->>>>>>> origin/kaku
 
 </template>
 

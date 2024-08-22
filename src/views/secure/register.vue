@@ -30,7 +30,7 @@
                     <button class="ts-button is-fluid is-start-icon is-outlined">
                         <span class="ts-icon is-google-icon"></span> Google
                     </button>
-                    <p class="ts-text is-center-aligned">已有帳號? <RouterLink to="/secure/register">去登入</RouterLink></p>
+                    <p class="ts-text is-center-aligned">已有帳號? <RouterLink to="/secure/login">去登入</RouterLink></p>
                 </div>
             </div>
         </div>

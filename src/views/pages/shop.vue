@@ -36,17 +36,22 @@
 import { ref, onMounted } from "vue";
 import axiosapi from "@/plugins/axios.js";
 
+
+
 const categories = ref([]);
 
 onMounted(async () => {
-    const response = await axiosapi.get("/categories");
-    categories.value = response.data;
+    axiosapi.get("/categories").then(response=>{
+
+      categories.value = response.data;
+    }).catch(error =>{
+      console.log("123")
+    })
     
     for (let category of categories.value) {
       const subcategoriesResponse = await axiosapi.get(`/subcategories/categories/${category.categoryId}`);
       category.subcategories = subcategoriesResponse.data;
     }
-    console.error("Error fetching data:", error);
   })
 </script>
 
