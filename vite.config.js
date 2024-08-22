@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import { createStyleImportPlugin, AntdResolve } from 'vite-plugin-style-import'
 import * as path from 'path'
 
@@ -8,6 +9,7 @@ import * as path from 'path'
 export default defineConfig({
   plugins: [
     vue(),
+    vueJsx(),  // 加入 JSX 插件
     createStyleImportPlugin({
       resolves: [AntdResolve()],
     }),
