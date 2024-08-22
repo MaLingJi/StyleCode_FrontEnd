@@ -4,10 +4,8 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" />
 
-        <title>募資平台 - Tocas UI</title>
     </head>
 
-    <body>
         <div class="ts-content is-padded is-secondary">
             <div class="ts-container ">
                 <div class="ts-grid">
@@ -44,7 +42,6 @@
         </div>
         <div class="ts-divider"></div>
 
-    </body>
 
 </template>
 

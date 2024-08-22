@@ -2,26 +2,7 @@
         
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <link rel="stylesheet" href="./../assets/tocas/tocas.min.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
-        <title>庫存管理 - Tocas UI</title>
-    </head>
     <body>
-        <!-- 頂部列 -->
-        <div class="ts-content is-tertiary is-fitted">
-            <div class="ts-container">
-                <div class="ts-tab">
-                    <a href="#!" class="item">購物平台</a>
-                    <a href="#!" class="item is-active">管理</a>
-                    <a href="#!" class="item">訂單</a>
-                    <a href="#!" class="item">通知</a>
-                </div>
-            </div>
-        </div>
-        <!-- / 頂部列 -->
 
         <div class="ts-divider"></div>
 
