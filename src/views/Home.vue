@@ -21,20 +21,19 @@
         </div>
         <div class="cell">
             <div class="ts-app-center">
-                <!--  v-for="post in posts" :key="post.postId -->
-                <div class="ts-grid is-3-columns is-relaxed is-stretched" v-for="post in posts" :key="post.postId"> 
-                    <!-- <ShareCard></ShareCard> -->
-                    <div class="ts-grid">
+                <div class="ts-grid is-3-columns is-relaxed is-stretched" v-for="post in posts" :key="post.postId">
+                    <ShareCard :post="post"></ShareCard>
+                    <!-- <div class="ts-grid">
                         <div class="column is-4-wide">
                             <div class="ts-box">
                                 <div class="ts-image">
-                                    <img src="../../../public/No_image.png" />
+                                    <img src="/No_image.png" />
                                 </div>
                                 <div class="ts-divider"></div>
                                 <div class="ts-content">{{ post.contentText }}</div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -72,7 +71,7 @@ function callFind() {
         console.log("response: ", response);
 
         posts.value = response.data;
-        console.log("posts.value: ", posts.value);
+        // console.log("posts.value: ", posts.value);
 
         setTimeout(function () {
             Swal.close();
