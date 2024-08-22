@@ -1,46 +1,33 @@
 <template>
     <div class="ts-app-layout is-vertical">
-        <div class="cell">
-            <div class="ts-app-center">
-                <div class="ts-content">照片輪播</div>
+        <div class="ts-app-center">
+            <div class="ts-content">照片輪播</div>
+        </div>
+
+        <div class="ts-app-center">
+            <div class="ts-content">討論區文章輪播</div>
+        </div>
+
+        <div class="ts-app-center">
+            <div class="ts-content">
+                <div class="ts-text is-massive">
+                    今日推薦穿搭
+                </div>
             </div>
         </div>
-        <div class="cell">
-            <div class="ts-app-center">
-                <div class="ts-content">討論區文章輪播</div>
-            </div>
-        </div>
-        <div class="cell">
-            <div class="ts-app-center">
-                <div class="ts-content">
-                    <div class="ts-text is-massive">
-                        今日推薦穿搭
+
+        <div class="ts-app-center">
+            <div class="ts-container">
+                <div class="ts-grid is-3-columns is-relaxed is-stretched">
+                    <div class="column" v-for="post in posts" :key="post.postId">
+                        <ShareCard :post="post"></ShareCard>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="cell">
-            <div class="ts-app-center">
-                <div class="ts-grid is-3-columns is-relaxed is-stretched" v-for="post in posts" :key="post.postId">
-                    <ShareCard :post="post"></ShareCard>
-                    <!-- <div class="ts-grid">
-                        <div class="column is-4-wide">
-                            <div class="ts-box">
-                                <div class="ts-image">
-                                    <img src="/No_image.png" />
-                                </div>
-                                <div class="ts-divider"></div>
-                                <div class="ts-content">{{ post.contentText }}</div>
-                            </div>
-                        </div>
-                    </div> -->
-                </div>
-            </div>
-        </div>
-        <div class="cell">
-            <div class="ts-content">Footer</div>
-        </div>
     </div>
+    <div class="ts-divider"></div>
+    <div class="ts-content">Footer</div>
 
 </template>
 
