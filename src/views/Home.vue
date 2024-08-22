@@ -21,8 +21,20 @@
         </div>
         <div class="cell">
             <div class="ts-app-center">
-                <div class="ts-grid is-3-columns is-relaxed is-stretched" v-for="post in posts" :key="post.postId">
-                    <ShareCard></ShareCard>
+                <!--  v-for="post in posts" :key="post.postId -->
+                <div class="ts-grid is-3-columns is-relaxed is-stretched" v-for="post in posts" :key="post.postId"> 
+                    <!-- <ShareCard></ShareCard> -->
+                    <div class="ts-grid">
+                        <div class="column is-4-wide">
+                            <div class="ts-box">
+                                <div class="ts-image">
+                                    <img src="../../../public/No_image.png" />
+                                </div>
+                                <div class="ts-divider"></div>
+                                <div class="ts-content">{{ post.contentText }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,7 +54,7 @@ import Swal from 'sweetalert2';
 
 const router = useRouter();
 
-const post = ref({});
+// const post = ref({});
 const posts = ref([]);
 
 onMounted(function () {
@@ -56,15 +68,12 @@ function callFind() {
         showConfirmButton: false,
         allowOutsideClick: false,
     });
-    let request = {
-        "start": 0,
-        "rows": 3,
-        "dir": true,
-        "order": "id",
-        "name": "a"
-    };
-    axiosapi.post("/post/1", request).then(function (response) {
-        console.log("response", response);
+    axiosapi.get("/post").then(function (response) {
+        console.log("response: ", response);
+
+        posts.value = response.data;
+        console.log("posts.value: ", posts.value);
+
         setTimeout(function () {
             Swal.close();
         }, 500);
