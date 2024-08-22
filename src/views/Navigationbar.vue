@@ -6,6 +6,7 @@
                     <div class="ts-wrap is-middle-aligned">
                         <RouterLink to="/" class="ts-text is-undecorated"><img src="../../public/favicon.ico"
                                 width="45px"></RouterLink>
+                        <RouterLink to="/share" class="ts-text is-undecorated is-big">穿搭</RouterLink>
                         <RouterLink to="/forum" class="ts-text is-undecorated is-big">論壇</RouterLink>
                         <RouterLink to="/shop" class="ts-text is-undecorated is-big">商城</RouterLink>
                         <RouterLink to="/backstage" class="ts-text is-undecorated is-big">後台</RouterLink>
