@@ -9,8 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "ant-design-vue": "^4.2.3",
+    "axios": "^1.7.4",
+    "consola": "^3.2.3",
+    "less": "^4.2.0",
+    "less-loader": "^12.2.0",
     "pinia": "^2.1.7",
     "tocas": "^5.0.1",
+    "vite-plugin-style-import": "^2.0.0",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
