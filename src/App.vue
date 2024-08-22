@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-    import { RouterLink, RouterView } from 'vue-router'
+    import { RouterLink, RouterView } from 'vue-router';
     import Navigationbar from './views/Navigationbar.vue';
 </script>
 <style scoped></style>

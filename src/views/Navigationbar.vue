@@ -34,8 +34,9 @@
                         <div class="ts-dropdown" id="dropdown">
                             <button class="item">新增檔案</button>
                             <button class="item">移至回收桶</button>
-                            <button class="item">檢視資訊</button>
+                            <button class="item">登出</button>
                         </div>
+                        <RouterLink to="/secure/login" class="ts-button is-circular is-outlined">登入</RouterLink>
                     </div>
                 </div>
             </div>
