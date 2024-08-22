@@ -8,6 +8,8 @@ import Shop from "@/views/pages/shop.vue";
 import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share.vue";
+import Register from "@/views/secure/register.vue";
+
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -20,6 +22,8 @@ const routes = [
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
 
+  { name: "longin-ling", path: "/secure/login", component: Login},
+  { name: "register-ling", path: "/secure/register", component: Register},
 ];
 
 const router = createRouter({
