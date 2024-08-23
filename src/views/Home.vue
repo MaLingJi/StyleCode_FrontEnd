@@ -63,7 +63,7 @@ function callFind() {
         "order": "id",
         "name": "a"
     };
-    axiosapi.post("/post/1", request).then(function (response) {
+    axiosapi.get("/post/2").then(function (response) {
         console.log("response", response);
         setTimeout(function () {
             Swal.close();
