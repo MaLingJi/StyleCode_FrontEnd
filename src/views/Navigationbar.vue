@@ -32,10 +32,10 @@
                                 class="ts-icon is-bell-icon is-big"></span></a>
                         <a class="ts-text is-undecorated" data-dropdown="dropdown" href="#!"><span
                                 class="ts-icon is-user-icon is-big"></span></a>
-                        <div class="ts-dropdown" id="dropdown">
-                            <button class="item">新增檔案</button>
-                            <button class="item">移至回收桶</button>
-                            <button class="item">登出</button>
+                        <div class="ts-dropdown" id="user-dropdown">
+                            <button class="item">個人頁面</button>
+                            <RouterLink to="/backstage" class="item">後台</RouterLink>
+                            <button class="item" @click="logout">登出</button>
                         </div>
                         <RouterLink to="/secure/login" class="ts-button is-circular is-outlined">登入</RouterLink>
                     </div>
@@ -48,13 +48,7 @@
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router';
+
 </script>
 
-<style scoped>
-/* Add some basic styles for testing */
-nav {
-display: flex;
-gap: 10px;
-}
-</style>
+<style scoped></style>
