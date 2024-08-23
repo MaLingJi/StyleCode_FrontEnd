@@ -12,6 +12,7 @@ import Register from "@/views/secure/register.vue";
 
 import comment from "@/views/pages/comment.vue"
 
+
 const routes = [
   { name: "home-link", path: "/", component: Home },
   { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },

@@ -1,29 +1,28 @@
-import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
-import { createStyleImportPlugin, AntdResolve } from 'vite-plugin-style-import'
-import * as path from 'path'
+// vite.config.js
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
+import { createStyleImportPlugin, AntdResolve } from 'vite-plugin-style-import';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    vueJsx(),  // 加入 JSX 插件
+    vueJsx(),
     createStyleImportPlugin({
       resolves: [AntdResolve()],
     }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)), // 确保 alias 配置正确
+    },
   },
   css: {
     preprocessorOptions: {
       less: {
         javascriptEnabled: true,
-        // 可以在這裡設置其他 Less 選項
       },
     },
   },
@@ -31,4 +30,4 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
   },
-})
+});

@@ -48,7 +48,13 @@
 </template>
 
 <script setup>
-
+import { RouterLink } from 'vue-router';
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Add some basic styles for testing */
+nav {
+display: flex;
+gap: 10px;
+}
+</style>
