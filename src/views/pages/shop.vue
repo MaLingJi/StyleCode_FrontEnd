@@ -39,7 +39,7 @@
                 <div class="column"v-for="product in products" :key="product.productId">
                     <div class="ts-box">
                       <div class="ts-image">
-                        <img :src="product.coverImage" :alt="product.productName"/>
+                        <img :src="product.pimages.imageId" :alt="product.productName"/>
                     </div>
                         <div class="ts-image" >{{ product.productName }}
                         </div>
@@ -53,8 +53,10 @@
 <script setup>
 import { ref ,  onMounted} from "vue";
 import axiosapi from "@/plugins/axios.js";
-
+const path = import.meta.env.VITE_PRODUCT_IMAGE_URL
+// 分類開始
 const categories = ref([]);
+
 
 onMounted(async () => {
   try {
@@ -69,6 +71,9 @@ onMounted(async () => {
   }
 });
 
+// 分類結束
+
+// 子分類開始
 const toggleSubcategories = async (category) => {
   // 切換 showSubcategories 狀態
   category.showSubcategories = !category.showSubcategories;
@@ -86,18 +91,24 @@ const toggleSubcategories = async (category) => {
   }
 };
 
+// 子分類開始
+
 
 const products = ref ('');
 
 axiosapi.get(`/products`).then(response =>{
   products.value = response.data;
-  console.log(response.data)
+
+  console.log(products.value)
 })
 
-const pimage = ref('');
-axiosapi.get(`/${products.productId}/cover`).then(response => {
-  pimage.value = response.data;
-  console.log(response.data)
+const imgUrl = ref('');
+axiosapi.get(`http://localhost:8080/images/cover/${products.productId}`).then(response => {
+  const data = response.data;
+  let imagePath = data[0].imgUrl
+  imgUrl.value = `${path}${imagePath}`;
+
+  console.log(imgUrl.value)
 })
 
 
