@@ -4,7 +4,7 @@
             <div class="ts-grid is-middle-aligned">
                 <div class="column is-fluid">
                     <div class="ts-wrap is-middle-aligned">
-                        <RouterLink to="/" class="ts-text is-undecorated"><img src="/favicon.ico" width="45px">
+                        <RouterLink to="/" class="ts-text is-undecorated"><img src="/public/beginner.png" width="45px">
                         </RouterLink>
                         <RouterLink to="/share" class="ts-text is-undecorated is-big">穿搭</RouterLink>
                         <RouterLink to="/forum" class="ts-text is-undecorated is-big">論壇</RouterLink>
