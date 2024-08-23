@@ -2,8 +2,6 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstste from "pinia-plugin-persistedstate"
 
-
-
 import App from './App.vue'
 import router from './router/router'
 import Antd from 'ant-design-vue'

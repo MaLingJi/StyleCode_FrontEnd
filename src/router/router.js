@@ -9,9 +9,7 @@ import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share.vue";
 import Register from "@/views/secure/register.vue";
-
-import comment from "@/views/pages/comment.vue"
-
+import share from "@/views/pages/share.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
