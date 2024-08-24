@@ -33,9 +33,9 @@
     </div>
 
     <div class="ts-pagination is-secondary">
-      <paginate v-model="currentPage" :page-count="getPageCount()" :page-range="5" :margin-pages="0"
-        :click-handler="handlePageChange" :prev-text="'&lt;'" :next-text="'&gt;'" :active-class="'active'">
-      </paginate>
+      <Paginate v-model="currentPage" :page-count="getPageCount()" :page-range="5" :margin-pages="0"
+        :click-handler="handlePageChange" :prev-text="''" :next-text="''" :container-class="'ts-pagination'"
+        :page-class="'item'" :active-class="'is-active'" :prev-class="'item is-back'" :next-class="'item is-next'" />
     </div>
   </div>
 </template>
