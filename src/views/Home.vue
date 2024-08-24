@@ -19,13 +19,13 @@
         >
           <div class="column is-center-aligned">
             <div class="column is-center-aligned"
-              v-for="subcategory in category.subcategories"
-              :key="subcategory.subcategoryId"
+            v-for="subcategory in category.subcategories"
+            :key="subcategory.subcategoryId"
             >
-              <button 
-                class="ts-text is-undecorated is-secondary"
-                @click="filterProductsBySubcategory(subcategory.subcategoryId)"
-              >
+            <button 
+            class="ts-text is-undecorated is-secondary"
+            @click="filterProductsBySubcategory(subcategory.subcategoryId)"
+            >
                 {{ subcategory.subcategoryName }}
               </button>
             </div>
@@ -41,7 +41,7 @@
       <div class="column" v-for="product in filteredProducts" :key="product.productId">
         <div class="ts-box">
           <div class="ts-image">
-            <img :src="`${imgUrl}`" :alt="product.productName"/>
+            <img :src="imgUrl" :alt="product.productName"/>
           </div>
           <div class="ts-content">
             <h3>{{ product.productName }}</h3>
@@ -58,9 +58,9 @@
 import { ref, computed, onMounted } from "vue";
 import axiosapi from "@/plugins/axios.js";
 const path = import.meta.env.VITE_PRODUCT_IMAGE_URL
-
+console.log(path)
 const categories = ref([]);
-const products = ref([]);
+const products = ref();
 const selectedSubcategoryId = ref(null);
 
 const filteredProducts = computed(() => {
@@ -69,7 +69,7 @@ const filteredProducts = computed(() => {
   }
   return products.value;
 });
-
+let imgUrl = ref('');
 
 onMounted(async () => {
   
@@ -83,8 +83,20 @@ onMounted(async () => {
   // 獲取所有產品
   const productsResponse = await axiosapi.get("/products");
   products.value = productsResponse.data;
-  console.log(productsResponse.data)
+  // 為每個產品獲取封面圖片
+  for (let product of products.value) {
+    try {
+      const imageResponse = await axiosapi.get(`/${product.productId}/cover`);
+      product.coverImage = imageResponse.data.imgUrl;
+        imgUrl.value = `${path}${product.coverImage}`
+        console.log(imgUrl.value)
+      } catch (error) {
+        console.error(`Error fetching cover image for product ${product.productId}:`, error);
+        product.coverImage = null; // 設置一個默認值或者null
+      }
+    }
   
+    
 
     // axiosapi.get(`/${products.productId}/cover`).then(response => {
     // const data = response.data;
@@ -117,20 +129,23 @@ const toggleSubcategories = async (category) => {
 
 const filterProductsBySubcategory = (subcategoryId) => {
   selectedSubcategoryId.value = subcategoryId;
+
 };
 
-const imgUrl = ref ('');
+// let imgUrl = ref ('');
+// let producId = ref('');
+// onMounted(() => {
+//   axiosapi.get(`/${products.productId}/cover`).then(response => {
+//     const data = response.data;
+//     let imagePath = data[0].imgUrl;
+//     imgUrl.value = `${path}${imagePath}`
+//     productId=response.data.productId;
+//     console.log(imgUrl.value)
+//   }).catch(error => {
+//             console.error('Error fetching image URL:', error);
+//         });
+// });
 
-onMounted(() => {
-  axiosapi.get(`/products`).then(response => {
-    const data = response.data;
-    let imagePath = data[0].imgUrl;
-    imgUrl.value = `${path}${imagePath}`
-    console.log(imgUrl.value)
-  }).catch(error => {
-            console.error('Error fetching image URL:', error);
-        });
-});
 </script>
 
 <style scoped>
