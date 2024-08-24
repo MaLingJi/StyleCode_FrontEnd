@@ -9,6 +9,7 @@ import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share.vue";
 import comment from "@/views/pages/comment.vue"
+import post from "@/views/pages/post.vue"
 
 
 const routes = [
@@ -22,6 +23,7 @@ const routes = [
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
   { name: 'comment-link', path: '/comment/:id', component: comment },
+  { name: "post-link", path: "/post", component: post },
 ];
 
 const router = createRouter({
