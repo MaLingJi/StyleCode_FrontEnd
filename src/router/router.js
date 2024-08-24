@@ -10,6 +10,7 @@ import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share.vue";
 import Register from "@/views/secure/register.vue";
 import comment from "@/views/pages/comment.vue";
+import cart from "@/views/pages/cart.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -25,6 +26,7 @@ const routes = [
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "comment-link", path: "/comment/:id", component: comment },
+  { name: "cart-link", path: "/cart", component: cart },
 ];
 
 const router = createRouter({

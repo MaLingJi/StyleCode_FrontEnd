@@ -26,8 +26,8 @@
                 </div>
                 <div class="column">
                     <div class="ts-wrap">
-                        <a class="ts-text is-undecorated" href="#!"><span
-                                class="ts-icon is-spinning is-cart-shopping-icon is-big"></span></a>
+                        <RouterLink to="/cart"><a class="ts-text is-undecorated" href="#!"><span
+                                    class="ts-icon is-spinning is-cart-shopping-icon is-big"></span></a></RouterLink>
                         <a class="ts-text is-undecorated" href="#!"><span
                                 class="ts-icon is-spinning is-bell-icon is-big"></span></a>
                         <a class="ts-text is-undecorated" data-dropdown="user-dropdown" href="#!"
