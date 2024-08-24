@@ -39,19 +39,27 @@
          </div>
        </div>
    
-       <div class="ts-pagination is-secondary" >
-       <paginate
-         v-model="currentPage"
-         :page-count="getPageCount()"
-         :page-range="5"
-         :margin-pages="0"
-         :click-handler="handlePageChange"
-         :prev-text="'&lt;'"
-         :next-text="'&gt;'"
-         :active-class="'active'"
-       >
-       </paginate>
-     </div>
+       <div class="ts-pagination is-secondary">
+      <Paginate v-model="currentPage" 
+      :page-count="getPageCount()" 
+      :page-range="3" 
+      :margin-pages="1"
+      :click-handler="handlePageChange" 
+      :prev-text="''" 
+      :next-text="''" 
+      :prev-class="'item'"
+      :next-class="'item'" 
+      :prev-link-class="'item is-back'"
+      :next-link-class="'item is-next'" 
+      :container-class="'ts-pagination'"
+      :page-class="'item'" 
+      :active-class="'is-active'" 
+      :first-last-button="true"
+      :first-button-text="'第一頁'"
+      :last-button-text="'最後一頁'"
+      :first-button-class="'item is-first'"
+      :last-button-class="'item is-last'"/>
+    </div>
      </div>
    </template>
    
@@ -145,10 +153,13 @@
      closeAllSubmenus();
    };
    
+   //換頁畫面移到最上面
    const handlePageChange = (pageNum) => {
-     currentPage.value = pageNum;
-   };
-   
+  currentPage.value = pageNum;
+  // 可以在這裡添加額外的邏輯，比如滾動到頁面頂部
+  window.scrollTo(0, 0);
+};
+
    // 替代 computed 屬性的方法
    const getFilteredProducts = () => {
      if (selectedSubcategoryId.value) {
@@ -186,6 +197,7 @@
      justify-content: center;
      color: #000;
    }
+
    .category-menu {
    display: flex;
    justify-content: center;
