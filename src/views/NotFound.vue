@@ -1,8 +1,8 @@
 <template>
-    <h3>404：找不到網頁</h3>
+        <h3>404找不到</h3>
 </template>
     
-<script setup>
+<script setup >
     
 </script>
     
