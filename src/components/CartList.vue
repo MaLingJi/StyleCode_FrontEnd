@@ -1,19 +1,19 @@
 <template>
     <div class="ts-box">
-        <table class="ts-table">
+        <table class="ts-table " >
             <thead>
                 <tr>
-                    <th class="text-center">商品資料</th>
+                    <th>商品資料</th>
                     <th>單件價格</th>
                     <th>數量</th>
                     <th>小計</th>
-                    <th>刪除按鈕</th>
+                    <th class="is-collapsed">刪除按鈕</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems" :key="item.productId">
+                <tr v-for="item in cartItems" >
                     <td>{{ item.productName }}</td>
-                    <td>{{ item.productPrice }}</td>
+                    <td>{{ formatCurrency(item.productPrice) }}</td>
 
                     <td>
                         <div>
@@ -26,11 +26,11 @@
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>
-                                判斷庫存
+                                <span v-show="stockStatus.get(item.productId)">已達庫存上限</span>
                             </div>
                         </div>
                     </td>
-                    <td>NT${{ cauculate(item) }}</td>
+                    <td>{{ formatCurrency(cauculate(item)) }}</td>
                     <td><button @click="removeItem(item)" class="ts-icon is-close-icon">X</button></td>
                 </tr>
             </tbody>
@@ -46,9 +46,11 @@
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
 import axios from 'axios';
-
+import { ref } from 'vue';
+import { onMounted } from 'vue';
 const props = defineProps(['cartItems']);
-const emit = defineEmits(['update:carItems'])
+const emit = defineEmits(['update:carItems']);
+const stockStatus = ref(new Map());
 
 const cauculate = (item) => {
     return computed(() => item.productPrice * item.quantity).value;
@@ -69,11 +71,14 @@ const increaseQuantity = (item) => {
     })
         .then(response => {
             console.log(response.data)
-            if (response != null) {
+            console.log(response);
+            if (response.data != '') {
                 item.quantity++;
                 updateParent();
+                stockStatus.value.set(item.productId, false)
             } else {
                 console.log('超過庫存')
+                stockStatus.value.set(item.productId, true)
             }
 
         })
@@ -90,9 +95,13 @@ const decreaseQuantity = (item) => {
                 productId: item.productId
             }
         }).then(response => {
-            if (response != null) {
+            if (response.data != '') {
                 item.quantity--;
                 updateParent();
+                stockStatus.value.set(item.productId, false)
+            } else {
+                console.log('超過庫存')
+                stockStatus.value.set(item.productId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -108,7 +117,21 @@ const updateQuantity = (item) => {
     if (item.quantity <= 0) {
         removeItem(item);
     } else {
-        // updateapi     判
+        axios.put('http://localhost:8080/cart/update', {
+            userId: 1,
+            productId: item.productId,
+            quantity: item.quantity
+
+        }).then(response => {
+            if (response.data != '') {
+                updateParent();
+                stockStatus.value.set(item.productId, false)
+            } else {
+                stockStatus.value.set(item.productId, true)
+            }
+        }).catch(error => {
+            console.error('Failed to load cart items' + error)
+        })
     }
     updateParent();
 }
@@ -117,8 +140,10 @@ const removeItem = (item) => {
     if (!confirm('確定要從購物車移除此商品嗎？')) return;
 
     axios.delete('http://localhost:8080/cart/delete', {
-        data:{userId: 1,
-        productId: item.productId}
+        data: {
+            userId: 1,
+            productId: item.productId
+        }
     }).then(response => {
         console.log(response);
         if (response != null) {
@@ -136,8 +161,15 @@ const removeItem = (item) => {
 
 }
 
+onMounted(() => {
+    props.cartItems.forEach(item => {
+        stockStatus.value.set(item.productId, false);
+    });
+});
 
-
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
+};
 
 </script>
 
