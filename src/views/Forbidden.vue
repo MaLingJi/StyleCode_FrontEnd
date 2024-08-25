@@ -1,11 +1,13 @@
-<template>
-    <a-result status="403" title="403" sub-title="抱歉，您無權訪問此頁面。">
-    <template #extra>
-        <router-link to="/" tag="a">
-        <a-button type="primary">回首頁</a-button>
-        </router-link>
+    <template>
+  <n-result
+    status="403"
+    title="403 禁止訪問"
+    description="沒有權限使用此網頁"
+  >
+    <template #footer>
+      <n-button>放轻松</n-button>
     </template>
-    </a-result>
+  </n-result>
 </template>
 
 <script setup>

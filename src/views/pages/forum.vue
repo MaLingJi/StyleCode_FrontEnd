@@ -132,7 +132,7 @@ export default defineComponent({
   setup() {
     const pagination = ref({
       current: 1,
-      pageSize: 6,
+      pageSize: 8,
       total: listData.length,
       onChange: (page: number) => {
         pagination.value.current = page;
