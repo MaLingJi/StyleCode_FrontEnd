@@ -8,7 +8,7 @@
 </a-result>
 </template>
     
-<script setup>
+<script setup >
     
 </script>
     
