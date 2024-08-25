@@ -1,20 +1,19 @@
 <template>
+    <h2>newShare</h2>
 
-        <div class="ts-content is-center-aligned" style="background: var(--ts-gray-50)">
-            <div class="ts-container is-narrow">
-                <div class="ts-header is-center-aligned is-huge is-heavy">
-                    <RouterLink to="/new-share"><button class="ts-button">分享你的穿搭</button></RouterLink>
+        <div class="ts-divider"></div>
+        <div class="ts-container">
+            <div class="ts-app-layout is-horizontal">
+                <div class="cell is-fluid is-vertical">
+                    <h2>標題</h2>
+                    <textarea name="" id="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla ipsa provident dolores quo hic adipisci laboriosam, quibusdam est facere iusto sint, suscipit impedit illum iste fugit velit eligendi magnam mollitia?</textarea>
+                </div>
+                <div class="cell is-vertical" >
+                    <h2>標籤</h2>
+                    <textarea name="" id="">123</textarea>
                 </div>
             </div>
         </div>
-        <div class="ts-divider"></div>
-        <div class="ts-container">
-                <div class="ts-grid is-3-columns is-relaxed is-stretched">
-                    <div class="column" v-for="post in posts" :key="post.postId">
-                        <ShareCard :post="post"></ShareCard>
-                    </div>
-                </div>
-            </div>
         <div class="ts-divider"></div>
         <div class="ts-content is-vertically-very-padded" style="background: var(--ts-gray-50)">
             <div class="ts-container is-narrow">
@@ -22,12 +21,10 @@
                 <div class="ts-text is-secondary">由 Yami Odymel 製作</div>
             </div>
         </div>
-
 </template>
     
 <script setup>
-import ShareCard from '@/components/share/ShareCard.vue';
-import newShare from './newShare.vue';
+    import ShareCard from '@/components/share/ShareCard.vue';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
