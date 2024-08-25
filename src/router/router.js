@@ -11,6 +11,8 @@ import share from "@/views/pages/share.vue";
 import Register from "@/views/secure/register.vue";
 import comment from "@/views/pages/comment.vue";
 import cart from "@/views/pages/cart.vue";
+import post from "@/views/pages/post.vue";
+
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -27,6 +29,7 @@ const routes = [
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "cart-link", path: "/cart", component: cart },
+  { name: "post-link", path: "/post", component: post },
 ];
 
 const router = createRouter({
