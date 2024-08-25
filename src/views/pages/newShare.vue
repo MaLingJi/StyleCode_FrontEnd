@@ -1,72 +1,149 @@
 <template>
-    <h2>newShare</h2>
-
-        <div class="ts-divider"></div>
-        <div class="ts-container">
-            <div class="ts-app-layout is-horizontal">
-                <div class="cell is-fluid is-vertical">
-                    <h2>標題</h2>
-                    <textarea name="" id="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla ipsa provident dolores quo hic adipisci laboriosam, quibusdam est facere iusto sint, suscipit impedit illum iste fugit velit eligendi magnam mollitia?</textarea>
+    <div class="ts-container">
+        <div class="ts-app-layout is-horizontal">
+            <div class="cell is-fluid is-vertical">
+                <div class="ts-header">發文暱稱: {{ userStore.id }}</div>
+                <div class="ts-divider"></div>
+                <h2>標題</h2>
+                <div class="ts-input is-solid">
+                    <textarea v-model="postTitle" placeholder="請輸入文章標題"></textarea>
                 </div>
-                <div class="cell is-vertical" >
-                    <h2>標籤</h2>
+                <h2>內容</h2>
+                <div class="ts-input is-solid">
+                    <textarea v-model="contentText" placeholder="請輸入文章內容"></textarea>
+                </div>
+                <h2>上傳圖片</h2>
+                <div class="ts-input is-solid">
+                    <input type="file" @change="handleFileUpload" accept="image/*" />
+                </div>
+                <br>
+                <button class="ts-button" @click="submitPost">送出文章</button>
+
+            </div>
+            <!-- <div class="cell is-vertical">
+                <h2>標籤</h2>
+                <div class="ts-input is-solid">
                     <textarea name="" id="">123</textarea>
                 </div>
-            </div>
+            </div> -->
         </div>
-        <div class="ts-divider"></div>
-        <div class="ts-content is-vertically-very-padded" style="background: var(--ts-gray-50)">
-            <div class="ts-container is-narrow">
-                <div class="ts-header is-large is-heavy">Tocas UI 相簿範例</div>
-                <div class="ts-text is-secondary">由 Yami Odymel 製作</div>
-            </div>
-        </div>
+    </div>
 </template>
-    
+
 <script setup>
-    import ShareCard from '@/components/share/ShareCard.vue';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
+import useUserStore from "@/stores/user.js"
 
 const router = useRouter();
+const userStore = useUserStore();
 
-// const post = ref({});
-const posts = ref([]);
+const postTitle = ref('');
+const contentText = ref('');
+const imageFile = ref(null);
 
-onMounted(function () {
-    callFind();
-});
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        imageFile.value = file;
+    }
+}
 
-function callFind() {
-    console.log("callFind");
+function submitPost() {
+    if (!postTitle.value || !contentText.value) {
+        Swal.fire({
+            text: '標題和內容不能為空',
+            icon: 'warning',
+            confirmButtonText: '確認',
+        });
+        return;
+    }
+
     Swal.fire({
-        text: "Loading......",
+        text: "發文中......",
         showConfirmButton: false,
         allowOutsideClick: false,
     });
-    axiosapi.get("/post").then(function (response) {
-        console.log("response: ", response);
 
-        posts.value = response.data;
-        // console.log("posts.value: ", posts.value);
+    const postData = {
+        postTitle: postTitle.value,
+        contentText: contentText.value,
+        contentType: '分享',
+        userDetail: {
+            id: 2,
+        }
+    };
 
-        setTimeout(function () {
+    // 1. 先發送發文請求
+    axiosapi.post("/post", postData)
+        .then(postResponse => {
+            const postId = postResponse.data.postId;
+
+            // 2. 如果有圖片，發送圖片上傳請求
+            if (imageFile.value) {
+                const formData = new FormData();
+                formData.append('postId', postId);
+                formData.append('file', imageFile.value);
+
+                return axiosapi.post("/images", formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            }
+        })
+        .then(() => {
             Swal.close();
-        }, 500);
-    }).catch(function (error) {
-        console.log("callFind error", error);
-        Swal.fire({
-            text: '失敗：' + error.message,
-            icon: 'error',
-            allowOutsideClick: false,
-            confirmButtonText: '確認',
+            Swal.fire({
+                text: '發文成功',
+                icon: 'success',
+                confirmButtonText: '確認',
+            }).then(() => {
+                router.push('/share'); // 跳轉到文章列表頁面或其他頁面
+            });
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                text: '發文失敗：' + error.message,
+                icon: 'error',
+                confirmButtonText: '確認',
+            });
         });
-    });
 }
+
+// onMounted(function () {
+//     callFind();
+// });
+
+// function callFind() {
+//     console.log("callFind");
+//     Swal.fire({
+//         text: "Loading......",
+//         showConfirmButton: false,
+//         allowOutsideClick: false,
+//     });
+//     axiosapi.get("/post").then(function (response) {
+//         console.log("response: ", response);
+
+//         posts.value = response.data;
+//         // console.log("posts.value: ", posts.value);
+
+//         setTimeout(function () {
+//             Swal.close();
+//         }, 500);
+//     }).catch(function (error) {
+//         console.log("callFind error", error);
+//         Swal.fire({
+//             text: '失敗：' + error.message,
+//             icon: 'error',
+//             allowOutsideClick: false,
+//             confirmButtonText: '確認',
+//         });
+//     });
+// }
 </script>
-    
-<style>
-    
-</style>
+
+<style></style>

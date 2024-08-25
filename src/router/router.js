@@ -13,6 +13,7 @@ import comment from "@/views/pages/comment.vue";
 import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
 import newShare from "@/views/pages/newShare.vue";
+import editShare from "@/views/pages/editShare.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -25,6 +26,9 @@ const routes = [
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
   { name: "new-share-link", path: "/new-share", component: newShare },
+  { name: "edit-share-link", path: "/editShare/:postId", component: editShare },
+
+
 
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
