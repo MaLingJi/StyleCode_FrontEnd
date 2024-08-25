@@ -57,6 +57,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import type { UploadProps } from 'ant-design-vue';
+import axios from 'axios';
 
 const title = ref('');
 const description = ref('');
@@ -81,16 +82,24 @@ const handlePreview = async (file: UploadProps['fileList'][number]) => {
     previewTitle.value = file.name || file.url.substring(file.url.lastIndexOf('/') + 1);
 };
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
     if (!title.value || !description.value) {
     alert('請填寫所有欄位');
     return;
     }
-
+    
+    console.log('Validation passed');
+    
+    try{
     // 處理提交邏輯
-    console.log('Title:', title.value);
-    console.log('Description:', description.value);
-    console.log('Uploaded Files:', fileList.value);
+    const postData = {
+            title: title.value,
+            description: description.value,
+            image: fileList.value.map(file => file.url || file.preview),
+        };
+        // 發送 POST 請求到後端 API
+        const response = await axios.post('/post', postData);
+        console.log('Post created:', response.data);
 
     // 提交後清空表單
     title.value = '';
@@ -99,6 +108,10 @@ const handleSubmit = () => {
 
     // 跳轉到論壇頁面
     router.push({ name: 'forum-link' });
+    } catch (error) {
+    console.error('建立貼文時出錯:', error);
+    alert('提交時發生錯誤');
+    }
 };
 
 function getBase64(file: File) {
