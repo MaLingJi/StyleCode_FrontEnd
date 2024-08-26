@@ -4,7 +4,7 @@
             <div class="ts-grid">
                 <div class="column is-fluid">
                     <div class="cell is-fluid is-vertical">
-                        <div class="ts-header">發文暱稱: {{ userStore.id }}</div>
+                        <div class="ts-header">發文暱稱: {{ userStore.userId }}</div>
                         <div class="ts-divider"></div>
                         <div class="ts-text is-heavy is-big">標題</div>
                         <div class="ts-input is-solid">
