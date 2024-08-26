@@ -1,31 +1,36 @@
 <template>
     <div class="ts-container">
         <div class="ts-app-layout is-horizontal">
-            <div class="cell is-fluid is-vertical">
-                <div class="ts-header">發文暱稱: {{ userStore.id }}</div>
-                <div class="ts-divider"></div>
-                <h2>標題</h2>
-                <div class="ts-input is-solid">
-                    <textarea v-model="postTitle" placeholder="請輸入文章標題"></textarea>
+            <div class="ts-grid">
+                <div class="column is-fluid">
+                    <div class="cell is-fluid is-vertical">
+                        <div class="ts-header">發文暱稱: {{ userStore.id }}</div>
+                        <div class="ts-divider"></div>
+                        <div class="ts-text is-heavy is-big">標題</div>
+                        <div class="ts-input is-solid">
+                            <textarea v-model="postTitle" placeholder="請輸入文章標題"></textarea>
+                        </div>
+                        <div class="ts-text is-heavy is-big">內容</div>
+                        <div class="ts-input is-solid">
+                            <textarea v-model="contentText" placeholder="請輸入文章內容"></textarea>
+                        </div>
+                        <div class="ts-text is-heavy is-big">上傳圖片</div>
+                        <div class="ts-file">
+                            <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" />
+                        </div>
+                        <br>
+                        <button class="ts-button" @click="submitPost">送出文章</button>
+                    </div>
                 </div>
-                <h2>內容</h2>
-                <div class="ts-input is-solid">
-                    <textarea v-model="contentText" placeholder="請輸入文章內容"></textarea>
-                </div>
-                <h2>上傳圖片</h2>
-                <div class="ts-input is-solid">
-                    <input type="file" @change="handleFileUpload" accept="image/*" />
-                </div>
-                <br>
-                <button class="ts-button" @click="submitPost">送出文章</button>
-
             </div>
-            <!-- <div class="cell is-vertical">
-                <h2>標籤</h2>
-                <div class="ts-input is-solid">
-                    <textarea name="" id="">123</textarea>
+            <div class="column">
+                <div class="cell is-vertical">
+                    <h2>標籤</h2>
+                    <div class="ts-input is-solid">
+                        <textarea name="" id="">123</textarea>
+                    </div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </template>
