@@ -94,7 +94,7 @@ const handleSubmit = async () => {
     try {
         const userStore = useUserStore(); // 獲取用戶存儲
         const postData = {
-            userDetail: { id: userStore.userid }, // 確保這裡獲取正確的用戶 ID
+            userDetail: { id: userStore.userId }, // 確保這裡獲取正確的用戶 ID
             postTitle: title.value,
             contentText: description.value,
             images: fileList.value.map(file => file.url || file.preview)
