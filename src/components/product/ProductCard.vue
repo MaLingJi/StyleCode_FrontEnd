@@ -1,7 +1,7 @@
 <template>
-    <div class="ts-box product-card">
+    <div class="ts-box product-card" @click="navigateToProductDetails">
       <div class="ts-image">
-        <img :src="getImageUrl(product.coverImage)" :alt="product.productName"/>
+        <img :src="getImageUrl(product.coverImage)" :alt="product.productName" />
       </div>
       <div class="ts-content">
         <h3>{{ product.productName }}</h3>
@@ -11,6 +11,10 @@
   </template>
   
   <script setup>
+  import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
   // 定義元件的 props
   const props = defineProps({
     product: {
@@ -28,6 +32,10 @@
     // 如果沒有圖片，返回預設圖片
     return '../../../public/No_image.png';
   };
+
+  const navigateToProductDetails = () => {
+  router.push({ name: 'productDetails-link', params: { id: props.product.productId } });
+};
   </script>
   
   <style scoped>

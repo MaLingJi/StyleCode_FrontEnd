@@ -4,7 +4,7 @@ import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
 import Forbidden from "@/views/Forbidden.vue";
 import Login from "@/views/secure/Login.vue";
-import Shop from "@/views/pages/shop.vue";
+import Shop from "@/views/pages/product/shop.vue";
 import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share.vue";
@@ -14,6 +14,7 @@ import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
 import newShare from "@/views/pages/newShare.vue";
 import editShare from "@/views/pages/editShare.vue";
+import productDetails from '@/views/pages/product/productDetails.vue';
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -22,6 +23,7 @@ const routes = [
 
   { name: "secure-login-link", path: "/secure/login", component: Login },
   { name: "shop-link", path: "/shop", component: Shop },
+  { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
   { name: "forum-link", path: "/forum", component: Forum },
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
@@ -37,9 +39,15 @@ const routes = [
   { name: "order-link", path: "/order", component: order },
 ];
 
+
+
+
+
 const router = createRouter({
   history: createWebHistory(),
   routes: routes,
 });
+
+
 
 export default router;
