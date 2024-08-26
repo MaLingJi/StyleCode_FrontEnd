@@ -8,7 +8,14 @@ import Shop from "@/views/pages/shop.vue";
 import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share.vue";
-import comment from "@/views/pages/comment.vue"
+import Register from "@/views/secure/register.vue";
+import comment from "@/views/pages/comment.vue";
+import cart from "@/views/pages/cart.vue";
+import order from "@/views/pages/order.vue";
+import newShare from "@/views/pages/newShare.vue";
+import editShare from "@/views/pages/editShare.vue";
+import post from "@/views/pages/post.vue";
+
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -20,7 +27,17 @@ const routes = [
   { name: "forum-link", path: "/forum", component: Forum },
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
+  { name: "new-share-link", path: "/new-share", component: newShare },
+  { name: "edit-share-link", path: "/editShare/:postId", component: editShare },
+
+
+
+  { name: "longin-ling", path: "/secure/login", component: Login},
+  { name: "register-ling", path: "/secure/register", component: Register},
   { name: "comment-link", path: "/comment/:id", component: comment },
+  { name: "cart-link", path: "/cart", component: cart },
+  { name: "order-link", path: "/order", component: order },
+  { name: "post-link", path: "/post", component: post },
 ];
 
 const router = createRouter({
