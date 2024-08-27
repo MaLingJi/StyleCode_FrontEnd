@@ -20,7 +20,7 @@ const routes = [
   { name: "home-link", path: "/", component: Home },
   { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },
   { name: "403-link", path: "/403", component: Forbidden },
-
+  
   { name: "secure-login-link", path: "/secure/login", component: Login },
   { name: "shop-link", path: "/shop", component: Shop },
   { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
