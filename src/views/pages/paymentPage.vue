@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import OrderList from '@/components/OrderList.vue';
 
@@ -48,7 +48,7 @@ const showOrderDetails = ref(true);
 
 const loadCartItems = async () => {
     try {
-        const response = await axios.get('http://localhost:8080/cart/find/1');
+        const response = await axiosapi.get('/cart/find/1');
         cartItems.value = response.data;
         console.log("Cart items loaded:", cartItems.value);
     } catch (error) {
@@ -64,14 +64,14 @@ const lpPayment = async () => {
             totalAmounts: totalAmount.value,
             userId: 1,
             items: cartItems.value.map(item => ({
-                productId: item.productId,
+                productDetailsId: item.productDetailsId,
                 quantity: item.quantity,
                 productName: item.productName,
                 productPrice: item.productPrice
             }))
         };
         console.log('Payment Data:', JSON.stringify(paymentData, null, 2));
-        const response = await axios.post('http://localhost:8080/pay/linePayRequest', paymentData)
+        const response = await axiosapi.post('/pay/linePayRequest', paymentData)
 
         console.log('Payment initiation response:', response.data);
 

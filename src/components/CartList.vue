@@ -1,6 +1,6 @@
 <template>
     <div class="ts-box">
-        <table class="ts-table " >
+        <table class="ts-table ">
             <thead>
                 <tr>
                     <th>商品資料</th>
@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems" >
+                <tr v-for="item in cartItems">
                     <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
 
@@ -26,7 +26,7 @@
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>
-                                <span v-show="stockStatus.get(item.productId)">已達庫存上限</span>
+                                <span v-show="stockStatus.get(item.productDetailsId)">已達庫存上限</span>
                             </div>
                         </div>
                     </td>
@@ -45,9 +45,11 @@
 
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
-import axios from 'axios';
+import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+
+
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
@@ -63,10 +65,10 @@ const updateParent = () => {
 const increaseQuantity = (item) => {
 
     // increase api
-    axios.post('http://localhost:8080/cart/addOneVol', {
+    axiosapi.post('/cart/addOneVol', {
 
         userId: 1,
-        productId: item.productId
+        productDetailsId: item.productDetailsId
 
     })
         .then(response => {
@@ -75,10 +77,10 @@ const increaseQuantity = (item) => {
             if (response.data != '') {
                 item.quantity++;
                 updateParent();
-                stockStatus.value.set(item.productId, false)
+                stockStatus.value.set(item.productDetailsId, false)
             } else {
                 console.log('超過庫存')
-                stockStatus.value.set(item.productId, true)
+                stockStatus.value.set(item.productDetailsId, true)
             }
 
         })
@@ -89,19 +91,17 @@ const increaseQuantity = (item) => {
 
 const decreaseQuantity = (item) => {
     if (item.quantity > 1) {
-        axios.post('http://localhost:8080/cart/minusOneVol', {
-            cartId: {
-                userId: 1,
-                productId: item.productId
-            }
+        axiosapi.post('/cart/minusOneVol', {
+            userId: 1,
+            productDetailsId: item.productDetailsId
         }).then(response => {
             if (response.data != '') {
                 item.quantity--;
                 updateParent();
-                stockStatus.value.set(item.productId, false)
+                stockStatus.value.set(item.productDetailsId, false)
             } else {
                 console.log('超過庫存')
-                stockStatus.value.set(item.productId, true)
+                stockStatus.value.set(item.productDetailsId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -117,17 +117,17 @@ const updateQuantity = (item) => {
     if (item.quantity <= 0) {
         removeItem(item);
     } else {
-        axios.put('http://localhost:8080/cart/update', {
+        axiosapi.put('/cart/update', {
             userId: 1,
-            productId: item.productId,
+            productDetailsId: item.productDetailsId,
             quantity: item.quantity
 
         }).then(response => {
             if (response.data != '') {
                 updateParent();
-                stockStatus.value.set(item.productId, false)
+                stockStatus.value.set(item.productDetailsId, false)
             } else {
-                stockStatus.value.set(item.productId, true)
+                stockStatus.value.set(item.productDetailsId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -139,10 +139,10 @@ const updateQuantity = (item) => {
 const removeItem = (item) => {
     if (!confirm('確定要從購物車移除此商品嗎？')) return;
 
-    axios.delete('http://localhost:8080/cart/delete', {
+    axiosapi.delete('/cart/delete', {
         data: {
             userId: 1,
-            productId: item.productId
+            productDetailsId: item.productDetailsId
         }
     }).then(response => {
         console.log(response);
@@ -163,7 +163,7 @@ const removeItem = (item) => {
 
 onMounted(() => {
     props.cartItems.forEach(item => {
-        stockStatus.value.set(item.productId, false);
+        stockStatus.value.set(item.productDetailsId, false);
     });
 });
 

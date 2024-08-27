@@ -9,7 +9,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import axiosapi from '@/plugins/axios.js';
 
 const route = useRoute()
 const router = useRouter()
@@ -27,7 +27,7 @@ onMounted(async () => {
     }
 
     try {
-        const response = await axios.get(`http://localhost:8080/pay/linePayConfirm?orderId=${orderId}`)
+        const response = await axiosapi.get(`pay/linePayConfirm?orderId=${orderId}`)
         status.value = response.data.status
         if (status.value === 'success') {
             // 支付成功，跳轉到訂單頁面

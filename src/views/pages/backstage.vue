@@ -1,8 +1,6 @@
 <template>
         
-<!DOCTYPE html>
-<html>
-    <body>
+
 
         <!-- <div class="ts-divider"></div> -->
 
@@ -281,8 +279,6 @@
                 </div>
             </div>
         </div>
-    </body>
-</html>
 
 </template>
     
