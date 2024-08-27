@@ -16,10 +16,10 @@
           <button class="carousel-button prev" @click="prevImage">&lt;</button>
           <button class="carousel-button next" @click="nextImage">&gt;</button>
         </div>
-
+        
         <div class="ts-grid thumbnail-grid">
           <div
-            class="column"
+            class="column is-2-wide"
             v-for="(image, index) in product.pimages"
             :key="index"
           >
@@ -278,16 +278,22 @@ const addToCart = () => {
   cursor: pointer;
   opacity: 0.6;
   transition: opacity 0.3s ease;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
 }
+
 
 .thumbnail.active,
 .thumbnail:hover {
   opacity: 1;
+  border: 2px solid var(--ts-gray-400);
 }
 
 .thumbnail img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .fade-enter-active,
@@ -300,5 +306,4 @@ const addToCart = () => {
   opacity: 0;
 }
 
-/* Rest of the styles remain the same */
 </style>

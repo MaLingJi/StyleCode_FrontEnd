@@ -45,7 +45,7 @@ const routes = [
   { name: "profile-ling", path: "/secure/profile", component: profile},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "productDetails-link", path: '/product/:id', component: productDetails},
-  { name: 'addProduct', path: '/admin/add-product',component: addProduct},
+  { name: 'addProduct', path: '/addproduct',component: addProduct},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
   { name: "post-link", path: "/post", component: post },

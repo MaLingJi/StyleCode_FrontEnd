@@ -57,35 +57,42 @@
             </div>
             <div class="column is-4-wide">
               <div class="ts-input is-fluid">
-                <input type="number" v-model="detail.stock" placeholder="庫存數量" required>
+                <input type="number" v-model="detail.stock" placeholder="庫存數量" required @input="updateOnSaleStatus(index)">
               </div>
             </div>
+
             <div class="column is-4-wide">
-              <div class="ts-checkbox">
-                <input type="checkbox" v-model="detail.onSale" :id="'onSale' + index">
-                <label :for="'onSale' + index">上架</label>
+               <div class="ts-text">
+                  狀態: {{ detail.onSale ? '上架' : '下架' }}
               </div>
+            </div>
+
+            <div class="column is-4-wide">
+              <button type="button" class="ts-button is-negative" @click="removeProductDetail(index)">刪除</button>
             </div>
           </div>
-          <button type="button" class="ts-button is-secondary has-top-spaced" @click="addProductDetail">添加商品</button>
+          <button type="button" class="ts-button is-secondary has-top-spaced" @click="addProductDetail">添加商品詳情</button>
 
           <!-- 图片上传 -->
           <div class="ts-grid has-top-spaced">
             <div class="column is-16-wide">
-              <div class="ts-input">
-                <input type="file" @change="handleFileUpload" multiple accept="image/*">
+              <div class="ts-file is-large">
+                <input type="file" @change="handleFileUpload" multiple accept="image/*" ref="fileInput">
               </div>
             </div>
           </div>
 
-          <!-- 图片预览 -->
+          <!-- 圖片預覽 -->
           <div class="ts-grid is-4-columns has-top-spaced" v-if="previewImages.length > 0">
             <div v-for="(image, index) in previewImages" :key="index" class="column">
-              <div class="ts-image">
-                <img :src="image" alt="Preview">
-              </div>
-            </div>
+              <div class="ts-image preview-image">
+                 <img :src="image" alt="Preview" >
+                 <div class="delete-overlay" @click.stop="removeImage(index)">
+                    <span class="delete-text">點擊刪除</span>
+                </div>
           </div>
+        </div>
+      </div>
 
           <div class="ts-grid has-top-spaced">
             <div class="column is-8-wide">
@@ -115,11 +122,12 @@ const product = reactive({
   price: null,
   subcategoryId: '',
   productDescription: '',
-  productDetails: [{ color: '', size: '', stock: null, onSale: false }]
+  productDetails: [{ color: '', size: '', stock: null }]
 });
 
 const previewImages = ref([]);
 const files = ref([]);
+const fileInput = ref(null);
 
 onMounted(async () => {
   try {
@@ -149,22 +157,50 @@ const addProductDetail = () => {
   product.productDetails.push({ color: '', size: '', stock: null, onSale: false });
 };
 
+const removeProductDetail = (index) => {
+  product.productDetails.splice(index, 1);
+};
+
+const updateOnSaleStatus = (index) => {
+  const detail = product.productDetails[index];
+  detail.onSale = detail.stock > 0;
+};
+
 const handleFileUpload = (event) => {
-  files.value = event.target.files;
-  previewImages.value = [];
-  for (let i = 0; i < files.value.length; i++) {
+  const newFiles = Array.from(event.target.files);
+  files.value = [...files.value, ...newFiles];
+  
+  for (let i = 0; i < newFiles.length; i++) {
     const reader = new FileReader();
     reader.onload = (e) => {
       previewImages.value.push(e.target.result);
     };
-    reader.readAsDataURL(files.value[i]);
+    reader.readAsDataURL(newFiles[i]);
+  }
+};
+
+const removeImage = (index) => {
+  console.log('Removing image at index:', index);
+  previewImages.value.splice(index, 1);
+  files.value.splice(index, 1);
+  resetFileInput();
+};
+
+const resetFileInput = () => {
+  if (fileInput.value) {
+    fileInput.value.value = '';
   }
 };
 
 const submitProduct = async () => {
   try {
     // 创建商品
-    const response = await axiosapi.post('/admin/products/create', product);
+    const productData = {
+      ...product,
+      subcategoryId: { subcategoryId: product.subcategoryId }
+    };
+    const response = await axiosapi.post('/admin/products/create', productData);
+    console.log("Response:", response);
     const createdProductId = response.data.productId;
 
     // 上传图片
@@ -178,22 +214,27 @@ const submitProduct = async () => {
       });
     }
 
-    alert('商品创建成功！');
-    router.push('/backstage'); // 假设后台路径是 '/admin/dashboard'
+    alert('商品新增成功！');
+    router.push('/backstage');
   } catch (error) {
     console.error('Error creating product:', error);
-    alert('创建商品失败，请重试。');
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+    }
+    alert('商品新增失敗，請重試。');
   }
 };
 
 const cancelCreation = () => {
-  router.push('/backstage'); // 假设后台路径是 '/admin/dashboard'
+  router.push('/backstage');
 };
 
 const resetForm = () => {
   Object.keys(product).forEach(key => {
     if (key === 'productDetails') {
-      product[key] = [{ color: '', size: '', stock: null, onSale: false }];
+      product[key] = [{ color: '', size: '', stock: null }];
     } else {
       product[key] = '';
     }
@@ -211,4 +252,29 @@ const resetForm = () => {
   height: auto;
   object-fit: cover;
 }
+
+.preview-image {
+  position: relative;
+  cursor: pointer;
+}
+
+.delete-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.preview-image:hover .delete-overlay {
+  opacity: 1;
+}
+
 </style>

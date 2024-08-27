@@ -31,7 +31,7 @@
                         <div class="ts-menu is-dense is-small">
                             <a href="#!" class="item">管理商品</a>
                             <a class="item" @click = switchComp(addProduct)>新增商品</a>
-                            <router-link to="/admin/add-product" class="ts-button is-positive">新增商品</router-link>
+                            <router-link to="/addproduct" class="ts-button is-positive">新增商品</router-link>
                             <a href="#!" class="item">庫存管理</a>
                             <a href="#!" class="item">編輯分類</a>
                         </div>
