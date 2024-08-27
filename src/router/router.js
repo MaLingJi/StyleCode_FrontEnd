@@ -14,7 +14,12 @@ import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
 import newShare from "@/views/pages/newShare.vue";
 import editShare from "@/views/pages/editShare.vue";
+import post from "@/views/pages/post.vue";
+
+
+import addProduct from '@/components/product/addProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
+
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -36,6 +41,7 @@ const routes = [
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "productDetails-link", path: '/product/:id', component: productDetails},
+  { name: 'addProduct', path: '/admin/add-product',component: addProduct},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
 ];
