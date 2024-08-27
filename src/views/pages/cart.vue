@@ -3,12 +3,12 @@
         <html class="is-secondary">
         <div class="ts-container">
                 <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-                        <span class="ts-text">圈圈123</span>
+                        <span class="ts-text">圈圈1</span>
                 </div>
 
                 <div class="ts-box" style="margin-top: 20px;">
                         <div class="ts-content"
-                                style="display: flex;justify-content: space-between; align-items: center;">
+                                style="display: flex; justify-content: space-between;align-items: center;">
                                 <span class="ts-text">已經是會員？登入後可以更方便管理訂單！</span>
                                 <div class="ts-wrap">
                                         <button class="ts-button">會員登入</button>
@@ -16,12 +16,23 @@
                                 </div>
                         </div>
                 </div>
+
+                <!-- <div v-if="!isLoggedIn" class="ts-box" style="margin-top: 20px;">
+                        <div class="ts-content login-box">
+                                <span class="ts-text">已經是會員？登入後可以更方便管理訂單！</span>
+                                <div class="ts-wrap">
+                                        <button class="ts-button" @click="login">會員登入</button>
+                                        <button class="ts-button" @click="register">註冊會員</button>
+                                </div>
+                        </div>
+                </div> -->
                 <br>
 
                 <CartList :cart-items="cartItems" @update:car-items="updateCartItems"></CartList>
                 <div>
                         <h3>訂單總金額:{{ formatCurrency(totalAmount) }}</h3>
-                        <button class="ts-button" @click="proceedPayment">Submit</button>
+                        <!-- <button class="ts-button" @click="proceedPayment">Submit</button> -->
+                        <button class="ts-button" @click="checkInventoryAndProceed">前往付款</button>
                 </div>
 
         </div>
@@ -41,7 +52,7 @@ import router from '@/router/router';
 
 
 const cartItems = ref([]);
-
+// const isLoggedIn = ref(false);  // 新增：用於追蹤登入狀態
 
 const loadCartItems = async () => {
         try {
@@ -55,37 +66,7 @@ const loadCartItems = async () => {
 
 onMounted(loadCartItems);
 
-const proceedPayment = async () => {
-        try {
-                console.log(cartItems.value);
-                if (cartItems.value == '') {
-                        alert('請先加入商品 購物車不能為空')
-                        return
-                }
 
-                if (!confirm('確定要產生訂單嗎？')) return;
-
-                console.log('totalamount' + totalAmount.value)
-
-                const response = await axios.post('http://localhost:8080/order/admin/add', {
-                        userId: 1,
-                        totalAmounts: totalAmount.value // 使用計算屬性的值
-                });
-                console.log('Payment response:', response.data);
-                if (response.data) { // 假設後端返回 success 字段
-                        console.log('Payment successful');
-                        // 這裡可以添加成功後的邏輯，比如跳轉到成功頁面
-                        router.push('/order');
-                } else {
-                        console.log('Payment failed or stock issues');
-                        // 重新加載購物車數據以更新庫存信息
-                        await loadCartItems();
-                }
-        } catch (error) {
-                console.error('Failed to process payment:', error);
-                // 這裡可以添加錯誤處理邏輯，比如顯示錯誤消息給用戶
-        }
-};
 
 const updateCartItems = (updatedItems) => {
         cartItems.value = updatedItems;
@@ -110,6 +91,42 @@ const totalAmount = computed(() => {
 const formatCurrency = (amount) => {
         return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
+
+
+const checkInventoryAndProceed = async () => {
+        try {
+                // 調用檢查庫存的 API
+                const response = await axios.post('http://localhost:8080/cart/checkStock', {
+                        items: cartItems.value.map(item => ({
+                                productId: item.productId,
+                                quantity: item.quantity,
+                        }))
+                })
+                console.log('responsedata:' + response.value);
+                if (response.data != '') {
+                        // 庫存充足，轉到付款頁面
+                        router.push('/payment')
+                } else {
+                        // 庫存不足，顯示錯誤消息
+                        alert('抱歉，部分商品庫存不足，請調整購物車內容。')
+                }
+        } catch (error) {
+                console.error('檢查庫存時發生錯誤:', error)
+                alert('檢查庫存時發生錯誤，請稍後再試。')
+        }
+}
+
+
+// const checkLoginStatus = async () => {
+//   try {
+//     // 這裡應該調用檢查登入狀態的 API
+//     const response = await axios.get('http://localhost:8080/user/checkLoginStatus');
+//     isLoggedIn.value = response.data.isLoggedIn;
+//   } catch (error) {
+//     console.error('Failed to check login status:', error);
+//     isLoggedIn.value = false;
+//   }
+// };
 
 </script>
 

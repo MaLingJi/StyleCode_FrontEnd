@@ -12,6 +12,8 @@ import Register from "@/views/secure/register.vue";
 import comment from "@/views/pages/comment.vue";
 import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
+import paymentPage from "@/views/pages/paymentPage.vue";
+import checkPaying from "@/views/pages/checkPaying.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -29,6 +31,8 @@ const routes = [
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
+  { name: "paymentPage-link", path: "/payment", component: paymentPage },
+  { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
 ];
 
 const router = createRouter({
