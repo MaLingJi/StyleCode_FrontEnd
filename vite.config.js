@@ -29,5 +29,10 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    hmr: {
+      host: '35.229.197.237',  // 您的公共 IP 或域名
+      port: 5173,       // 與 server 的端口一致
+      protocol: 'ws',   // 或者 'wss' 如果您使用 HTTPS
+    }
   },
 });

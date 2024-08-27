@@ -70,14 +70,14 @@ function submitPost() {
     const postData = {
         postTitle: postTitle.value,
         contentText: contentText.value,
-        contentType: '分享',
+        contentType: 'share',
         userDetail: {
             id: 2,
         }
     };
 
     // 1. 先發送發文請求
-    axiosapi.post("/post", postData)
+    axiosapi.post("/api/post", postData)
         .then(postResponse => {
             const postId = postResponse.data.postId;
 
@@ -87,7 +87,7 @@ function submitPost() {
                 formData.append('postId', postId);
                 formData.append('file', imageFile.value);
 
-                return axiosapi.post("/images", formData, {
+                return axiosapi.post("/api/images", formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }

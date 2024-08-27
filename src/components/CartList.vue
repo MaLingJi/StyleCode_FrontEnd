@@ -1,6 +1,6 @@
 <template>
     <div class="ts-box">
-        <table class="ts-table " >
+        <table class="ts-table ">
             <thead>
                 <tr>
                     <th>商品資料</th>
@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems" >
+                <tr v-for="item in cartItems">
                     <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
 
@@ -45,7 +45,8 @@
 
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
-import axios from 'axios';
+// import axios from 'axios';
+import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 const props = defineProps(['cartItems']);
@@ -63,7 +64,7 @@ const updateParent = () => {
 const increaseQuantity = (item) => {
 
     // increase api
-    axios.post('http://localhost:8080/cart/addOneVol', {
+    axiosapi.post('/cart/addOneVol', {
 
         userId: 1,
         productId: item.productId
@@ -89,7 +90,7 @@ const increaseQuantity = (item) => {
 
 const decreaseQuantity = (item) => {
     if (item.quantity > 1) {
-        axios.post('http://localhost:8080/cart/minusOneVol', {
+        axiosapi.post('/cart/minusOneVol', {
             cartId: {
                 userId: 1,
                 productId: item.productId
@@ -117,7 +118,7 @@ const updateQuantity = (item) => {
     if (item.quantity <= 0) {
         removeItem(item);
     } else {
-        axios.put('http://localhost:8080/cart/update', {
+        axiosapi.put('/cart/update', {
             userId: 1,
             productId: item.productId,
             quantity: item.quantity
@@ -139,7 +140,7 @@ const updateQuantity = (item) => {
 const removeItem = (item) => {
     if (!confirm('確定要從購物車移除此商品嗎？')) return;
 
-    axios.delete('http://localhost:8080/cart/delete', {
+    axiosapi.delete('/cart/delete', {
         data: {
             userId: 1,
             productId: item.productId
