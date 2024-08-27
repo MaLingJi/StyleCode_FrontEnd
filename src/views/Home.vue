@@ -37,10 +37,15 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
+import useUserStore from "@/stores/user.js"
+const userStore = useUserStore();
+console.log("userId: ", userStore.userId);
+console.log("isLogin: ", userStore.isLogedin);
+console.log("permissions: ", userStore.permissions);
+console.log("token: ", userStore.userToken);
 
 const router = useRouter();
 
-// const post = ref({});
 const posts = ref([]);
 
 onMounted(function () {

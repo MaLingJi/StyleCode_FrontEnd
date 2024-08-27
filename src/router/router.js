@@ -14,6 +14,8 @@ import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
 import newShare from "@/views/pages/newShare.vue";
 import editShare from "@/views/pages/editShare.vue";
+import post from "@/views/pages/post.vue";
+
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -35,6 +37,7 @@ const routes = [
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
+  { name: "post-link", path: "/post", component: post },
 ];
 
 const router = createRouter({
