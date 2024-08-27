@@ -1,37 +1,20 @@
 <template>
     <div class="ts-box">
-        <table class="ts-table ">
+        <table class="ts-table " >
             <thead>
                 <tr>
                     <th>商品資料</th>
                     <th>單件價格</th>
                     <th>數量</th>
                     <th>小計</th>
-                    <th class="is-collapsed">刪除按鈕</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems">
+                <tr v-for="item in cartItems" >
                     <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
-
-                    <td>
-                        <div>
-                            <div>
-                                <!-- 要加判斷數量變0自動移除 -->
-                                <button @click="decreaseQuantity(item)" :disabled="item.quantity < 1"
-                                    class="ts-icon is-minus-icon"></button>
-                                <input v-model.number="item.quantity" type="number" min="1" class="custom-number-input"
-                                    @input="updateQuantity(item)">
-                                <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
-                            </div>
-                            <div>
-                                <span v-show="stockStatus.get(item.productDetailsId)">已達庫存上限</span>
-                            </div>
-                        </div>
-                    </td>
+                    <td>{{ item.quantity }}</td>
                     <td>{{ formatCurrency(cauculate(item)) }}</td>
-                    <td><button @click="removeItem(item)" class="ts-icon is-close-icon">X</button></td>
                 </tr>
             </tbody>
             <tfoot>
@@ -45,11 +28,9 @@
 
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
-import axiosapi from '@/plugins/axios.js';
+import axios from 'axios';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
-
-
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
@@ -65,10 +46,10 @@ const updateParent = () => {
 const increaseQuantity = (item) => {
 
     // increase api
-    axiosapi.post('/cart/addOneVol', {
+    axios.post('http://localhost:8080/cart/addOneVol', {
 
         userId: 1,
-        productDetailsId: item.productDetailsId
+        productId: item.productId
 
     })
         .then(response => {
@@ -77,10 +58,10 @@ const increaseQuantity = (item) => {
             if (response.data != '') {
                 item.quantity++;
                 updateParent();
-                stockStatus.value.set(item.productDetailsId, false)
+                stockStatus.value.set(item.productId, false)
             } else {
                 console.log('超過庫存')
-                stockStatus.value.set(item.productDetailsId, true)
+                stockStatus.value.set(item.productId, true)
             }
 
         })
@@ -91,17 +72,19 @@ const increaseQuantity = (item) => {
 
 const decreaseQuantity = (item) => {
     if (item.quantity > 1) {
-        axiosapi.post('/cart/minusOneVol', {
-            userId: 1,
-            productDetailsId: item.productDetailsId
+        axios.post('http://localhost:8080/cart/minusOneVol', {
+            cartId: {
+                userId: 1,
+                productId: item.productId
+            }
         }).then(response => {
             if (response.data != '') {
                 item.quantity--;
                 updateParent();
-                stockStatus.value.set(item.productDetailsId, false)
+                stockStatus.value.set(item.productId, false)
             } else {
                 console.log('超過庫存')
-                stockStatus.value.set(item.productDetailsId, true)
+                stockStatus.value.set(item.productId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -117,17 +100,17 @@ const updateQuantity = (item) => {
     if (item.quantity <= 0) {
         removeItem(item);
     } else {
-        axiosapi.put('/cart/update', {
+        axios.put('http://localhost:8080/cart/update', {
             userId: 1,
-            productDetailsId: item.productDetailsId,
+            productId: item.productId,
             quantity: item.quantity
 
         }).then(response => {
             if (response.data != '') {
                 updateParent();
-                stockStatus.value.set(item.productDetailsId, false)
+                stockStatus.value.set(item.productId, false)
             } else {
-                stockStatus.value.set(item.productDetailsId, true)
+                stockStatus.value.set(item.productId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -139,10 +122,10 @@ const updateQuantity = (item) => {
 const removeItem = (item) => {
     if (!confirm('確定要從購物車移除此商品嗎？')) return;
 
-    axiosapi.delete('/cart/delete', {
+    axios.delete('http://localhost:8080/cart/delete', {
         data: {
             userId: 1,
-            productDetailsId: item.productDetailsId
+            productId: item.productId
         }
     }).then(response => {
         console.log(response);
@@ -163,7 +146,7 @@ const removeItem = (item) => {
 
 onMounted(() => {
     props.cartItems.forEach(item => {
-        stockStatus.value.set(item.productDetailsId, false);
+        stockStatus.value.set(item.productId, false);
     });
 });
 

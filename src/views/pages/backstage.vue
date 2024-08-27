@@ -30,7 +30,9 @@
                         </div>
                         <div class="ts-menu is-dense is-small">
                             <a href="#!" class="item">管理商品</a>
-                            <a href="#!" class="item is-active">庫存管理</a>
+                            <a class="item" @click = switchComp(addProduct)>新增商品</a>
+                            <router-link to="/addproduct" class="ts-button is-positive">新增商品</router-link>
+                            <a href="#!" class="item">庫存管理</a>
                             <a href="#!" class="item">編輯分類</a>
                         </div>
                         <div class="ts-divider has-top-spaced-small"></div>
@@ -86,6 +88,7 @@
 
                 <div class="column is-12-wide">
                     <div class="ts-box has-bottom-spaced-large">
+                        <component :is = "currentComp"></component>
                         <table class="ts-table">
                             <thead>
                                 <tr>
@@ -283,7 +286,14 @@
 </template>
     
 <script setup>
-    
+ import addProduct from '@/components/product/addProduct.vue';
+
+ import{ shallowRef , onMounted } from 'vue';
+
+ function switchComp (comp){
+    currentComp.value = comp;
+ }
+
 </script>
     
 <style>
