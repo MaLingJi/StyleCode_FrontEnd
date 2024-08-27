@@ -4,10 +4,6 @@
     <div class="ts-container">
         <div class="ts-selection is-fluid">
             <label class="item">
-                <input type="radio" name="language" value="0" v-model="status" />
-                <div class="text">未付款</div>
-            </label>
-            <label class="item">
                 <input type="radio" name="language" value="1" v-model="status" />
                 <div class="text">已付款</div>
             </label>
@@ -25,28 +21,22 @@
                         <th>訂單編號</th>
                         <th>日期</th>
                         <th>總金額</th>
-                        <th>付款方式</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <template v-for="order in orders" :key="order.id">
+                    <template v-for="order in orders" :key="order.orderId">
                         <tr>
-                            <td>{{ order.id }}</td>
+                            <td>{{ order.orderId }}</td>
                             <td>{{ order.orderDate }}</td>
                             <td>{{ formatCurrency(order.totalAmounts) }}</td>
-                            <td><button class="ts-button is-short is-outlined is-small"
-                                    style="background-color:limegreen;">LinePay</button>
-                                <button class="ts-button is-short is-outlined is-small"
-                                    style="background-color:cornflowerblue;">綠界</button>
-                            </td>
                             <td>
-                                <button class="ts-button is-outlined" @click="toggleOrderDetails(order.id)">
-                                    {{ expandedOrderId === order.id ? '收起' : '展開' }}
+                                <button class="ts-button is-outlined" @click="toggleOrderDetails(order.orderId)">
+                                    {{ expandedOrderId === order.orderId ? '收起' : '展開' }}
                                 </button>
                             </td>
                         </tr>
-                        <tr v-if="expandedOrderId === order.id">
+                        <tr v-if="expandedOrderId === order.orderId">
                             <td colspan="5" class="is-secondary is-padded is-insetted">
                                 <div v-if="orderDetails.length > 0">
                                     <table class="ts-table">
@@ -89,10 +79,14 @@ import axios, { Axios } from 'axios';
 import { ref } from 'vue';
 import { watch } from 'vue';
 
-const status = ref(0);
+
+const status = ref(1);
 const orders = ref([]);
 const expandedOrderId = ref(null);
 const orderDetails = ref([]);
+
+
+
 
 watch(status, () => {
     axios
@@ -119,17 +113,23 @@ const toggleOrderDetails = orderId => {
         expandedOrderId.value = null;
     } else {
         expandedOrderId.value = orderId;
-        axios.get('http://localhost:8080/order/findOd/' + orderId)
-            .then(response => {
-                console.log(response)
-                orderDetails.value = response.data
-            }).catch(
-                error => {
-                    console.error('cant load orderDetails' + error)
-                }
-            )
+        getOrderDetails(orderId);
     }
 }
+
+const getOrderDetails = async (orderId) => {
+    await axios.get('http://localhost:8080/order/findOd/' + orderId)
+        .then(response => {
+            console.log(response)
+            orderDetails.value = response.data
+        }).catch(
+            error => {
+                console.error('cant load orderDetails' + error)
+            }
+        )
+}
+
+
 
 
 
@@ -137,7 +137,8 @@ const toggleOrderDetails = orderId => {
 
 <style>
 .ts-table th,
-.ts-table td {
+.ts-table td,
+.ts-table tr {
     text-align: center;
 }
 </style>

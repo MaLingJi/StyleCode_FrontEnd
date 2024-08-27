@@ -17,6 +17,8 @@ import editShare from "@/views/pages/editShare.vue";
 import post from "@/views/pages/post.vue";
 
 import productDetails from '@/views/pages/product/productDetails.vue';
+import paymentPage from "@/views/pages/paymentPage.vue";
+import checkPaying from "@/views/pages/checkPaying.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -40,6 +42,8 @@ const routes = [
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
   { name: "post-link", path: "/post", component: post },
+  { name: "paymentPage-link", path: "/payment", component: paymentPage },
+  { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
 ];
 
 const router = createRouter({
