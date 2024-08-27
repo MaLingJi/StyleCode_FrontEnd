@@ -19,6 +19,7 @@ import post from "@/views/pages/post.vue";
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
+import profile from "@/views/secure/profile.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -37,6 +38,7 @@ const routes = [
   
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
+  { name: "profile-ling", path: "/secure/profile", component: profile},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: "cart-link", path: "/cart", component: cart },

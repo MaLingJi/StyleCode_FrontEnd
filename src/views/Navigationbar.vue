@@ -33,7 +33,7 @@
                         <a class="ts-text is-undecorated" data-dropdown="user-dropdown" href="#!"
                             v-if="userStore.isLogedin"><span class="ts-icon is-spinning is-user-icon is-big"></span></a>
                         <div class="ts-dropdown" id="user-dropdown" v-if="userStore.isLogedin">
-                            <button class="item">個人頁面</button>
+                            <RouterLink to="/secure/profile" class="item">個人頁面</RouterLink>
                             <RouterLink to="/backstage" class="item">後台</RouterLink>
                             <button class="item" @click="logout">登出</button>
                         </div>
