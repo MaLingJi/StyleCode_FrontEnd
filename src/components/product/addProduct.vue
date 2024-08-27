@@ -67,7 +67,7 @@
               </div>
             </div>
           </div>
-          <button type="button" class="ts-button is-secondary has-top-spaced" @click="addProductDetail">商品說明</button>
+          <button type="button" class="ts-button is-secondary has-top-spaced" @click="addProductDetail">添加商品</button>
 
           <!-- 图片上传 -->
           <div class="ts-grid has-top-spaced">
