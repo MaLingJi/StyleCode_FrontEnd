@@ -6,10 +6,10 @@
         <span key="comment-basic-like">
           <a-tooltip title="Like">
             <template v-if="action === 'liked'">
-              <LikeFilled @click="like" />
+              <heart-filled @click="toggleLike" style="color: #eb2f96;" />
             </template>
             <template v-else>
-              <LikeOutlined @click="like" />
+              <heart-outlined @click="toggleLike" style="color: #eb2f96;" />
             </template>
           </a-tooltip>
           <span style="padding-left: 8px; cursor: auto">{{ likes }}</span>
@@ -17,13 +17,23 @@
         <span key="comment-basic-collect">
           <a-tooltip title="Collect">
             <template v-if="action === 'collected'">
-              <StarFilled @click="collect" />
+              <star-filled @click="toggleCollect" style="color: #fadb14;" />
             </template>
             <template v-else>
-              <StarOutlined @click="collect" />
+              <star-outlined @click="toggleCollect" style="color: #fadb14;" />
             </template>
           </a-tooltip>
           <span style="padding-left: 8px; cursor: auto">{{ collects }}</span>
+        </span>
+        <span key="comment-basic-share">
+          <a-tooltip title="Share">
+            <template v-if="action === 'shared'">
+              <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
+            </template>
+            <template v-else>
+              <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
+            </template>
+          </a-tooltip>
         </span>
         <span key="comment-basic-reply-to">回覆</span>
       </template>
@@ -111,13 +121,14 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { ref } from 'vue';
-import { LikeFilled, LikeOutlined, StarFilled, StarOutlined } from '@ant-design/icons-vue';
+import { StarFilled, StarOutlined, HeartFilled, HeartOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 
 dayjs.extend(relativeTime);
 
 const likes = ref<number>(0);
 const collects = ref<number>(0);
-const action = ref<string>();
+const shares = ref<number>(0);
+const action = ref<string>(''); // 初始化為空字符串
 const newComment = ref<string>('');
 const submitting = ref<boolean>(false);
 
@@ -129,14 +140,34 @@ const userImages = ref<string[]>([
 ]);
 
 // 點讚和收藏的處理函數
-const like = () => {
-  likes.value += 1;
-  action.value = 'liked';
+const toggleLike = () => {
+  if (action.value === 'liked') {
+    likes.value -= 1; // 減少讚數
+    action.value = ''; // 重置狀態
+  } else {
+    likes.value += 1; // 增加讚數
+    action.value = 'liked'; // 設置為已點讚
+  }
 };
 
-const collect = () => {
-  collects.value += 1;
-  action.value = 'collected';
+const toggleCollect = () => {
+  if (action.value === 'collected') {
+    collects.value -= 1; // 減少收藏數
+    action.value = ''; // 重置狀態
+  } else {
+    collects.value += 1; // 增加收藏數
+    action.value = 'collected'; // 設置為已收藏
+  }
+};
+
+const toggleShare = () => {
+  if (action.value === 'shared') {
+    shares.value -= 1; // 減少分享數
+    action.value = ''; // 重置狀態
+  } else {
+    shares.value += 1; // 增加分享數
+    action.value = 'shared'; // 設置為已分享
+  }
 };
 
 // 評論數據

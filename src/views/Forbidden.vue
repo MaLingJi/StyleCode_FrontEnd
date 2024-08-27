@@ -9,11 +9,11 @@
     </template>
   </n-result>
 </template>
-    
+
 <script setup>
-    
+
 </script>
-    
-<style>
-    
+
+<style scoped>
+
 </style>

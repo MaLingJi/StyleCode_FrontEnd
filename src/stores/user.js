@@ -2,13 +2,13 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 const user = defineStore("user",function(){
-    const userid = ref("");
+    const userId = ref("");
     const userToken = ref("");
     const permissions = ref("");
     const isLogedin = ref(false);
 
     function setUserId(data){
-        userid.value = data;
+        userId.value = data;
     }
     function setPermissions(data){
         permissions.value = data;
@@ -22,7 +22,7 @@ const user = defineStore("user",function(){
     }
 
     return{
-        userid, setUserId, isLogedin, setLogedin, userToken, setUserToken, permissions, setPermissions}
+        userId, setUserId, isLogedin, setLogedin, userToken, setUserToken, permissions, setPermissions}
 }, {
         persist:{
             storage: localStorage,
