@@ -29,12 +29,13 @@ const routes = [
   { name: "share-link", path: "/share", component: share },
   { name: "new-share-link", path: "/new-share", component: newShare },
   { name: "edit-share-link", path: "/editShare/:postId", component: editShare },
-
-
-
+  
+  
+  
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "comment-link", path: "/comment/:id", component: comment },
+  { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
 ];
