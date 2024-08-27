@@ -2,7 +2,7 @@
     <div class="ts-container">
         <div class="ts-app-layout is-horizontal">
             <div class="cell is-fluid is-vertical">
-                <div class="ts-header">發文暱稱: {{ userStore.userid }}</div>
+                <div class="ts-header">發文暱稱: {{ userStore.userId }}</div>
                 <div class="ts-divider"></div>
                 <h2>標題</h2>
                 <div class="ts-input is-solid">
@@ -44,7 +44,7 @@ const contentText = ref('');
 const images = ref([]);
 
 onMounted(() => {
-    console.log('Post ID:', postId.value);
+    // console.log('Post ID:', postId.value);
     // console.log('Route Params:', route.params);
     if (postId.value) {
         loadPostData(postId.value);

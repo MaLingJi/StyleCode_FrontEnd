@@ -19,6 +19,9 @@ import post from "@/views/pages/post.vue";
 
 import addProduct from '@/components/product/addProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
+import paymentPage from "@/views/pages/paymentPage.vue";
+import checkPaying from "@/views/pages/checkPaying.vue";
+import profile from "@/views/secure/profile.vue";
 
 
 const routes = [
@@ -39,11 +42,15 @@ const routes = [
   
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
+  { name: "profile-ling", path: "/secure/profile", component: profile},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: 'addProduct', path: '/admin/add-product',component: addProduct},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
+  { name: "post-link", path: "/post", component: post },
+  { name: "paymentPage-link", path: "/payment", component: paymentPage },
+  { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
 ];
 
 
