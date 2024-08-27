@@ -75,7 +75,7 @@ onMounted(async () => {
   }
 });
 
-// 獲取商品的方法
+// 獲取全部商品的方法
 const fetchProducts = async (categoryId = null, subcategoryId = null) => {
   try {
     let url = "/products/filter";
