@@ -290,7 +290,7 @@
 <script setup>
 import addProduct from '@/components/product/addProduct.vue';
 import { shallowRef, onMounted } from 'vue';
-import OrderManagement from '@/components/order/OrderManagement.vue';
+import OrderManagement from '@/components/order/OrderManage.vue';
 
 const currentComp = shallowRef(null);
 function switchComp(comp) {

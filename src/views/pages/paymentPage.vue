@@ -20,7 +20,7 @@
         </div>
 
         <div v-if="showOrderDetails">
-            <OrderList :cart-items="cartItems" @update:car-items="updateCartItems"></OrderList>
+            <PaymentPageList :cart-items="cartItems" @update:car-items="updateCartItems"></PaymentPageList>
         </div>
 
 
@@ -38,8 +38,8 @@
 <script setup>
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
-import OrderList from '@/components/order/OrderList.vue';
-import ProgressIndicator from '@/components/order/ProgressIndicator.vue';
+import PaymentPageList from '@/components/order/PaymentPageList.vue';
+import ProgressIndicator from '@/components/order/Circle.vue';
 
 
 

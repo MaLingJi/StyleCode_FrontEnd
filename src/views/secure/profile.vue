@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="ts-menu is-dense is-small" style="opacity: 0.8">
-                <a class="item">購買清單</a>
+                <a class="item" @click="switchComps(order)">購買清單</a>
             </div>
             <div class="ts-divider has-top-spaced-small"></div>
             <a href="#!" class="ts-content is-interactive is-dense">
@@ -101,7 +101,7 @@
 <script setup>
     import userProfile from '@/components/profile/userProfile.vue';
     import card from '@/components/profile/card.vue';
-
+    import order from '../pages/order.vue';
     import { shallowRef } from 'vue';
     const currentComp = shallowRef(userProfile);
     function switchComps(comp){

@@ -49,7 +49,7 @@ import CartList from '@/components/order/CartList.vue';
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
-import ProgressIndicator from '@/components/order/ProgressIndicator.vue';
+import ProgressIndicator from '@/components/order/Circle.vue';
 
 const currentStep = ref(1);
 const cartItems = ref([]);

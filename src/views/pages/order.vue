@@ -45,6 +45,7 @@
                                                 <th>商品名稱</th>
                                                 <th>數量</th>
                                                 <th>價格</th>
+                                                <th>付款方式</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -52,6 +53,7 @@
                                                 <td>{{ detail.productName }}</td>
                                                 <td>{{ detail.quantity }}</td>
                                                 <td>{{ formatCurrency(detail.price) }}</td>
+                                                <td>{{ detail.paymentMethod === 1 ? 'LinePay' : '其他' }}</td>
                                             </tr>
                                         </tbody>
                                     </table>

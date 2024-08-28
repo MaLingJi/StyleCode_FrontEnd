@@ -3,23 +3,36 @@
         <div class="date-picker">
             <DatePicker v-model="range" is-range @input="fetchOrders" />
         </div>
-        <div>
-            <<!-- Your other content here -->>
+        <div class="orderAnalysis">
+            <div>
+                <h1>累積訂單數:{{ orders.length }}</h1>
+                <h1>累積訂單金額:{{ formatCurrency(totalAmount) }}</h1>
+            </div>
+            <OrderManageLineChart></OrderManageLineChart>
+        </div>
+
+        <div class="productAnalysis">
+            <OrderManageProChart></OrderManageProChart>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import axiosapi from '@/plugins/axios.js';
+import OrderManageLineChart from './OrderManageLineChart.vue';
+import OrderManageProChart from './OrderManageProChart.vue';
+
+
 
 const range = ref({
     start: new Date(),
     end: new Date()
 });
 
+const orders = ref([]);
 
 
 const fetchOrders = async () => {
@@ -33,7 +46,7 @@ const fetchOrders = async () => {
             }
         });
         console.log(response.data);
-        // 处理返回的数据
+        orders.value = response.data;
     } catch (error) {
         console.error('fetchOrderByDateFail', error);
     }
@@ -52,11 +65,27 @@ const formatDate = (date) => {
     return '';
 };
 
+
 // 监听日期变化
 watch(range, () => {
     fetchOrders();
 }, { deep: true });
 
+
+
+const totalAmount = computed(() => {
+    let total = 0;
+    for (const order of orders.value) {
+        total += order.totalAmounts
+        console.log(total)
+    }
+    console.log('totalamount:' + total)
+    return total;
+})
+
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
+};
 </script>
 
 <style scoped>

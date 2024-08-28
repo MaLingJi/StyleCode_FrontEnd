@@ -28,7 +28,6 @@
 
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
-import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 const props = defineProps(['cartItems']);
