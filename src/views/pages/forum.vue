@@ -26,16 +26,16 @@
     
     <!-- 發文按鈕 -->
     <div class="buttons">
-      <router-link :to="{ name: 'post-link' }">
-        <button class="button is-warning is-light is-medium">
-          <span class="icon">
-            <i class="fas fa-edit"></i>
-          </span>
-          <span>發文</span>
-        </button>
-      </router-link>
-    </div>
-  </div>
+  <router-link :to="{ name: 'post-link' }">
+    <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 52px; font-size: 26px;" size="large">
+      <span class="icon">
+        <i class="fas fa-edit"></i>
+      </span>
+      <span>發文</span>
+    </a-button>
+  </router-link>
+</div>
+</div>
   
   <!-- 浮動式至頂效果 -->
   <div :style="{ height: '1vh', padding: '10px' }">
@@ -178,6 +178,7 @@ export default defineComponent({
       likePost,
       collectPost,
       commentPost,
+      
     };
   },
 });
