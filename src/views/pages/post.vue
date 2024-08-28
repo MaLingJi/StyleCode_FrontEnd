@@ -127,7 +127,7 @@ const handleSubmit = async () => {
         router.push({ name: 'forum-link' });
     } catch (error) {
         console.error('建立貼文時出錯:', error);
-        alert('提交時發生錯誤');
+        alert('提交時字數或格式錯誤');
     }
 };
 
