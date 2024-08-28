@@ -16,7 +16,7 @@
                         </div>
                         <div class="ts-text is-heavy is-big">上傳圖片</div>
                         <div class="ts-file">
-                            <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" />
+                            <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" multiple/>
                         </div>
                         <br>
                         <button class="ts-button" @click="submitPost">送出文章</button>
@@ -45,21 +45,47 @@ import useUserStore from "@/stores/user.js"
 const router = useRouter();
 const userStore = useUserStore();
 
+
 const postTitle = ref('');
 const contentText = ref('');
-const imageFile = ref(null);
+const imageFiles = ref([]);
+// const userName = ref('');
+
+// onMounted(() => {
+//     axiosapi.get(`/member/profile/${userStore.userId}`, {
+//                     headers: {
+//                         'Authorization': `${userStore.userToken}`
+//                     }
+//                 })
+//         .then(response => {
+//             getUserData = response.data;
+//             console.log("userStore: ", getUserData);
+            
+            
+//         })
+//         .catch(error => {
+//             console.error('Error fetching image URL:', error);
+//         });
+
+// });
 
 function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        imageFile.value = file;
-    }
+    imageFiles.value = Array.from(event.target.files);
 }
 
 function submitPost() {
     if (!postTitle.value || !contentText.value) {
         Swal.fire({
             text: '標題和內容不能為空',
+            icon: 'warning',
+            confirmButtonText: '確認',
+        });
+        return;
+    }
+
+    if (imageFiles.value.length === 0) {
+        Swal.fire({
+            text: '至少上傳一張圖片',
             icon: 'warning',
             confirmButtonText: '確認',
         });
@@ -77,7 +103,7 @@ function submitPost() {
         contentText: contentText.value,
         contentType: 'share',
         userDetail: {
-            id: 2,
+            id: userStore.userId,
         }
     };
 
@@ -87,10 +113,12 @@ function submitPost() {
             const postId = postResponse.data.postId;
 
             // 2. 如果有圖片，發送圖片上傳請求
-            if (imageFile.value) {
+            if (imageFiles.value.length > 0) {
                 const formData = new FormData();
                 formData.append('postId', postId);
-                formData.append('file', imageFile.value);
+                imageFiles.value.forEach(file => {
+                    formData.append('file', file);
+                });
 
                 return axiosapi.post("/api/images", formData, {
                     headers: {
@@ -119,36 +147,6 @@ function submitPost() {
         });
 }
 
-// onMounted(function () {
-//     callFind();
-// });
-
-// function callFind() {
-//     console.log("callFind");
-//     Swal.fire({
-//         text: "Loading......",
-//         showConfirmButton: false,
-//         allowOutsideClick: false,
-//     });
-//     axiosapi.get("/post").then(function (response) {
-//         console.log("response: ", response);
-
-//         posts.value = response.data;
-//         // console.log("posts.value: ", posts.value);
-
-//         setTimeout(function () {
-//             Swal.close();
-//         }, 500);
-//     }).catch(function (error) {
-//         console.log("callFind error", error);
-//         Swal.fire({
-//             text: '失敗：' + error.message,
-//             icon: 'error',
-//             allowOutsideClick: false,
-//             confirmButtonText: '確認',
-//         });
-//     });
-// }
 </script>
 
 <style></style>

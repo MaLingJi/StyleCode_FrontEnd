@@ -45,7 +45,7 @@
 
 <script setup>
 import CartList from '@/components/CartList.vue';
-import axios from 'axios';
+import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
 
@@ -56,7 +56,7 @@ const cartItems = ref([]);
 
 const loadCartItems = async () => {
         try {
-                const response = await axios.get('http://localhost:8080/cart/find/1');
+                const response = await axiosapi.get('/cart/find/1');
                 cartItems.value = response.data;
                 console.log("Cart items loaded:", cartItems.value);
         } catch (error) {
@@ -96,9 +96,9 @@ const formatCurrency = (amount) => {
 const checkInventoryAndProceed = async () => {
         try {
                 // 調用檢查庫存的 API
-                const response = await axios.post('http://localhost:8080/cart/checkStock', {
+                const response = await axiosapi.post('/cart/checkStock', {
                         items: cartItems.value.map(item => ({
-                                productId: item.productId,
+                                productDetailsId: item.productDetailsId,
                                 quantity: item.quantity,
                         }))
                 })

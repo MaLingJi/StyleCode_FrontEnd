@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@flaticon/flaticon-uicons": "^3.3.1",
     "@ant-design/icons-vue": "^7.0.1",
+    "@flaticon/flaticon-uicons": "^3.3.1",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
@@ -18,7 +18,6 @@
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.4",
     "bootstrap": "^5.3.3",
-    "bulma": "^1.0.2",
     "consola": "^3.2.3",
     "dayjs": "^1.11.13",
     "naive-ui": "^2.39.0",

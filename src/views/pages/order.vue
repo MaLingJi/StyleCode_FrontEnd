@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import axios, { Axios } from 'axios';
+import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { watch } from 'vue';
 
@@ -89,8 +89,8 @@ const orderDetails = ref([]);
 
 
 watch(status, () => {
-    axios
-        .get('http://localhost:8080/order/find/1?status=' + status.value)
+    axiosapi
+        .get('/order/find/1?status=' + status.value)
         .then(response => {
             console.log(response)
             if (response.data !== '') {
@@ -118,7 +118,7 @@ const toggleOrderDetails = orderId => {
 }
 
 const getOrderDetails = async (orderId) => {
-    await axios.get('http://localhost:8080/order/findOd/' + orderId)
+    await axiosapi.get('/order/findOd/' + orderId)
         .then(response => {
             console.log(response)
             orderDetails.value = response.data

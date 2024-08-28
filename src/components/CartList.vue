@@ -26,7 +26,7 @@
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>
-                                <span v-show="stockStatus.get(item.productId)">已達庫存上限</span>
+                                <span v-show="stockStatus.get(item.productDetailsId)">已達庫存上限</span>
                             </div>
                         </div>
                     </td>
@@ -45,10 +45,11 @@
 
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
-// import axios from 'axios';
 import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+
+
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
@@ -67,7 +68,7 @@ const increaseQuantity = (item) => {
     axiosapi.post('/cart/addOneVol', {
 
         userId: 1,
-        productId: item.productId
+        productDetailsId: item.productDetailsId
 
     })
         .then(response => {
@@ -76,10 +77,10 @@ const increaseQuantity = (item) => {
             if (response.data != '') {
                 item.quantity++;
                 updateParent();
-                stockStatus.value.set(item.productId, false)
+                stockStatus.value.set(item.productDetailsId, false)
             } else {
                 console.log('超過庫存')
-                stockStatus.value.set(item.productId, true)
+                stockStatus.value.set(item.productDetailsId, true)
             }
 
         })
@@ -91,18 +92,16 @@ const increaseQuantity = (item) => {
 const decreaseQuantity = (item) => {
     if (item.quantity > 1) {
         axiosapi.post('/cart/minusOneVol', {
-            cartId: {
-                userId: 1,
-                productId: item.productId
-            }
+            userId: 1,
+            productDetailsId: item.productDetailsId
         }).then(response => {
             if (response.data != '') {
                 item.quantity--;
                 updateParent();
-                stockStatus.value.set(item.productId, false)
+                stockStatus.value.set(item.productDetailsId, false)
             } else {
                 console.log('超過庫存')
-                stockStatus.value.set(item.productId, true)
+                stockStatus.value.set(item.productDetailsId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -120,15 +119,15 @@ const updateQuantity = (item) => {
     } else {
         axiosapi.put('/cart/update', {
             userId: 1,
-            productId: item.productId,
+            productDetailsId: item.productDetailsId,
             quantity: item.quantity
 
         }).then(response => {
             if (response.data != '') {
                 updateParent();
-                stockStatus.value.set(item.productId, false)
+                stockStatus.value.set(item.productDetailsId, false)
             } else {
-                stockStatus.value.set(item.productId, true)
+                stockStatus.value.set(item.productDetailsId, true)
             }
         }).catch(error => {
             console.error('Failed to load cart items' + error)
@@ -143,7 +142,7 @@ const removeItem = (item) => {
     axiosapi.delete('/cart/delete', {
         data: {
             userId: 1,
-            productId: item.productId
+            productDetailsId: item.productDetailsId
         }
     }).then(response => {
         console.log(response);
@@ -164,7 +163,7 @@ const removeItem = (item) => {
 
 onMounted(() => {
     props.cartItems.forEach(item => {
-        stockStatus.value.set(item.productId, false);
+        stockStatus.value.set(item.productDetailsId, false);
     });
 });
 

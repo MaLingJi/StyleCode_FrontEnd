@@ -44,8 +44,6 @@ const contentText = ref('');
 const images = ref([]);
 
 onMounted(() => {
-    // console.log('Post ID:', postId.value);
-    // console.log('Route Params:', route.params);
     if (postId.value) {
         loadPostData(postId.value);
     }
@@ -62,17 +60,6 @@ const loadPostData = async (id) => {
         console.error('Error loading post data:', error);
     }
 };
-
-// const handleFileChange = (event) => {
-//     const files = event.target.files;
-//     for (let i = 0; i < files.length; i++) {
-//         const reader = new FileReader();
-//         reader.onload = (e) => {
-//             images.value.push({ imgUrl: e.target.result });
-//         };
-//         reader.readAsDataURL(files[i]);
-//     }
-// };
 
 function handleFileChange(event) {
     const file = event.target.files[0];

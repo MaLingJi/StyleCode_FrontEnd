@@ -19,7 +19,7 @@
         <div class="ts-app-center">
             <div class="ts-container">
                 <div class="ts-grid is-3-columns is-relaxed is-stretched">
-                    <div class="column" v-for="post in posts" :key="post.postId">
+                    <div class="column" v-for="post in posts.slice(0, 6)" :key="post.postId">
                         <ShareCard :post="post"></ShareCard>
                     </div>
                 </div>
@@ -37,12 +37,12 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
-import useUserStore from "@/stores/user.js"
-const userStore = useUserStore();
-console.log("userId: ", userStore.userId);
-console.log("isLogin: ", userStore.isLogedin);
-console.log("permissions: ", userStore.permissions);
-console.log("token: ", userStore.userToken);
+// import useUserStore from "@/stores/user.js"
+// const userStore = useUserStore();
+// console.log("userId: ", userStore.userId);
+// console.log("isLogin: ", userStore.isLogedin);
+// console.log("permissions: ", userStore.permissions);
+// console.log("token: ", userStore.userToken);
 
 const router = useRouter();
 

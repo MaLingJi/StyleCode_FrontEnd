@@ -27,12 +27,7 @@
         </span>
         <span key="comment-basic-share">
           <a-tooltip title="Share">
-            <template v-if="action === 'shared'">
-              <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
-            </template>
-            <template v-else>
-              <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
-            </template>
+            <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
           </a-tooltip>
         </span>
         <span key="comment-basic-reply-to">回覆</span>
@@ -105,7 +100,12 @@
       </template>
       <template #content>
         <a-form-item>
-          <a-textarea v-model:value="newComment" :rows="4" placeholder="新增評論..." />
+          <a-textarea 
+            v-model:value="newComment" 
+            :rows="4" 
+            placeholder="新增評論..." 
+            class="comment-textarea"
+          />
         </a-form-item>
         <a-form-item>
           <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">
@@ -231,5 +231,9 @@ const handleSubmit = () => {
 
 .image-preview-group {
   margin-top: 16px; /* 照片區域的上方間距 */
+}
+
+.comment-textarea {
+  font-size: 16px; /* 設置字體大小 */
 }
 </style>
