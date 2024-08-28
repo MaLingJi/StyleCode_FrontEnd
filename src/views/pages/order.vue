@@ -28,7 +28,7 @@
                     <template v-for="order in orders" :key="order.orderId">
                         <tr>
                             <td>{{ order.orderId }}</td>
-                            <td>{{ order.orderDate }}</td>
+                            <td>{{ formatDate(order.orderDate) }}</td>
                             <td>{{ formatCurrency(order.totalAmounts) }}</td>
                             <td>
                                 <button class="ts-button is-outlined" @click="toggleOrderDetails(order.orderId)">
@@ -107,6 +107,12 @@ watch(status, () => {
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
+
+const formatDate = (dateString) => {
+    if (!dateString) return ''
+    return dateString.replace('T', ' ').split('.')[0]
+}
+
 
 const toggleOrderDetails = orderId => {
     if (expandedOrderId.value === orderId) {

@@ -4,7 +4,7 @@
 
     <div class="ts-container">
         <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-            <span class="ts-text">圈圈2</span>
+            <ProgressIndicator :current-step="2" />
         </div>
     </div>
 
@@ -38,8 +38,8 @@
 <script setup>
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
-import OrderList from '@/components/OrderList.vue';
-
+import OrderList from '@/components/order/OrderList.vue';
+import ProgressIndicator from '@/components/order/ProgressIndicator.vue';
 
 
 

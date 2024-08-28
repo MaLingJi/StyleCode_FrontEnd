@@ -21,6 +21,7 @@ import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
 
+
 const routes = [
   { name: "home-link", path: "/", component: Home },
   { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },

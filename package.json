@@ -9,16 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@flaticon/flaticon-uicons": "^3.3.1",
     "@ant-design/icons-vue": "^7.0.1",
+    "@flaticon/flaticon-uicons": "^3.3.1",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@popperjs/core": "^2.11.8",
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.4",
     "bootstrap": "^5.3.3",
-    "bulma": "^1.0.2",
     "consola": "^3.2.3",
     "dayjs": "^1.11.13",
     "naive-ui": "^2.39.0",
@@ -27,6 +27,7 @@
     "stylecode-frontend": "file:",
     "sweetalert2": "^11.12.4",
     "tocas": "^5.0.1",
+    "v-calendar": "^3.1.2",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
     "vuejs-paginate-next": "^1.0.2"
