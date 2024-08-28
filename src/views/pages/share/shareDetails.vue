@@ -2,14 +2,37 @@
     <div class="ts-container">
         <div class="ts-row">
             <!-- 左側：圖片 -->
-            <div class="ts-column is-9">
+            <!-- <div class="ts-column is-9">
                 <div class="ts-card">
                     <div class="ts-image">
                         <div v-if="images.length" class="ts-placeholder is-segment">
-                            <img :src="`${path}${images[0].imgUrl}`" alt="Post Image" />
+                            <img :src="`${path}${images[1].imgUrl}`" alt="Post Image" />
                         </div>
                         <div v-else class="ts-placeholder is-segment">
                             <span class="ts-text">NO IMAGE</span>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="column is-7-wide">
+                <div class="carousel-container">
+                    <!-- 照片輪播 -->
+                    <transition name="fade" mode="out-in">
+                        <div class="ts-image main-image" :key="currentImageIndex">
+                            <img :src="getImageUrl(currentImage)" />
+                        </div>
+                    </transition>
+                    <!-- 往前一張or下一張 -->
+                    <button class="carousel-button prev" @click="prevImage">&lt;</button>
+                    <button class="carousel-button next" @click="nextImage">&gt;</button>
+                </div>
+
+                <div class="ts-grid thumbnail-grid">
+                    <div class="column is-2-wide" v-for="(image, index) in images.value" :key="index">
+                        <div class="ts-image thumbnail" @click="setCurrentImage(index)"
+                            :class="{ active: currentImageIndex === index }">
+                            <img :src="getImageUrl(image.imgUrl)" />
                         </div>
                     </div>
                 </div>
@@ -71,24 +94,55 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 
 const route = useRoute();
 const post = ref({});
-const images = ref([]);
+const images = ref({});
 const path = import.meta.env.VITE_POST_IMAGE_URL;
+const currentImageIndex = ref(0);
+
 const clothingItems = ref([]);
 const tags = ref([]);
 const brands = ref([]);
 const commonBrands = ref(["Slightly Numb", "OVERKILL inc.", "STUSSY", "adidas"]);
+
+const getImageUrl = (imageName) => {
+    if (imageName) {
+        return `${path}${imageName}`;
+    }
+    return "../../../public/No_image.png";
+};
+
+const currentImage = computed(() => {
+    return images.value?.[currentImageIndex.value]?.imgUrl;
+});
+
+// 照片輪播 下一張照片
+const nextImage = () => {
+    currentImageIndex.value =
+        (currentImageIndex.value + 1) % images.value.length;
+};
+
+// 照片輪播 上一張照片
+const prevImage = () => {
+    currentImageIndex.value =
+        (currentImageIndex.value - 1 + images.value.length) %
+        images.value.length;
+};
+
+const setCurrentImage = (index) => {
+    currentImageIndex.value = index;
+};
 
 onMounted(() => {
     const postId = route.params.postId;
     axiosapi.get(`/post/${postId}`)
         .then(response => {
             post.value = response.data;
+            console.log("post.value: ", post.value);
             // images.value = post.value.images || [];
             clothingItems.value = post.value.clothingItems || [];
             tags.value = post.value.tags || ["Taiwan", "Taichung"];
@@ -101,7 +155,7 @@ onMounted(() => {
     axiosapi.get(`/images/post/${postId}`)
         .then(response => {
             images.value = response.data;
-            console.log(images.value.length);
+            console.log("images.value: ", images.value);
 
             images.value.forEach(image => {
                 console.log(image.imgUrl);

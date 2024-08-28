@@ -42,32 +42,17 @@ const postId = ref(route.params.postId || null);
 const postTitle = ref('');
 const contentText = ref('');
 const images = ref([]);
-const imageId = ref('');
-const props = defineProps(["post"]);
 
 onMounted(() => {
-    // console.log('Post ID:', postId.value);
-    // console.log('Route Params:', route.params);
     if (postId.value) {
         loadPostData(postId.value);
     }
-    axiosapi.get(`/images/post/${postId.value}`)
-        .then(response => {
-            const data = response.data;
-            imageId.value = data[0].imageId;
-        })
-        .catch(error => {
-            console.error('Error fetching image URL:', error);
-        });
-    // console.log(imageId.value);
-    // console.log(imageId.value != null ? "Null" : "!Null");
 });
 
 const loadPostData = async (id) => {
     try {
         const response = await axiosapi.get(`/post/${id}`);
         const postData = response.data;
-        console.log("postData: ", postData);
         postTitle.value = postData.postTitle;
         contentText.value = postData.contentText;
         images.value = postData.images || [];
@@ -80,7 +65,6 @@ function handleFileChange(event) {
     const file = event.target.files[0];
     if (file) {
         images.value = file;
-        // console.log(images);
     }
 }
 
@@ -105,7 +89,7 @@ function submitPost() {
         contentText: contentText.value,
         contentType: '分享',
         userDetail: {
-            id: userStore.userId,
+            id: 2,
         }
     };
 
@@ -118,24 +102,15 @@ function submitPost() {
             if (images.value) {
                 // console.log('Post ID value during submit:', postId.value);
                 // console.log('Post ID during submit:', postId);
-                // console.log(images.value);
                 const formData = new FormData();
                 formData.append('postId', postId);
                 formData.append('file', images.value);
 
-                // if (imageId) {
-                return axiosapi.put(`/images/${imageId.value}`, formData, {
+                return axiosapi.put(`/images/${postId}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
-                })
-                // } else {
-                //     return axiosapi.post("/images", formData, {
-                //         headers: {
-                //             'Content-Type': 'multipart/form-data'
-                //         }
-                //     })
-                // }
+                });
             }
         })
         .then(() => {

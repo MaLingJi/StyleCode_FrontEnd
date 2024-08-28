@@ -4,7 +4,7 @@
             <div class="ts-content is-center-aligned">
                 <div class="ts-wrap is-vertical is-compact is-middle-aligned">
                     <div class="ts-image is-circular">
-                        <img src="C:/StyleCode_Image/UserPhoto/user.png" width="80"  data-dialog="modal"/>
+                        <img src="../../../../../java_project/StyleCode_Image/UserPhoto/user.png" width="80"  data-dialog="modal"/>
                     </div>
                     <div class="ts-header">Yami Odymel</div>
                 </div>
@@ -78,7 +78,7 @@
                             <div class="ts-content is-center-aligned">
                                 <div class="ts-wrap is-vertical is-compact is-middle-aligned">
                                     <div class="ts-image is-circular">
-                                        <img src="C:/StyleCode_Image/UserPhoto/user.png" width="200"  data-dialog="modal"/>
+                                        <img src="../../../../../java_project/StyleCode_Image/UserPhoto/user.png" width="200"  data-dialog="modal"/>
                                     </div>
                                         <div class="ts-content">
                                         <div class="ts-file">
