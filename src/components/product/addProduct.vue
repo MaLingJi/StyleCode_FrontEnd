@@ -1,47 +1,45 @@
 <template>
-  <div class="ts-container">
-    <div class="ts-box">
-      <div class="ts-content">
-        <h3 class="ts-header">新增商品</h3>
-        <form @submit.prevent="submitProduct">
-          <!-- 商品基本信息 -->
-          <div class="ts-grid">
-            <div class="column is-16-wide">
-              <div class="ts-input is-fluid">
-                <input type="text" v-model="product.productName" placeholder="商品名稱" required>
-              </div>
-            </div>
-            <div class="column is-8-wide">
-              <div class="ts-input is-fluid">
-                <input type="number" v-model="product.price" placeholder="價格" required>
-              </div>
-            </div>
-            <div class="column is-8-wide">
-              <div class="ts-select is-fluid">
-                <select v-model="selectedCategoryId" @change="loadSubcategories" required>
-                  <option value="">分類</option>
-                  <option v-for="category in categories" :key="category.categoryId" :value="category.categoryId">
-                    {{ category.categoryName }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="column is-8-wide">
-              <div class="ts-select is-fluid">
-                <select v-model="product.subcategoryId" required>
-                  <option value="">子分類</option>
-                  <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId" :value="subcategory.subcategoryId">
-                    {{ subcategory.subcategoryName }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="column is-16-wide">
-              <div class="ts-textarea">
-                <textarea v-model="product.productDescription" placeholder="商品描述" rows="4" required></textarea>
-              </div>
-            </div>
+  <div class="ts-box">
+  <div class="ts-content">
+    <h3 class="ts-header">新增商品</h3>
+    <form @submit.prevent="submitProduct">
+      <div class="ts-grid">
+        <div class="column is-16-wide">
+          <div class="ts-input is-fluid">
+            <input type="text" v-model="product.productName" placeholder="商品名稱" required>
           </div>
+        </div>
+        <div class="column is-8-wide">
+          <div class="ts-select is-fluid">
+            <select v-model="selectedCategoryId" @change="loadSubcategories" required>
+              <option value="">分類</option>
+              <option v-for="category in categories" :key="category.categoryId" :value="category.categoryId">
+                {{ category.categoryName }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="column is-8-wide">
+          <div class="ts-select is-fluid">
+            <select v-model="product.subcategoryId" required>
+              <option value="">子分類</option>
+              <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId" :value="subcategory.subcategoryId">
+                {{ subcategory.subcategoryName }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="column is-8-wide">
+          <div class="ts-input is-fluid">
+            <input type="number" v-model="product.price" placeholder="價格" required>
+          </div>
+        </div>
+        <div class="column is-16-wide">
+          <div class="ts-textarea">
+            <textarea v-model="product.productDescription" placeholder="商品描述" rows="4" required></textarea>
+          </div>
+        </div>
+      </div>
 
           <!-- 商品详情 -->
           <div v-for="(detail, index) in product.productDetails" :key="index" class="ts-grid has-top-spaced">
@@ -68,7 +66,7 @@
             </div>
 
             <div class="column is-4-wide">
-              <button type="button" class="ts-button is-negative" @click="removeProductDetail(index)">刪除</button>
+              <button type="button" class="ts-button is-outlined is-icon" @click="removeProductDetail(index)"><span class="ts-icon is-trash-can-icon"></span></button>
             </div>
           </div>
           <button type="button" class="ts-button is-secondary has-top-spaced" @click="addProductDetail">添加商品詳情</button>
@@ -95,17 +93,13 @@
       </div>
 
           <div class="ts-grid has-top-spaced">
-            <div class="column is-8-wide">
+            <div class="column is-16-wide">
               <button type="submit" class="ts-button is-positive is-fluid">新增商品</button>
-            </div>
-            <div class="column is-8-wide">
-              <button type="button" class="ts-button is-negative is-fluid" @click="cancelCreation">取消</button>
             </div>
           </div>
         </form>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -227,9 +221,6 @@ const submitProduct = async () => {
   }
 };
 
-const cancelCreation = () => {
-  router.push('/backstage');
-};
 
 const resetForm = () => {
   Object.keys(product).forEach(key => {
