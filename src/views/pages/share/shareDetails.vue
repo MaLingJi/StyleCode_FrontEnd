@@ -1,46 +1,41 @@
 <template>
-    <div class="ts-container">
-        <div class="ts-row">
-            <!-- 左側：圖片 -->
-            <!-- <div class="ts-column is-9">
-                <div class="ts-card">
-                    <div class="ts-image">
-                        <div v-if="images.length" class="ts-placeholder is-segment">
-                            <img :src="`${path}${images[1].imgUrl}`" alt="Post Image" />
-                        </div>
-                        <div v-else class="ts-placeholder is-segment">
-                            <span class="ts-text">NO IMAGE</span>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
+    <div class="ts-container has-vertically-spaced-large">
+        <div class="ts-grid is-center-aligned">
             <div class="column is-7-wide">
-                <div class="carousel-container">
-                    <!-- 照片輪播 -->
-                    <transition name="fade" mode="out-in">
-                        <div class="ts-image main-image" :key="currentImageIndex">
-                            <img :src="getImageUrl(currentImage)" />
-                        </div>
-                    </transition>
+                <div class="ts-box">
                     <!-- 往前一張or下一張 -->
                     <button class="carousel-button prev" @click="prevImage">&lt;</button>
                     <button class="carousel-button next" @click="nextImage">&gt;</button>
-                </div>
+                    <div class="carousel-container">
+                        <!-- 照片輪播 -->
+                        <transition name="fade" mode="out-in">
+                            <div class="ts-image main-image" :key="currentImageIndex">
+                                <img :src="getImageUrl(currentImage)" />
+                            </div>
+                        </transition>
+                    </div>
 
-                <div class="ts-grid thumbnail-grid">
-                    <div class="column is-2-wide" v-for="(image, index) in images.value" :key="index">
-                        <div class="ts-image thumbnail" @click="setCurrentImage(index)"
-                            :class="{ active: currentImageIndex === index }">
-                            <img :src="getImageUrl(image.imgUrl)" />
+                    <div class="ts-grid thumbnail-grid">
+                        <div class="column is-2-wide" v-for="(image, index) in images.value" :key="index">
+                            <div class="ts-image thumbnail" @click="setCurrentImage(index)"
+                                :class="{ active: currentImageIndex === index }">
+                                <img :src="getImageUrl(image.imgUrl)" />
+                            </div>
                         </div>
+                    </div>
+                </div>
+                <div class="ts-card">
+                    <div class="ts-content is-horizontally-padded">
+                        <button class="ts-button">收藏夾</button>
+                        <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
+                        <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button>
                     </div>
                 </div>
             </div>
 
             <!-- 右側：細節 -->
-            <div class="ts-column is-3">
-                <div class="ts-card">
+            <div class="ts-column is-9-wide">
+                <div class="ts-box">
                     <div class="ts-content">
                         <h4 class="ts-header">{{ post.postTitle }}</h4>
                         <p>Model資訊：174cm / MEN / 34歲 / 短髮</p>
@@ -74,18 +69,6 @@
                             <span class="ts-label" v-for="commonBrand in commonBrands" :key="commonBrand">{{ commonBrand
                                 }}</span>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ts-row">
-            <div class="ts-column">
-                <div class="ts-card">
-                    <div class="ts-content">
-                        <button class="ts-button">收藏夾</button>
-                        <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
-                        <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button>
                     </div>
                 </div>
             </div>
@@ -172,10 +155,132 @@ function formatDate(date) {
 }
 </script>
 
-<style>
+<style scoped>
 /* 添加必要的樣式來調整版面 */
 .ts-placeholder img {
     width: 100%;
     height: auto;
+}
+
+.product-details {
+    padding: 2rem 0;
+}
+
+.carousel-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-image img {
+    position: relative;
+    width: 100%;
+    height: auto;
+
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.carousel-button.prev {
+    left: 5px;
+}
+
+.carousel-button.next {
+    right: 5px;
+}
+
+.thumbnail-grid {
+    margin-top: 1rem;
+}
+
+.thumbnail {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+}
+
+
+.thumbnail.active,
+.thumbnail:hover {
+    opacity: 1;
+    border: 2px solid var(--ts-gray-400);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.ts-content.is-horizontally-padded {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* 按钮之间的间距 */
+}
+
+.ts-box {
+    position: relative;
+    width: 100%;
+    /* 确保 .ts-box 使用父级元素的宽度 */
+    height: 100%;
+    /* 确保 .ts-box 使用父级元素的高度 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* 裁切溢出的内容 */
+    margin: 0 auto;
+}
+
+.ts-image {
+    width: 100%;
+    /* 确保图片容器占满 ts-box 的宽度 */
+    height: 100%;
+    /* 确保图片容器占满 ts-box 的高度 */
+    position: relative;
+    overflow: hidden;
+    /* 裁切溢出的内容 */
+}
+
+.ts-image img {
+    object-fit: cover;
+    /* 裁切图片，使图片覆盖整个容器 */
+    width: 100%;
+    height: 100%;
+    object-position: center;
+    /* 图片居中显示 */
+}
+
+.ts-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    /* 根据需要调整 .ts-card 的顶部间距 */
 }
 </style>
