@@ -40,15 +40,16 @@ import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import PaymentPageList from '@/components/order/PaymentPageList.vue';
 import ProgressIndicator from '@/components/order/Circle.vue';
-
+import useUserStore from "@/stores/user.js"
 
 
 const cartItems = ref([]);
 const showOrderDetails = ref(true);
+const user = useUserStore().userId;
 
 const loadCartItems = async () => {
     try {
-        const response = await axiosapi.get('/cart/find/1');
+        const response = await axiosapi.get(`/cart/find/${user}`);
         cartItems.value = response.data;
         console.log("Cart items loaded:", cartItems.value);
     } catch (error) {
@@ -62,7 +63,7 @@ const lpPayment = async () => {
     try {
         const paymentData = {
             totalAmounts: totalAmount.value,
-            userId: 1,
+            userId: user,
             items: cartItems.value.map(item => ({
                 productDetailsId: item.productDetailsId,
                 quantity: item.quantity,

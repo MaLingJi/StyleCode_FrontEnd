@@ -48,11 +48,12 @@ import { computed, defineProps, defineEmits } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
-
+import useUserStore from "@/stores/user.js"
 
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
+const user = useUserStore().userId
 
 const cauculate = (item) => {
     return computed(() => item.productPrice * item.quantity).value;
@@ -67,7 +68,7 @@ const increaseQuantity = (item) => {
     // increase api
     axiosapi.post('/cart/addOneVol', {
 
-        userId: 1,
+        userId: user,
         productDetailsId: item.productDetailsId
 
     })
@@ -92,7 +93,7 @@ const increaseQuantity = (item) => {
 const decreaseQuantity = (item) => {
     if (item.quantity > 1) {
         axiosapi.post('/cart/minusOneVol', {
-            userId: 1,
+            userId: user,
             productDetailsId: item.productDetailsId
         }).then(response => {
             if (response.data != '') {
@@ -118,7 +119,7 @@ const updateQuantity = (item) => {
         removeItem(item);
     } else {
         axiosapi.put('/cart/update', {
-            userId: 1,
+            userId: user,
             productDetailsId: item.productDetailsId,
             quantity: item.quantity
 
@@ -141,7 +142,7 @@ const removeItem = (item) => {
 
     axiosapi.delete('/cart/delete', {
         data: {
-            userId: 1,
+            userId: user,
             productDetailsId: item.productDetailsId
         }
     }).then(response => {
