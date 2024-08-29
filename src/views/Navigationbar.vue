@@ -13,17 +13,18 @@
                     </div>
                 </div>
                 <div class="column">
-                    <div class="ts-wrap">
-                        <div class="ts-input is-start-icon">
-                            <span class="ts-icon is-angle-down-icon" data-dropdown="dropdown"></span>
-                            <div class="ts-dropdown " id="dropdown">
-                                <button class="item">文章</button>
-                                <button class="item">商城</button>
-                            </div>
-                            <input type="text" placeholder="搜尋文章(商城)...">
-                        </div>
-                    </div>
-                </div>
+          <div class="ts-wrap">
+            <div class="ts-input is-start-icon">
+              <span class="ts-icon is-search-icon"></span>
+              <input 
+                type="text" 
+                v-model="searchQuery" 
+                @input="handleSearch" 
+                placeholder="搜索商品..."
+              >
+            </div>
+          </div>
+        </div>
                 <div class="column">
                     <div class="ts-wrap">
                         <RouterLink to="/cart"><a class="ts-text is-undecorated" href="#!"><span
@@ -49,9 +50,32 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import axiosapi from "@/plugins/axios.js"
 import useUserStore from "@/stores/user.js"
+import { useRouter } from 'vue-router';
+import { useProductStore } from '@/stores/product'; 
+
+const router = useRouter();
+const productStore = useProductStore();
+const searchQuery = ref('');
+
 const userStore = useUserStore();
+
+
+const handleSearch = async () => {
+  if (searchQuery.value.trim()) {
+    try {
+      const response = await axiosapi.get(`/products?name=${searchQuery.value}`);
+      productStore.setSearchResults(response.data);
+      router.push('/shop');
+    } catch (error) {
+      console.error('Error searching products:', error);
+    }
+  }
+};
+
+// function
 
 function logout() {
     //pinia 清空資料

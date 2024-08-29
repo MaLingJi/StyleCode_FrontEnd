@@ -93,11 +93,11 @@
 </template>
 
 <script setup>
-import AddProduct from '@/components/product/AddProduct.vue';
-import CategoryManager from '@/components/product/CategoryManager.vue'
-import SubcategoryManager from '@/components/product/SubcategoryManager.vue'
-import ProductManager from '@/components/product/ProductManager.vue'
-import ProductDetailManager from '@/components/product/ProductDetailManager.vue'
+import AddProduct from '@/components/product/addProduct.vue';
+import CategoryManager from '@/components/product/categoryManager.vue'
+import SubcategoryManager from '@/components/product/subcategoryManager.vue'
+import ProductManager from '@/components/product/productManager.vue'
+import ProductDetailManager from '@/components/product/productDetailManager.vue'
 import { shallowRef, onMounted } from 'vue';
 import OrderManagement from '@/components/order/OrderManage.vue';
 

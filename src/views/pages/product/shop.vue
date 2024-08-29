@@ -47,8 +47,8 @@
 import { ref, onMounted } from "vue";
 import axiosapi from "@/plugins/axios.js";
 import Paginate from 'vuejs-paginate-next';
-import CategoryMenu from "@/components/product/CategoryMenu.vue";
-import ProductCard from "@/components/product/ProductCard.vue";
+import CategoryMenu from "@/components/product/categoryMenu.vue";
+import ProductCard from "@/components/product/productCard.vue";
 
 // 存儲分類、商品和分頁相關的響應式數據
 const categories = ref([]);

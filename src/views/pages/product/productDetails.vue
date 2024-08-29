@@ -113,9 +113,10 @@
             </p>
           </div>
         </div>
+        </div>
+        </div>
       </div>
-    </div>
-  </div>
+        
 </template>
 
 <script setup>
@@ -304,6 +305,21 @@ const addToCart = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.ts-box.is-segment {
+  margin-top: 2rem;
+}
+
+.ts-table {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.ts-image img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
 }
 
 </style>

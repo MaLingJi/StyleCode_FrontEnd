@@ -17,13 +17,12 @@ import editShare from "@/views/pages/share/editShare.vue";
 import post from "@/views/pages/post.vue";
 
 
-import addProduct from '@/components/product/AddProduct.vue'
+import addProduct from '@/components/product/addProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
 import shareDetails from "@/views/pages/share/shareDetails.vue";
-
 
 
 const routes = [
@@ -45,8 +44,8 @@ const routes = [
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "profile-ling", path: "/secure/profile", component: profile},
   { name: "comment-link", path: "/comment/:id", component: comment },
-  { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: 'addProduct', path: '/addproduct',component: addProduct},
+  { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
   { name: "post-link", path: "/post", component: post },
