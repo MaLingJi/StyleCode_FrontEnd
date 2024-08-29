@@ -14,7 +14,6 @@
                             </div>
                         </transition>
                     </div>
-
                     <div class="ts-grid thumbnail-grid">
                         <div class="column is-2-wide" v-for="(image, index) in images.value" :key="index">
                             <div class="ts-image thumbnail" @click="setCurrentImage(index)"
@@ -24,6 +23,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- <div><span>{{ getImageUrl(currentImage) }}</span></div> -->
                 <div class="ts-card">
                     <div class="ts-content is-horizontally-padded">
                         <button class="ts-button">收藏夾</button>
@@ -122,7 +122,7 @@ const setCurrentImage = (index) => {
 
 onMounted(() => {
     const postId = route.params.postId;
-    axiosapi.get(`/post/${postId}`)
+    axiosapi.get(`/api/post/${postId}`)
         .then(response => {
             post.value = response.data;
             console.log("post.value: ", post.value);
@@ -135,7 +135,7 @@ onMounted(() => {
             console.error('Error loading post:', error);
         });
 
-    axiosapi.get(`/images/post/${postId}`)
+    axiosapi.get(`/api/images/post/${postId}`)
         .then(response => {
             images.value = response.data;
             console.log("images.value: ", images.value);
