@@ -27,7 +27,7 @@
               <span v-else>{{ category.categoryName }}</span>
             </td>
             <td  class="is-end-aligned">
-              <button v-if="editingId === category.categoryId" @click="updateCategory(category.categoryId)" class="ts-button is-small is-positive"><span class="ts-icon is-window-restore-icon"></span></button>
+              <button v-if="editingId === category.categoryId" @click="updateCategory(category.categoryId)" class="ts-button is-small is-positive"><span class="ts-icon is-floppy-disk-icon"></span></button>
               <button v-else @click="startEditing(category)" class="ts-button is-small"><span class="ts-icon is-pen-to-square-icon file content-main field-component-icon group-single icon-icon"></span></button>
               <button @click="deleteCategory(category.categoryId)" class="ts-button is-wide is-outlined"><span class="ts-icon is-trash-can-icon"></span></button>
             </td>

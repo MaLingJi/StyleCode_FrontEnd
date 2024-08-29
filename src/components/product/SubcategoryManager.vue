@@ -39,7 +39,7 @@
             </td>
             <td>{{ subcategory.categoryName }}</td>
             <td class="is-end-aligned">
-              <button v-if="editingId === subcategory.subcategoryId" @click="updateSubcategory(subcategory.subcategoryId)" class="ts-button is-small is-positive"><span class="ts-icon is-window-restore-icon"></span></button>
+              <button v-if="editingId === subcategory.subcategoryId" @click="updateSubcategory(subcategory.subcategoryId)" class="ts-button is-small is-positive"><span class="ts-icon is-floppy-disk-icon"></span></button>
               <button v-else @click="startEditing(subcategory)" class="ts-button is-small"><span class="ts-icon is-pen-to-square-icon file content-main field-component-icon group-single icon-icon"></span></button>
               <button @click="deleteSubcategory(subcategory.subcategoryId)" class="ts-button is-wide is-outlined"><span class="ts-icon is-trash-can-icon"></span></button>
             </td>

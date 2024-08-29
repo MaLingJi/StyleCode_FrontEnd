@@ -54,8 +54,8 @@
               </td>
               <td>
                 <template v-if="editingDetailId === detail.productDetailsId">
-                  <button @click="saveDetail" class="ts-button is-small is-positive"><span class="ts-icon is-window-restore-icon"></span></button>
-                  <button @click="cancelEdit" class="ts-button is-wide is-outlined"><span class="ts-icon is-person-through-window-icon "></span></button>
+                  <button @click="saveDetail" class="ts-button is-small is-positive"><span class="ts-icon is-floppy-disk-icon"></span></button>
+                  <button @click="cancelEdit" class="ts-button is-wide is-outlined"><span class="ts-icon is-arrow-right-from-bracket-icon"></span></button>
                 </template>
                 <template v-else>
                   <button @click="editDetail(detail)" class="ts-button is-small">
