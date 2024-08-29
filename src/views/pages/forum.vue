@@ -1,98 +1,98 @@
 <template>
-  <div>
-    <div class="rule-box">
-      <a-typography>
-        <a-typography-title>論壇區規範</a-typography-title>
-        <a-typography-paragraph>
-          本論壇為討論服飾為主，請不要發跟本版沒有關係的文章以及主題，所有違反規則的文章將有可能被自動刪除或停權帳號而不作任何通知，請各位遵守論壇規章及守則
-        </a-typography-paragraph>
-        <a-typography-paragraph>
-          請勿連續回文，請勿複製其他的回文內容當成是自已的回文內容。近期
-          <a-typography-text strong style="color: red;">詐騙</a-typography-text>
-          猖狂甚多請勿發連結相關到文章，系統將自動偵查<a-typography-text strong style="color: red;">刪除</a-typography-text>。
-        </a-typography-paragraph>
-        <a-typography-title :level="2">發文和照片 規範及限制</a-typography-title>
-        <a-typography-paragraph>
-          麻煩各位遵守論壇規章
-          (<a-typography-text strong style="color: red;">圖片</a-typography-text>
-          最多上傳3張共
-          <a-typography-text strong style="color: red;">10MB</a-typography-text>
-          ), 嚴禁濫發品優低劣的主題或相同的主題，請勿使用廣東話，注音文憀慁愬慇，火星文..等非正式或共通性的語言，嚴禁發表任何人身攻擊, 侮辱他人或引起國際紛争的內容，若受到不公平、不公正的對待, 歡迎向我們反映和投訴, 我們將會秉公處理。
-        </a-typography-paragraph>
-      </a-typography>
+  <div class="container">
+    <div class="content">
+      <div class="rule-box">
+        <a-typography>
+          <a-typography-title>論壇區規範</a-typography-title>
+          <a-typography-paragraph>
+            本論壇為討論服飾為主，請不要發跟本版沒有關係的文章以及主題，所有違反規則的文章將有可能被自動刪除或停權帳號而不作任何通知，請各位遵守論壇規章及守則
+          </a-typography-paragraph>
+          <a-typography-paragraph>
+            請勿連續回文，請勿複製其他的回文內容當成是自已的回文內容。近期
+            <a-typography-text strong style="color: red;">詐騙</a-typography-text>
+            猖狂甚多請勿發連結相關到文章，系統將自動偵查<a-typography-text strong style="color: red;">刪除</a-typography-text>。
+          </a-typography-paragraph>
+          <a-typography-title :level="2">發文和照片 規範及限制</a-typography-title>
+          <a-typography-paragraph>
+            麻煩各位遵守論壇規章
+            (<a-typography-text strong style="color: red;">圖片</a-typography-text>
+            最多上傳3張共
+            <a-typography-text strong style="color: red;">10MB</a-typography-text>
+            ), 嚴禁濫發品優低劣的主題或相同的主題，請勿使用廣東話，注音文憀慁愬慇，火星文..等非正式或共通性的語言，嚴禁發表任何人身攻擊, 侮辱他人或引起國際紛争的內容，若受到不公平、不公正的對待, 歡迎向我們反映和投訴, 我們將會秉公處理。
+          </a-typography-paragraph>
+        </a-typography>
 
-      <!-- 發文按鈕 -->
-      <div class="buttons">
-        <router-link :to="{ name: 'post-link' }">
-          <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 47px; font-size: 23px;" size="large">
-            <span class="icon">
-              <i class="fas fa-edit"></i>
-            </span>
-            <span>發文</span>
-          </a-button>
-        </router-link>
+        <!-- 發文按鈕 -->
+        <div class="buttons">
+          <router-link :to="{ name: 'post-link' }">
+            <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 47px; font-size: 23px;" size="large">
+              <span class="icon">
+                <i class="fas fa-edit"></i>
+              </span>
+              <span>發文</span>
+            </a-button>
+          </router-link>
+        </div>
       </div>
-    </div>
 
-    <!-- 浮動式至頂效果 -->
-    <div :style="{ height: '1vh', padding: '10px' }">
-      <a-back-top />
-    </div>
+      <!-- 浮動式至頂效果 -->
+      <div :style="{ height: '1vh', padding: '10px' }">
+        <a-back-top />
+      </div>
 
-    <!-- 發文地方 -->
-    <section>
-      <a-list
-        item-layout="vertical"
-        size="large"
-        :pagination="pagination"
-        :data-source="listData"
-      >
-        <template #footer>
-          <div class="ts-checklist">
-            <div class="item is-warning">發言前請三思而後行。</div>
-          </div>
-        </template>
-        <template #renderItem="{ item }">
-          <a-list-item :key="item.postId">
-            <template #actions>
-              <span @click.stop="likePost(item.postId)" style="cursor: pointer; margin-right: 8px;">
-                <heart-outlined v-if="!item.liked" style="color: #eb2f96;" />
-                <heart-filled v-else style="color: #eb2f96;" />
-                {{ item.likes }}
-              </span>
-              <span @click.stop="collectPost(item.postId)" style="cursor: pointer; margin-right: 8px;">
-                <star-outlined v-if="!item.collected" style="color: #fadb14;" />
-                <star-filled v-else style="color: #fadb14;" />
-                {{ item.collects }}
-              </span>
-              <span @click.stop="commentPost(item.postId)" style="cursor: pointer; color: #1890ff;">
-                <message-outlined />
-                {{ item.comments }}
-              </span>
-            </template>
-            <template #extra>
-              <div>
-                <img v-if="item.images && item.images.length > 0" width="272" alt="Image" :src="item.images[0]" />
-              </div>
-            </template>
-            <a-list-item-meta :description="item.contentText">
-              <template #title>
-                <router-link :to="`/comment/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
+      <!-- 發文地方 -->
+      <section>
+        <a-list
+          item-layout="vertical"
+          size="large"
+          :pagination="pagination"
+          :data-source="listData"
+        >
+          <template #footer>
+            <div class="ts-checklist">
+              <div class="item is-warning">發言前請三思而後行。</div>
+            </div>
+          </template>
+          <template #renderItem="{ item }">
+            <a-list-item :key="item.postId">
+              <template #actions>
+                <span @click.stop="likePost(item.postId)" style="cursor: pointer; margin-right: 8px;">
+                  <heart-outlined v-if="!item.liked" style="color: #eb2f96;" />
+                  <heart-filled v-else style="color: #eb2f96;" />
+                  {{ item.likes }}
+                </span>
+                <span @click.stop="collectPost(item.postId)" style="cursor: pointer; margin-right: 8px;">
+                  <star-outlined v-if="!item.collected" style="color: #fadb14;" />
+                  <star-filled v-else style="color: #fadb14;" />
+                  {{ item.collects }}
+                </span>
+                <span @click.stop="commentPost(item.postId)" style="cursor: pointer; color: #1890ff;">
+                  <message-outlined />
+                  {{ item.comments }}
+                </span>
               </template>
-              <template #avatar><a-avatar :src="item.avatar" /></template>
-            </a-list-item-meta>
-            {{ item.contentText }} 
-          </a-list-item>
-        </template>
-      </a-list>
-    </section>
+              <template #extra>
+                <div>
+                  <img v-if="item.images && item.images.length > 0" width="272" alt="Post Image" :src="`${path}${item.images[0].imgUrl}`" />
+                </div>
+              </template>
+              <a-list-item-meta :description="item.contentText">
+                <template #title>
+                  <router-link :to="`/comment/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
+                </template>
+                <template #avatar><a-avatar :src="item.avatar" /></template>
+              </a-list-item-meta>
+            </a-list-item>
+          </template>
+        </a-list>
+      </section>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import axiosapi from "@/plugins/axios.js";
-import useUserStore from "@/stores/user.js"; 
+import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue'; 
 
 export default defineComponent({
@@ -104,11 +104,13 @@ export default defineComponent({
     MessageOutlined,
   },
   setup() {
-    const userStore = useUserStore(); 
     const listData = ref([]); // 使用 ref 來存儲文章數據
+    const path = process.env.VITE_POST_IMAGE_URL; // 確保環境變數正確設置
     const pagination = ref({
-      current: 1,
-      pageSize: 8,
+      onChange: (page: number) => {
+        console.log(page);
+      },
+      pageSize: 10,
       total: 0,
     });
 
@@ -162,16 +164,52 @@ export default defineComponent({
       likePost,
       collectPost,
       commentPost,
+      path,
     };
   },
 });
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 讓內容不會遮住上方元素 */
+  padding: 20px; /* 增加上下內邊距 */
+}
+
+.content {
+  width: 80%;
+  max-width: 1200px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 32px;
+}
+
 .rule-box {
-  background-color: #f0f0f0;
-  padding: 20px;
-  border: 1px solid #dddddd;
-  border-radius: 5px;
+  background-color: #f7f7f7;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.ts-checklist {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
 }
 </style>
