@@ -80,19 +80,20 @@
 import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { watch } from 'vue';
+import useUserStore from "@/stores/user.js"
 
 
 const status = ref(1);
 const orders = ref([]);
 const expandedOrderId = ref(null);
 const orderDetails = ref([]);
-
+const user = useUserStore().userId;
 
 
 
 watch(status, () => {
     axiosapi
-        .get('/order/find/1?status=' + status.value)
+        .get(`/order/find/${user}?status=${status.value}`)
         .then(response => {
             console.log(response)
             if (response.data !== '') {

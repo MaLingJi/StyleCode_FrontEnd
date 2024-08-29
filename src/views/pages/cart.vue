@@ -50,14 +50,16 @@ import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
 import ProgressIndicator from '@/components/order/Circle.vue';
+import useUserStore from "@/stores/user.js"
 
 const currentStep = ref(1);
 const cartItems = ref([]);
+const user = useUserStore().userId
 // const isLoggedIn = ref(false);  // 新增：用於追蹤登入狀態
 
 const loadCartItems = async () => {
         try {
-                const response = await axiosapi.get('/cart/find/1');
+                const response = await axiosapi.get(`/cart/find/${user}`);
                 cartItems.value = response.data;
                 console.log("Cart items loaded:", cartItems.value);
         } catch (error) {

@@ -31,7 +31,7 @@ onMounted(async () => {
         status.value = response.data.status
         if (status.value === 'success') {
             // 支付成功，跳轉到訂單頁面
-            setTimeout(() => router.push(`/order`), 3000)
+            setTimeout(() => router.push(`/order`), 3000)   
         } else {
             errorMessage.value = `錯誤代碼：${response.data.errorCode}`
         }

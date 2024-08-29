@@ -1,24 +1,26 @@
 <template>
     <div class="dashboard">
         <div class="date-picker">
-            <DatePicker v-model="range" is-range @input="fetchOrders" />
+            <DatePicker v-model="range" mode="dateTime" is-range @input="fetchOrders" />
         </div>
         <div class="orderAnalysis">
             <div>
                 <h1>累積訂單數:{{ orders.length }}</h1>
                 <h1>累積訂單金額:{{ formatCurrency(totalAmount) }}</h1>
             </div>
-            <OrderManageLineChart></OrderManageLineChart>
+
+
+            <OrderManageLineChart :orders="orders"></OrderManageLineChart>
         </div>
 
         <div class="productAnalysis">
-            <OrderManageProChart></OrderManageProChart>
+            <OrderManageProChart :orders="orders"></OrderManageProChart>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref, toRaw, watch } from 'vue';
 import { DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import axiosapi from '@/plugins/axios.js';
@@ -35,6 +37,7 @@ const range = ref({
 const orders = ref([]);
 
 
+//取得範圍內商品
 const fetchOrders = async () => {
     if (!range.value.start || !range.value.end) return;
 
@@ -52,7 +55,7 @@ const fetchOrders = async () => {
     }
 };
 
-
+//加工資料庫資料成後端API可接受
 const formatDate = (date) => {
     if (date instanceof Date) {
         return date.toISOString().slice(0, 19);  // 返回格式为 "YYYY-MM-DDTHH:mm:ss"
@@ -66,13 +69,13 @@ const formatDate = (date) => {
 };
 
 
-// 监听日期变化
+//偵測日期選取變化
 watch(range, () => {
     fetchOrders();
 }, { deep: true });
 
 
-
+//計算範圍內所有訂單總金額
 const totalAmount = computed(() => {
     let total = 0;
     for (const order of orders.value) {
@@ -83,9 +86,12 @@ const totalAmount = computed(() => {
     return total;
 })
 
+//加工金額
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
+
+
 </script>
 
 <style scoped>
