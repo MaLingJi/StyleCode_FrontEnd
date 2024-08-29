@@ -173,18 +173,23 @@ export default defineComponent({
 <style scoped>
 .container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* 讓內容不會遮住上方元素 */
-  padding: 20px; /* 增加上下內邊距 */
+  justify-content: center; 
+  align-items: flex-start; 
+  width: 100vw; 
+  height: 100vh; 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; 
 }
 
 .content {
-  width: 80%;
-  max-width: 1200px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 32px;
+  width: 100%; 
+  max-width: 1200px; 
+  background-color: white; 
+  border-radius: 8px; 
+  padding: 32px; 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+  box-sizing: border-box; 
 }
 
 .rule-box {
