@@ -40,7 +40,7 @@
       <div class="column is-9-wide product-info">
         <h1 class="ts-header is-huge">{{ product.productName }}</h1>
         <p class="ts-text is-large price">
-          NT$ {{ selectedDetail ? selectedDetail.price : "請選擇規格" }}
+          NT$ {{ selectedDetail ? selectedDetail.price : " " }}
         </p>
         <div class="ts-divider"></div>
         <div class="ts-grid">
@@ -97,7 +97,7 @@
               @click="addToCart"
               :disabled="!isProductAvailable || !selectedDetail"
             >
-              {{ isProductAvailable ? "加入購物車" : "商品已售罄或下架" }}
+              {{ isProductAvailable ? "加入購物車" : "請選擇規格" }}
             </button>
           </div>
         </div>

@@ -4,7 +4,7 @@
             <div class="ts-content is-center-aligned">
                 <div class="ts-wrap is-vertical is-compact is-middle-aligned">
                     <div class="ts-image is-circular">
-                        <img src="../../../../../java_project/StyleCode_Image/UserPhoto/user.png" width="80"  data-dialog="modal"/>
+                        <!-- <img src="C:/StyleCode_Image/UserPhoto/user.png" width="80"  data-dialog="modal"/> -->
                     </div>
                     <div class="ts-header">Yami Odymel</div>
                 </div>
@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="ts-menu is-dense is-small" style="opacity: 0.8">
-                <a class="item">購買清單</a>
+                <a class="item" @click="switchComps(order)">購買清單</a>
             </div>
             <div class="ts-divider has-top-spaced-small"></div>
             <a href="#!" class="ts-content is-interactive is-dense">
@@ -78,7 +78,7 @@
                             <div class="ts-content is-center-aligned">
                                 <div class="ts-wrap is-vertical is-compact is-middle-aligned">
                                     <div class="ts-image is-circular">
-                                        <img src="../../../../../java_project/StyleCode_Image/UserPhoto/user.png" width="200"  data-dialog="modal"/>
+                                        <!-- <img src="C:/StyleCode_Image/UserPhoto/user.png" width="200"  data-dialog="modal"/> -->
                                     </div>
                                         <div class="ts-content">
                                         <div class="ts-file">
@@ -101,7 +101,7 @@
 <script setup>
     import userProfile from '@/components/profile/userProfile.vue';
     import card from '@/components/profile/card.vue';
-
+    import order from '../pages/order.vue';
     import { shallowRef } from 'vue';
     const currentComp = shallowRef(userProfile);
     function switchComps(comp){

@@ -1,4 +1,3 @@
-// vite.config.js
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -16,7 +15,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)), // 确保 alias 配置正确
+      '@': fileURLToPath(new URL('./src', import.meta.url)), // 確保 alias 配置正確
     },
   },
   css: {
@@ -34,5 +33,11 @@ export default defineConfig({
       port: 5173,       // 與 server 的端口一致
       protocol: 'ws',   // 或者 'wss' 如果您使用 HTTPS
     }
+  },
+  // 添加環境變數的配置
+  define: {
+    'process.env': {
+      VITE_POST_IMAGE_URL: process.env.VITE_POST_IMAGE_URL,
+    },
   },
 });
