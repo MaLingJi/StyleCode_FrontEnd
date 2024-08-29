@@ -7,13 +7,13 @@ import Login from "@/views/secure/Login.vue";
 import Shop from "@/views/pages/product/shop.vue";
 import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
-import share from "@/views/pages/share.vue";
+import share from "@/views/pages/share/share.vue";
 import Register from "@/views/secure/register.vue";
 import comment from "@/views/pages/comment.vue";
 import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
-import newShare from "@/views/pages/newShare.vue";
-import editShare from "@/views/pages/editShare.vue";
+import newShare from "@/views/pages/share/newShare.vue";
+import editShare from "@/views/pages/share/editShare.vue";
 import post from "@/views/pages/post.vue";
 
 
@@ -22,6 +22,7 @@ import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
+import shareDetails from "@/views/pages/share/shareDetails.vue";
 
 
 const routes = [
@@ -37,8 +38,7 @@ const routes = [
   { name: "share-link", path: "/share", component: share },
   { name: "new-share-link", path: "/new-share", component: newShare },
   { name: "edit-share-link", path: "/editShare/:postId", component: editShare },
-  
-  
+  { name: "shareDetails-link", path: "/shareDetails/:postId", component: shareDetails },
   
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
