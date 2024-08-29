@@ -127,7 +127,8 @@
   import { ref, reactive, onMounted, computed } from 'vue';
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
-  
+  import Swal from 'sweetalert2'
+
   const products = ref([]);
   const selectedProductId = ref('');
   const selectedProduct = ref(null);
@@ -187,41 +188,119 @@
 }
 
 async function saveDetail() {
+  const result = await Swal.fire({
+    title: '確定要修改這個商品嗎？',
+    text: "此操作無法撤銷！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: 'rgb(35 40 44)',
+    cancelButtonColor: '#9e9e9e',
+    confirmButtonText: '是的，修改它！',
+    cancelButtonText: '取消'
+  });
+  if(result.isConfirmed){
+
+    
     try {
-        await axiosapi.put(`/admin/productDetails/${editingDetailId.value}`, editingDetail);
-        await loadProductDetails();
-        editingDetailId.value = null;
-      alert('修改成功。');
+      await axiosapi.put(`/admin/productDetails/${editingDetailId.value}`, editingDetail);
+      await loadProductDetails();
+      editingDetailId.value = null;
+      Swal.fire({
+        title: '成功！',
+        text: '修改成功！',
+        icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push('/backstage');
+        }
+      });
     } catch (error) {
-      console.error('Error updating product detail:', error);
+      console.error('Error adding category:', error);
+      Swal.fire({
+        title: '錯誤',
+        text: '修改失敗，請重試。',
+        icon: 'error',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      });
     }
+  }else{
+    cancelEdit();
   }
+  };
   
   function cancelEdit() {
     editingDetailId.value = null;
   }
   
   async function deleteDetail(detailId) {
-    if (confirm('確定要刪除這個商品詳情嗎？')) {
+    const result = await Swal.fire({
+    title: '確定要刪除這個商品嗎？',
+    text: "此操作無法撤銷！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: 'rgb(35 40 44)',
+    cancelButtonColor: '#9e9e9e',
+    confirmButtonText: '是的，刪除它！',
+    cancelButtonText: '取消'
+  });
+
+    if (result.isConfirmed) {
       try {
         await axiosapi.delete(`/admin/productDetails/${detailId}`);
         await loadProductDetails();
-      } catch (error) {
-        console.error('Error deleting product detail:', error);
+        Swal.fire({
+      title: '成功！',
+      text: '刪除成功！',
+      icon: 'success',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/backstage');
       }
-    }
+    });
+    } catch (error) {
+      console.error('Error adding category:', error);
+      Swal.fire({
+      title: '錯誤',
+      text: '刪除失敗，請重試。',
+      icon: 'error',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    });
   }
-  
+};
+};
   async function addDetail() {
     try {
       await axiosapi.post(`/admin/${selectedProductId.value}/productDetails`, [newDetail]);
       await loadProductDetails();
       Object.assign(newDetail, { color: '', size: '', stock: 0, onSale: true });
-      alert('新增成功。');
+      Swal.fire({
+      title: '成功！',
+      text: '新增成功！',
+      icon: 'success',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/backstage');
+      }
+    });
     } catch (error) {
-      console.error('Error adding product detail:', error);
-    }
+      console.error('Error adding category:', error);
+      Swal.fire({
+      title: '錯誤',
+      text: '新增失敗，請重試。',
+      icon: 'error',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    });
   }
+};
   </script>
   
   <style scoped>

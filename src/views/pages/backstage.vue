@@ -26,11 +26,11 @@
             </div>
           </div>
           <div class="ts-menu is-dense is-small">
-            <a class="item" @click="addNewProduct">新增商品</a>
-            <a class="item" @click="handleEditProduct">商品管理</a>
-            <a class="item" @click="handleEditProductDetail">商品庫存管理</a>
             <a class="item" @click="handleEditCategories" >分類管理</a>
             <a class="item" @click="handleEditSubcategories">子分類管理</a>
+            <a class="item" @click="addNewProduct">新增商品</a>
+            <a class="item" @click="handleEditProduct">商品管理</a>
+            <a class="item" @click="handleEditProductDetail">商品庫存管理</ a>
           </div>
           <div class="ts-divider has-top-spaced-small"></div>
           <div class="ts-content is-dense">
@@ -99,6 +99,7 @@ import CategoryManager from "@/components/product/CategoryManager.vue";
 import SubcategoryManager from "@/components/product/SubcategoryManager.vue"; 
 import ProductManager from '@/components/product/ProductManager.vue';
 import ProductDetailManager from "@/components/product/ProductDetailManager.vue";
+
 
 const currentComp = shallowRef(AddProduct);
 

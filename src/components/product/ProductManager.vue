@@ -90,6 +90,7 @@
   import { ref, onMounted , computed } from 'vue';
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
+  import Swal from 'sweetalert2'
 
   const products = ref([]);
   const editingProduct = ref(null);
@@ -132,23 +133,61 @@ function handlePageChange(page) {
   }
   
   async function updateProduct() {
-    try {
-   // 創建一個新對象，只包含需要更新的字段
-   const updateData = {
-      productName: editingProduct.value.productName,
-      price: editingProduct.value.price,
-      productDescription: editingProduct.value.productDescription,
-      productImages: editingProduct.value.productImages
-      // 如果需要，可以添加其他字段
-    };
 
+    const result = await Swal.fire({
+    title: '確定要修改這個商品嗎？',
+    text: "此操作無法撤銷！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: 'rgb(35 40 44)',
+    cancelButtonColor: '#9e9e9e',
+    confirmButtonText: '是的，修改它！',
+    cancelButtonText: '取消'
+  });
+  if(result.isConfirmed){
+
+    
+    try {
+      // 創建一個新對象，只包含需要更新的字段
+      const updateData = {
+        productName: editingProduct.value.productName,
+        price: editingProduct.value.price,
+        productDescription: editingProduct.value.productDescription,
+        productImages: editingProduct.value.productImages
+        // 如果需要，可以添加其他字段
+      };
+      
       await axiosapi.put(`/admin/products/${editingProduct.value.productId}`, updateData);
       await fetchProducts();
       closeEditModal();
-      alert('修改成功。');
+      Swal.fire({
+        title: '成功！',
+        text: '修改成功！',
+        icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push('/backstage');
+        }
+      });
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error('Error adding category:', error);
+      Swal.fire({
+        title: '錯誤',
+        text: '修改失敗，請重試。',
+        icon: 'error',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      });
     }
+  }else{
+    cancelEdit();
+  }
+
+  };
+  function cancelEdit(){
+    editingProduct.value = null;
   }
   
   function closeEditModal() {
@@ -157,15 +196,43 @@ function handlePageChange(page) {
   }
   
   async function deleteProduct(productId) {
-    if (confirm('確定要刪除這個商品嗎？')) {
+    const result = await Swal.fire({
+    title: '確定要刪除這個商品嗎？',
+    text: "此操作無法撤銷！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: 'rgb(35 40 44)',
+    cancelButtonColor: '#9e9e9e',
+    confirmButtonText: '是的，刪除它！',
+    cancelButtonText: '取消'
+  });
+    if (result.isConfirmed) {
       try {
         await axiosapi.delete(`/admin/products/${productId}`);
         await fetchProducts();
-      } catch (error) {
-        console.error('Error deleting product:', error);
+        Swal.fire({
+      title: '成功！',
+      text: '刪除成功！',
+      icon: 'success',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/backstage');
       }
-    }
+    });
+    } catch (error) {
+      console.error('Error adding category:', error);
+      Swal.fire({
+      title: '錯誤',
+      text: '刪除失敗，請重試。',
+      icon: 'error',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    });
   }
+}
+};
   
   async function fetchProductImages(productId) {
     try {

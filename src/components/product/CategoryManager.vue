@@ -66,6 +66,7 @@
   import { ref, onMounted, computed} from 'vue';
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
+  import Swal from 'sweetalert2'
   
   const categories = ref([]);
   const newCategory = ref('');
@@ -106,49 +107,139 @@ function handlePageChange(page) {
       await axiosapi.post('/admin/categories/create', { categoryName: newCategory.value });
       newCategory.value = '';
       await fetchCategories();
-      alert('新增成功。');
+      Swal.fire({
+      title: '成功！',
+      text: '新增成功！',
+      icon: 'success',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/backstage');
+      }
+    });
     } catch (error) {
       console.error('Error adding category:', error);
-      alert('新增失敗，可能有重複的名稱。');
-    }
+      Swal.fire({
+      title: '錯誤',
+      text: '新增失敗，請重試。',
+      icon: 'error',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    });
   }
-  
+};
+
   function startEditing(category) {
     editingId.value = category.categoryId;
     editingName.value = category.categoryName;
 }
 
 async function updateCategory(id) {
+
+  const result = await Swal.fire({
+    title: '確定要修改這個分類嗎？',
+    text: "此操作無法撤銷！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: 'rgb(35 40 44)',
+    cancelButtonColor: '#9e9e9e',
+    confirmButtonText: '是的，修改它！',
+    cancelButtonText: '取消'
+  });
+
+  if(result.isConfirmed){
+
     try {
- // 將分類名稱包裝在一個對象中
-        const updateData = { categoryName: editingName.value };
-    // 發送 PUT 請求，包含完整的請求體
-        await axiosapi.put(`/admin/categories/${id}`, updateData, {
-
+      // 將分類名稱包裝在一個對象中
+      const updateData = { categoryName: editingName.value };
+      // 發送 PUT 請求，包含完整的請求體
+      await axiosapi.put(`/admin/categories/${id}`, updateData, {
+        
         headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
+          'Content-Type': 'application/json'
+        }
+      });
+      
       editingId.value = null;
       await fetchCategories();
-      alert('修改成功。');
+      Swal.fire({
+        title: '成功！',
+        text: '修改成功！',
+        icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push('/backstage');
+        }
+      });
     } catch (error) {
-      console.error('Error updating category:', error);
-      alert('修改失敗，可能有重複的名稱。');
+      console.error('Error adding category:', error);
+      Swal.fire({
+        title: '錯誤',
+        text: '修改失敗，請重試。',
+        icon: 'error',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      });
     }
+  }else{
+    cancelEdit();
   }
+};
+  function cancelEdit() {
+  editingId.value = null;
+  editingName.value = '';
+}
   
   async function deleteCategory(id) {
-    if (confirm('確定要刪除這個分類嗎？')) {
+
+    const result = await Swal.fire({
+    title: '確定要刪除這個分類嗎？',
+    text: "此操作無法撤銷！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: 'rgb(35 40 44)',
+    cancelButtonColor: '#9e9e9e',
+    confirmButtonText: '是的，刪除它！',
+    cancelButtonText: '取消'
+  });
+
+    if (result.isConfirmed) {
       try {
         await axiosapi.delete(`/admin/categories/${id}`);
         await fetchCategories();
-        alert('刪除成功。');
-      } catch (error) {
-        console.error('Error deleting category:', error);
+        Swal.fire({
+      title: '成功！',
+      text: '刪除成功！',
+      icon: 'success',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/backstage');
       }
+    });
+
+  } catch (error) {
+    console.error('Error creating product:', error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
     }
+
+    // 使用 SweetAlert2 顯示錯誤信息
+    Swal.fire({
+      title: '錯誤',
+      text: '刪除失敗，請重試。',
+      icon: 'error',
+      confirmButtonColor: 'rgb(35 40 44)',
+      confirmButtonText: '確認'
+    });
+  }
+};
   }
   </script>
   <style>

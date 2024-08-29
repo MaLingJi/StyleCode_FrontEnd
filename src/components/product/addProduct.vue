@@ -106,6 +106,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2'
 
 const router = useRouter();
 const categories = ref([]);
@@ -208,8 +209,16 @@ const submitProduct = async () => {
       });
     }
 
-    alert('商品新增成功！');
-    router.push('/backstage');
+    Swal.fire({
+      title: '成功！',
+      text: '商品新增成功！',
+      icon: 'success',
+      confirmButtonText: '確認'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/shop');
+      }
+    });
   } catch (error) {
     console.error('Error creating product:', error);
     if (error.response) {
@@ -217,11 +226,14 @@ const submitProduct = async () => {
       console.error('Response status:', error.response.status);
       console.error('Response headers:', error.response.headers);
     }
-    alert('商品新增失敗，請重試。');
+    Swal.fire({
+      title: '錯誤',
+      text: '商品新增失敗，請重試。',
+      icon: 'error',
+      confirmButtonText: '確認'
+    });
   }
 };
-
-
 const resetForm = () => {
   Object.keys(product).forEach(key => {
     if (key === 'productDetails') {
