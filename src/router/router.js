@@ -25,6 +25,7 @@ import profile from "@/views/secure/profile.vue";
 import shareDetails from "@/views/pages/share/shareDetails.vue";
 
 
+
 const routes = [
   { name: "home-link", path: "/", component: Home },
   { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },

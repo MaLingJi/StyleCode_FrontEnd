@@ -1,14 +1,14 @@
 <template>
   <!-- <div class="ts-divider"></div> -->
 
-  <!-- 矚目看板 -->
-  <div class="ts-content is-tertiary is-vertically-padded">
-    <div class="ts-container">
-      <div class="ts-header is-big is-heavy">庫存管理</div>
-      <div class="ts-text is-secondary">編輯商品的相關金額與剩餘數量。</div>
+    <!-- 矚目看板 -->
+    <div class="ts-content is-tertiary is-vertically-padded">
+        <div class="ts-container">
+            <div class="ts-header is-big is-heavy">庫存管理</div>
+            <div class="ts-text is-secondary">編輯商品的相關金額與剩餘數量。</div>
+        </div>
     </div>
-  </div>
-  <!-- / 矚目看板 -->
+    <!-- / 矚目看板 -->
 
   <div class="ts-divider"></div>
   <div class="ts-container has-vertically-padded-big">
@@ -44,7 +44,7 @@
             </div>
           </div>
           <div class="ts-menu is-dense is-small">
-            <a href="#!" class="item">管理訂單</a>
+            <a class="item" @click=switchComp(OrderManagement)>管理訂單</a>
             <a href="#!" class="item">設定物流</a>
             <a href="#!" class="item">月結統計</a>
           </div>
@@ -93,19 +93,13 @@
 </template>
 
 <script setup>
-import { shallowRef } from "vue";
-import AddProduct from "@/components/product/AddProduct.vue";
-import CategoryManager from "@/components/product/CategoryManager.vue";
-import SubcategoryManager from "@/components/product/SubcategoryManager.vue"; 
-import ProductManager from '@/components/product/ProductManager.vue';
-import ProductDetailManager from "@/components/product/ProductDetailManager.vue";
+import AddProduct from '@/components/product/AddProduct.vue';
+import { shallowRef, onMounted } from 'vue';
+import OrderManagement from '@/components/order/OrderManage.vue';
 
-
-const currentComp = shallowRef(AddProduct);
-
-// 後台預設攔位
+const currentComp = shallowRef(null);
 function switchComp(comp) {
-  currentComp.value = comp;
+    currentComp.value = comp;
 }
 
 // 新增商品

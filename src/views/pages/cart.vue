@@ -3,7 +3,8 @@
         <html class="is-secondary">
         <div class="ts-container">
                 <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-                        <span class="ts-text">圈圈1</span>
+                        <ProgressIndicator :current-step="1" />
+                        <!-- <span class="ts-text">圈圈1</span> -->
                 </div>
 
                 <div class="ts-box" style="margin-top: 20px;">
@@ -44,13 +45,13 @@
 </template>
 
 <script setup>
-import CartList from '@/components/CartList.vue';
+import CartList from '@/components/order/CartList.vue';
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
+import ProgressIndicator from '@/components/order/Circle.vue';
 
-
-
+const currentStep = ref(1);
 const cartItems = ref([]);
 // const isLoggedIn = ref(false);  // 新增：用於追蹤登入狀態
 
@@ -127,7 +128,46 @@ const checkInventoryAndProceed = async () => {
 //     isLoggedIn.value = false;
 //   }
 // };
-
+const nextStep = () => {
+        if (currentStep.value < 3) {
+                currentStep.value++;
+        }
+};
 </script>
 
-<style></style>
+<style scoped>
+.progress-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 300px;
+        margin-bottom: 20px;
+}
+
+.step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: white;
+}
+
+.step.active {
+        background-color: #007bff;
+}
+
+.line {
+        flex-grow: 1;
+        height: 2px;
+        background-color: #ccc;
+        margin: 0 10px;
+}
+
+.line.active {
+        background-color: #007bff;
+}
+</style>
