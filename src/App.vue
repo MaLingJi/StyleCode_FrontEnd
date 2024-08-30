@@ -7,8 +7,10 @@
   </header>
   
 <RouterView></RouterView>
+<footer>
 
-<Footerpage></Footerpage>  
+  <Footerpage></Footerpage>  
+</footer>
 </template>
 
 <script setup>

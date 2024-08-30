@@ -15,13 +15,6 @@
             </div>
         </div>
     </div>
-    <div class="ts-divider"></div>
-    <div class="ts-content is-vertically-very-padded" style="background: var(--ts-gray-50)">
-        <div class="ts-container is-narrow">
-            <div class="ts-header is-large is-heavy">Tocas UI 相簿範例</div>
-            <div class="ts-text is-secondary">由 Yami Odymel 製作</div>
-        </div>
-    </div>
 
 </template>
 

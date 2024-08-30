@@ -41,7 +41,7 @@
               </td>
               <td>
                 <div v-if="editingDetailId === detail.productDetailsId" class="ts-input is-fluid">
-                  <input type="number" v-model="editingDetail.stock" placeholder="庫存" required>
+                  <input type="number" v-model="editingDetail.stock" placeholder="庫存" required  min="0">
                 </div>
                 <span v-else>{{ detail.stock }}</span>
               </td>
@@ -86,7 +86,7 @@
             </div>
             <div class="column is-3-wide">
               <div class="ts-input is-fluid">
-                <input type="number" v-model="newDetail.stock" placeholder="庫存" required>
+                <input type="number" v-model="newDetail.stock" placeholder="庫存" required  min="1">
               </div>
             </div>
             <div class="column is-3-wide">

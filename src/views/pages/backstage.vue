@@ -101,6 +101,11 @@ import ProductDetailManager from '@/components/product/productDetailManager.vue'
 import { shallowRef, onMounted } from 'vue';
 import OrderManagement from '@/components/order/OrderManage.vue';
 
+import useUserStore from "@/stores/user.js"
+    const userStore = useUserStore();
+    console.log(userStore.userId);
+
+
 const currentComp = shallowRef(null);
 function switchComp(comp) {
     currentComp.value = comp;
