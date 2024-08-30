@@ -216,11 +216,9 @@ const addToCart = () => {
       Swal.fire({
         icon: 'error',
         title: '加入購物車失敗',
-        text: '請稍後再試或聯繫客服',
-        toast: true,
-        position: 'top-end',
+        text: '庫存不足',
         showConfirmButton: false,
-        timer: 3000,
+        timer: 1000,
         timerProgressBar: true,
       })
     }
