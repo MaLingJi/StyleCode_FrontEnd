@@ -1,8 +1,15 @@
 <template>
-    <div>
+    <div class="ts-container">
+        <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
+            <Circle :current-step="3" />
+        </div>
+    </div>
+    <div class="ts-container">
+    <div class="ts-content" style="display: flex; justify-content: center;"> 
         <p v-if="isLoading">正在確認支付結果...</p>
         <p v-if="status === 'success'">支付成功！正在跳轉到訂單頁面...</p>
         <p v-if="status === 'error'">支付失敗：{{ errorMessage }}</p>
+    </div>
     </div>
 </template>
 
@@ -10,6 +17,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axiosapi from '@/plugins/axios.js';
+import Circle from '@/components/order/Circle.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -31,7 +39,7 @@ onMounted(async () => {
         status.value = response.data.status
         if (status.value === 'success') {
             // 支付成功，跳轉到訂單頁面
-            setTimeout(() => router.push(`/order`), 3000)   
+            setTimeout(() => router.push(`/order`), 3000)
         } else {
             errorMessage.value = `錯誤代碼：${response.data.errorCode}`
         }

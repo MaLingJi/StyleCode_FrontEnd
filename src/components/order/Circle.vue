@@ -83,6 +83,6 @@ const props = defineProps({
 }
 
 .circle.active {
-    background-color: gray
+    background-color: rgb(84, 94, 190)
 }
 </style>

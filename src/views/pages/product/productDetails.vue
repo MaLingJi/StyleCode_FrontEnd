@@ -6,32 +6,19 @@
           <!-- 照片輪播 -->
           <transition name="fade" mode="out-in">
             <div class="ts-image main-image" :key="currentImageIndex">
-              <img
-                :src="getImageUrl(currentImage)"
-                :alt="product.productName"
-              />
+              <img :src="getImageUrl(currentImage)" :alt="product.productName" />
             </div>
           </transition>
           <!-- 往前一張or下一張 -->
           <button class="carousel-button prev" @click="prevImage">&lt;</button>
           <button class="carousel-button next" @click="nextImage">&gt;</button>
         </div>
-        
+
         <div class="ts-grid thumbnail-grid">
-          <div
-            class="column is-2-wide"
-            v-for="(image, index) in product.pimages"
-            :key="index"
-          >
-            <div
-              class="ts-image thumbnail"
-              @click="setCurrentImage(index)"
-              :class="{ active: currentImageIndex === index }"
-            >
-              <img
-                :src="getImageUrl(image.imgUrl)"
-                :alt="product.productName"
-              />
+          <div class="column is-2-wide" v-for="(image, index) in product.pimages" :key="index">
+            <div class="ts-image thumbnail" @click="setCurrentImage(index)"
+              :class="{ active: currentImageIndex === index }">
+              <img :src="getImageUrl(image.imgUrl)" :alt="product.productName" />
             </div>
           </div>
         </div>
@@ -48,11 +35,7 @@
             <div class="ts-select is-fluid">
               <select v-model="selectedColor" @change="updateSelectedDetail">
                 <option value="">請選擇顏色</option>
-                <option
-                  v-for="color in availableColors"
-                  :key="color"
-                  :value="color"
-                >
+                <option v-for="color in availableColors" :key="color" :value="color">
                   {{ color }}
                 </option>
               </select>
@@ -62,11 +45,7 @@
             <div class="ts-select is-fluid">
               <select v-model="selectedSize" @change="updateSelectedDetail">
                 <option value="">請選擇尺寸</option>
-                <option
-                  v-for="size in availableSizes"
-                  :key="size"
-                  :value="size"
-                >
+                <option v-for="size in availableSizes" :key="size" :value="size">
                   {{ size }}
                 </option>
               </select>
@@ -77,26 +56,16 @@
         <div class="ts-grid has-top-spaced">
           <div class="column is-8-wide">
             <div class="ts-input is-fluid">
-              <input
-                type="number"
-                v-model.number="quantity"
-                min="1"
-                :max="selectedDetail ? selectedDetail.stock : 0"
-                :disabled="!isProductAvailable"
-              />
+              <input type="number" v-model.number="quantity" min="1" :max="selectedDetail ? selectedDetail.stock : 0"
+                :disabled="!isProductAvailable" />
             </div>
           </div>
           <!-- 商品上下架 & 如果沒有庫存 則把加入購物車按鈕鎖起來 -->
           <div class="column is-8-wide">
-            <button
-              class="ts-button is-fluid"
-              :class="{
-                'is-positive': isProductAvailable,
-                'is-negative': !isProductAvailable,
-              }"
-              @click="addToCart"
-              :disabled="!isProductAvailable || !selectedDetail"
-            >
+            <button class="ts-button is-fluid" :class="{
+              'is-positive': isProductAvailable,
+              'is-negative': !isProductAvailable,
+            }" @click="addToCart" :disabled="!isProductAvailable || !selectedDetail">
               {{ isProductAvailable ? "加入購物車" : "請選擇規格" }}
             </button>
           </div>
@@ -113,16 +82,18 @@
             </p>
           </div>
         </div>
-        </div>
-        </div>
       </div>
-        
+    </div>
+  </div>
+
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
+import useUserStore from "@/stores/user.js"
+import Swal from "sweetalert2";
 
 const route = useRoute();
 const product = ref({});
@@ -131,6 +102,7 @@ const selectedSize = ref("");
 const quantity = ref(1);
 const selectedDetail = ref(null);
 const currentImageIndex = ref(0);
+const user = useUserStore().userId
 
 // 找到對應商品的圖片
 const getImageUrl = (imageName) => {
@@ -208,7 +180,7 @@ const updateSelectedDetail = () => {
         detail.size === selectedSize.value
     ) || null;
 
-    // 庫存的數量去核對後端的庫存數量 & 點進商品時 數量欄位預設為1
+  // 庫存的數量去核對後端的庫存數量 & 點進商品時 數量欄位預設為1
   if (selectedDetail.value) {
     quantity.value = Math.min(quantity.value, selectedDetail.value.stock);
   } else {
@@ -226,6 +198,38 @@ const addToCart = () => {
     alert("商品已售罄或下架");
     return;
   }
+
+  axiosapi.post('/cart/add', {
+    "userId": user,
+    "productDetailsId": selectedDetail.value.productDetailsId,
+    "quantity": quantity.value
+  }).then(response => {
+    if (response.data != '') {
+      Swal.fire({
+        icon: 'success',
+        title: '成功加入購物車',
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+      })
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: '加入購物車失敗',
+        text: '請稍後再試或聯繫客服',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      })
+    }
+  })
+    .catch(
+      error => {
+        console.error(error)
+      }
+    )
   // 這裡添加將商品加入購物車的邏輯
   console.log("Added to cart:", {
     productId: product.value.productId,
@@ -321,5 +325,4 @@ const addToCart = () => {
   height: auto;
   margin-top: 1rem;
 }
-
 </style>

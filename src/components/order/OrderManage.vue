@@ -1,20 +1,24 @@
 <template>
     <div class="dashboard">
-        <div class="date-picker">
-            <DatePicker v-model="range" mode="dateTime" is-range @input="fetchOrders" />
-        </div>
-        <div class="orderAnalysis">
-            <div>
-                <h1>累積訂單數:{{ orders.length }}</h1>
-                <h1>累積訂單金額:{{ formatCurrency(totalAmount) }}</h1>
+        <div class="header">
+            <div class="stats">
+                <div>累積訂單數:{{ orders.length }}</div>
+                <div>累積訂單金額:{{ formatCurrency(totalAmount) }}</div>   
             </div>
 
 
-            <OrderManageLineChart :orders="orders"></OrderManageLineChart>
+            <div class="datePicker">
+                <DatePicker v-model="range" mode="dateTime" is-range @input="fetchOrders" />
+            </div>
         </div>
 
-        <div class="productAnalysis">
-            <OrderManageProChart :orders="orders"></OrderManageProChart>
+        <div class="charts">
+            <div class="chart lineChart">
+                <OrderManageLineChart :orders="orders"></OrderManageLineChart>
+            </div>
+            <div class="chart pieChart">
+                <OrderManageProChart :orders="orders"></OrderManageProChart>
+            </div>
         </div>
     </div>
 </template>
@@ -95,5 +99,49 @@ const formatCurrency = (amount) => {
 </script>
 
 <style scoped>
-/* 您的样式 */
+.dashboard {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: 100vh;
+    background-color: #f0f2f5;
+}
+
+.header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stats {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+
+.datePicker {
+    justify-self: end;
+}
+
+.charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.chart {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.pie-chart,
+.line-chart {
+    height: 400px;
+}
 </style>

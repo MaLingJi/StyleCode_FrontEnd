@@ -4,7 +4,7 @@
 
     <div class="ts-container">
         <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-            <ProgressIndicator :current-step="2" />
+            <Circle :current-step="2" />
         </div>
     </div>
 
@@ -39,7 +39,7 @@
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import PaymentPageList from '@/components/order/PaymentPageList.vue';
-import ProgressIndicator from '@/components/order/Circle.vue';
+import Circle from '@/components/order/Circle.vue';
 import useUserStore from "@/stores/user.js"
 
 

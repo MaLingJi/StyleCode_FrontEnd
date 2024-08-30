@@ -5,7 +5,7 @@
       </div>
       <div class="ts-content">
         <h3>{{ product.productName }}</h3>
-        <p>價格: ${{ product.price }}</p>
+        <p>價格: ${{ product.price }}</p> 
       </div>
     </div>
   </template>
