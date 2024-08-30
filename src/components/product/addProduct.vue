@@ -107,11 +107,9 @@ import { ref, reactive, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2'
+import useUserStore from "@/stores/user.js";
 
-import useUserStore from "@/stores/user.js"
-    const userStore = useUserStore();
-    console.log(userStore.userId);
-
+const userStore = useUserStore();
 const router = useRouter();
 const categories = ref([]);
 const subcategories = ref([]);
@@ -198,7 +196,10 @@ const submitProduct = async () => {
       ...product,
       subcategoryId: { subcategoryId: product.subcategoryId }
     };
-    const response = await axiosapi.post('/admin/products/create', productData);
+    const response = await axiosapi.post('/admin/products/create', productData,{
+      headers: { Authorization: `Bearer ${userStore.userToken}` }
+    }
+    );
     
     console.log("Response:", response);
     const createdProductId = response.data.productId;
@@ -210,7 +211,7 @@ const submitProduct = async () => {
         formData.append('file', files.value[i]);
       }
       await axiosapi.post(`/admin/products/images/${createdProductId}/multiple`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data'}
       });
     }
 
@@ -225,18 +226,7 @@ const submitProduct = async () => {
       }
     });
   } catch (error) {
-    console.error('Error creating product:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
-    }
-    Swal.fire({
-      title: '錯誤',
-      text: '商品新增失敗，請重試。',
-      icon: 'error',
-      confirmButtonText: '確認'
-    });
+   handleApiError(error, '新增失敗，請重試。');
   }
 };
 const resetForm = () => {
@@ -252,6 +242,28 @@ const resetForm = () => {
   files.value = [];
   previewImages.value = [];
 };
+
+function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = error.response.data.message;
+    }
+  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
 </script>
 
 <style scoped>

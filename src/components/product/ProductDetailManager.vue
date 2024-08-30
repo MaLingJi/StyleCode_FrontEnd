@@ -128,6 +128,11 @@
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
   import Swal from 'sweetalert2'
+  import useUserStore from "@/stores/user.js";
+  import { useRouter } from 'vue-router';
+
+  const userStore = useUserStore();
+  const router = useRouter();
 
   const products = ref([]);
   const selectedProductId = ref('');
@@ -202,7 +207,9 @@ async function saveDetail() {
 
     
     try {
-      await axiosapi.put(`/admin/productDetails/${editingDetailId.value}`, editingDetail);
+      await axiosapi.put(`/admin/productDetails/${editingDetailId.value}`, editingDetail,{
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
       await loadProductDetails();
       editingDetailId.value = null;
       Swal.fire({
@@ -213,18 +220,11 @@ async function saveDetail() {
         confirmButtonText: '確認'
       }).then((result) => {
         if (result.isConfirmed) {
-          router.push('/backstage');
+          router.push('backstage');
         }
       });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-        title: '錯誤',
-        text: '修改失敗，請重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認'
-      });
+      handleApiError(error, '修改失敗，請重試。');
     }
   }else{
     cancelEdit();
@@ -249,7 +249,9 @@ async function saveDetail() {
 
     if (result.isConfirmed) {
       try {
-        await axiosapi.delete(`/admin/productDetails/${detailId}`);
+        await axiosapi.delete(`/admin/productDetails/${detailId}`,{
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
+        });
         await loadProductDetails();
         Swal.fire({
       title: '成功！',
@@ -259,24 +261,20 @@ async function saveDetail() {
       confirmButtonText: '確認'
     }).then((result) => {
       if (result.isConfirmed) {
-        router.push('/backstage');
+        router.push('backstage');
       }
     });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-      title: '錯誤',
-      text: '刪除失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+      handleApiError(error, '刪除失敗，請重試。');
   }
 };
+
 };
   async function addDetail() {
     try {
-      await axiosapi.post(`/admin/${selectedProductId.value}/productDetails`, [newDetail]);
+      await axiosapi.post(`/admin/${selectedProductId.value}/productDetails`, [newDetail],{
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
       await loadProductDetails();
       Object.assign(newDetail, { color: '', size: '', stock: 0, onSale: true });
       Swal.fire({
@@ -287,20 +285,35 @@ async function saveDetail() {
       confirmButtonText: '確認'
     }).then((result) => {
       if (result.isConfirmed) {
-        router.push('/backstage');
+        router.push('backstage');;
       }
     });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-      title: '錯誤',
-      text: '新增失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+      handleApiError(error, '新增失敗，請重試。');
   }
 };
+
+function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = error.response.data.message;
+    }
+  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
   </script>
   
   <style scoped>

@@ -248,13 +248,24 @@ const addToCart = () => {
 
 .carousel-container {
   position: relative;
+  width: 500px;
+  height: 500px;
   overflow: hidden;
+  margin: 0 auto;
 }
 
-.main-image img {
+.main-image {
   width: 100%;
-  height: auto;
+  height: 100%;
 }
+
+  .main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 
 .carousel-button {
   position: absolute;
@@ -265,6 +276,7 @@ const addToCart = () => {
   border: none;
   padding: 10px;
   cursor: pointer;
+  z-index: 10;
 }
 
 .carousel-button.prev {
@@ -277,6 +289,8 @@ const addToCart = () => {
 
 .thumbnail-grid {
   margin-top: 1rem;
+  display: flex;
+  justify-content: center;
 }
 
 .thumbnail {
@@ -286,6 +300,7 @@ const addToCart = () => {
   width: 60px;
   height: 60px;
   overflow: hidden;
+  margin: 0 5px;
 }
 
 
@@ -294,6 +309,7 @@ const addToCart = () => {
   opacity: 1;
   border: 2px solid var(--ts-gray-400);
 }
+
 
 .thumbnail img {
   width: 100%;
@@ -324,5 +340,6 @@ const addToCart = () => {
   max-width: 100%;
   height: auto;
   margin-top: 1rem;
+  object-fit: cover; 
 }
 </style>

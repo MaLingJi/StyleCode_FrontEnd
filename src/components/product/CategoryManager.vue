@@ -67,7 +67,12 @@
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
   import Swal from 'sweetalert2'
-  
+  import useUserStore from "@/stores/user.js"
+  import { useRouter } from 'vue-router';
+
+  const userStore = useUserStore()
+  const router = useRouter();
+
   const categories = ref([]);
   const newCategory = ref('');
   const editingId = ref(null);
@@ -79,6 +84,7 @@
     await fetchCategories();
   });
   
+  // 分頁
   const paginatedCategories = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
@@ -93,18 +99,22 @@ function handlePageChange(page) {
   currentPage.value = page;
 }
 
+// 分類
   async function fetchCategories() {
     try {
       const response = await axiosapi.get('/categories');
       categories.value = response.data;
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      handleApiError(error, '獲取分類失敗');
     }
   }
   
   async function addCategory() {
     try {
-      await axiosapi.post('/admin/categories/create', { categoryName: newCategory.value });
+      await axiosapi.post('/admin/categories/create', { categoryName: newCategory.value },{
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      })
+
       newCategory.value = '';
       await fetchCategories();
       Swal.fire({
@@ -119,14 +129,7 @@ function handlePageChange(page) {
       }
     });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-      title: '錯誤',
-      text: '新增失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+      handleApiError(error, '新增失敗，請重試。');
   }
 };
 
@@ -157,7 +160,8 @@ async function updateCategory(id) {
       await axiosapi.put(`/admin/categories/${id}`, updateData, {
         
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userStore.userToken}`
         }
       });
       
@@ -175,14 +179,7 @@ async function updateCategory(id) {
         }
       });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-        title: '錯誤',
-        text: '修改失敗，請重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認'
-      });
+      handleApiError(error, '修改失敗，請重試。');
     }
   }else{
     cancelEdit();
@@ -206,41 +203,52 @@ async function updateCategory(id) {
     cancelButtonText: '取消'
   });
 
-    if (result.isConfirmed) {
-      try {
-        await axiosapi.delete(`/admin/categories/${id}`);
-        await fetchCategories();
-        Swal.fire({
-      title: '成功！',
-      text: '刪除成功！',
-      icon: 'success',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    }).then((result) => {
+  if (result.isConfirmed) {
+    try {
+      await axiosapi.delete(`/admin/categories/${id}`, {
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
+      await fetchCategories();
+      Swal.fire({
+        title: '成功！',
+        text: '刪除成功！',
+        icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      }).then((result) => {
       if (result.isConfirmed) {
         router.push('/backstage');
       }
     });
-
-  } catch (error) {
-    console.error('Error creating product:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
+    } catch (error) {
+      handleApiError(error, '刪除分類失敗');
     }
+  }
+}
 
-    // 使用 SweetAlert2 顯示錯誤信息
-    Swal.fire({
-      title: '錯誤',
-      text: '刪除失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+  
+function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      // 可能需要登出用戶或重定向到登錄頁面
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = error.response.data.message;
+    }
   }
-};
-  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
   </script>
   <style>
     .ts-pagination {

@@ -91,7 +91,11 @@
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
   import Swal from 'sweetalert2'
+  import useUserStore from "@/stores/user.js";
+  import { useRouter } from 'vue-router';
 
+  const userStore = useUserStore();
+  const router = useRouter();
   const products = ref([]);
   const editingProduct = ref(null);
   const productImages = ref([]);
@@ -157,7 +161,9 @@ function handlePageChange(page) {
         // 如果需要，可以添加其他字段
       };
       
-      await axiosapi.put(`/admin/products/${editingProduct.value.productId}`, updateData);
+      await axiosapi.put(`/admin/products/${editingProduct.value.productId}`, updateData,{
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
       await fetchProducts();
       closeEditModal();
       Swal.fire({
@@ -168,18 +174,11 @@ function handlePageChange(page) {
         confirmButtonText: '確認'
       }).then((result) => {
         if (result.isConfirmed) {
-          router.push('/backstage');
+          router.push('backstage');
         }
       });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-        title: '錯誤',
-        text: '修改失敗，請重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認'
-      });
+      handleApiError(error, '修改失敗，請重試。');
     }
   }else{
     cancelEdit();
@@ -208,7 +207,9 @@ function handlePageChange(page) {
   });
     if (result.isConfirmed) {
       try {
-        await axiosapi.delete(`/admin/products/${productId}`);
+        await axiosapi.delete(`/admin/products/${productId}`,{
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
+        });
         await fetchProducts();
         Swal.fire({
       title: '成功！',
@@ -218,18 +219,11 @@ function handlePageChange(page) {
       confirmButtonText: '確認'
     }).then((result) => {
       if (result.isConfirmed) {
-        router.push('/backstage');
+        router.push('backstage');
       }
     });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-      title: '錯誤',
-      text: '刪除失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+      handleApiError(error, '刪除失敗，請重試。');
   }
 }
 };
@@ -249,10 +243,12 @@ function handlePageChange(page) {
   
   async function deleteImage(imageId) {
       try {
-        await axiosapi.delete(`/admin/products/images/${editingProduct.value.productId}/${imageId}`);
+        await axiosapi.delete(`/admin/products/images/${editingProduct.value.productId}/${imageId}`,{
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
+        });
         await fetchProductImages(editingProduct.value.productId);
       } catch (error) {
-        console.error('Error deleting image:', error);
+        handleApiError(error, '失敗，請重試。');
       }
   }
   
@@ -265,14 +261,39 @@ function handlePageChange(page) {
       }
       try {
         await axiosapi.post(`/admin/products/images/${editingProduct.value.productId}/multiple`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${userStore.userToken}`}
         });
+
         await fetchProductImages(editingProduct.value.productId);
       } catch (error) {
-        console.error('Error adding images:', error);
+        handleApiError(error, '失敗，請重試。');
       }
     }
   }
+
+
+  function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = error.response.data.message;
+    }
+  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
   </script>
   
   <style scoped>
