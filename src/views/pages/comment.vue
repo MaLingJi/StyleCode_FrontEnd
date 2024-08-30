@@ -1,11 +1,13 @@
 <template>
-  <section>
-    <!-- 第一部分 單一評論 -->
-    <a-comment>
-      <template #actions>
+  <div class="container">
+    <section class="post-content">
+      <h1>{{ post.postTitle }}</h1>
+      <p>{{ post.contentText }}</p>
+
+      <div class="actions">
         <span key="comment-basic-like">
           <a-tooltip title="Like">
-            <template v-if="action === 'liked'">
+            <template v-if="post.isLiked">
               <heart-filled @click="toggleLike" style="color: #eb2f96;" />
             </template>
             <template v-else>
@@ -14,9 +16,10 @@
           </a-tooltip>
           <span style="padding-left: 8px; cursor: auto">{{ likes }}</span>
         </span>
+        <!-- <button @click="toggleLike">{{ post.isLiked ? '收回讚' : '按讚' }} ({{ likes }})</button> -->
         <span key="comment-basic-collect">
           <a-tooltip title="Collect">
-            <template v-if="action === 'collected'">
+            <template v-if="post.isCollected">
               <star-filled @click="toggleCollect" style="color: #fadb14;" />
             </template>
             <template v-else>
@@ -25,215 +28,292 @@
           </a-tooltip>
           <span style="padding-left: 8px; cursor: auto">{{ collects }}</span>
         </span>
+        <!-- <button @click="toggleCollect">{{ post.isCollected ? '取消收藏' : '收藏' }} ({{ collects }})</button> -->
         <span key="comment-basic-share">
           <a-tooltip title="Share">
             <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
           </a-tooltip>
+          <span style="padding-left: 8px; cursor: auto">{{ shares }}</span>
         </span>
-        <span key="comment-basic-reply-to">回覆</span>
-      </template>
-      <template #author><a>漢·索羅</a></template>
-      <template #avatar>
-        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="漢·索羅" />
-      </template>
-      <template #content>
-        <p>
-          我帶來一些我自己的語錄以下 是我的經典語錄~
-          蹲得越低 插得越深
-          吃虧就是占便宜 吃龜就是含 舔 抿~
-          失敗的人找藉口 成功的人找別人來口~
-          當你凝視著菊花 菊花也在凝視著你~
-          橋對角度 你也能抵達喉嚨深處~
-          不脫衣服 怎麼開始~
-          姿勢就是力量！
-        </p>
-      </template>
-      <template #datetime>
-        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-          <span>{{ dayjs().fromNow() }}</span>
-        </a-tooltip>
-      </template>
-    </a-comment>
+      </div>
 
-    <!-- 照片顯示區域 -->
-    <div class="image-preview-group">
-      <a-image-preview-group>
-        <a-image
-          v-for="(image, index) in userImages"
-          :key="index"
-          :width="200"
-          :src="image"
-        />
-      </a-image-preview-group>
-    </div>
+      <a-list
+        class="comment-list"
+        :header="`${comments.length} 則回覆`"
+        item-layout="horizontal"
+        :data-source="comments"
+      >
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-comment :author="`用戶 ${item.userDetail.id}`" :avatar="item.avatar">
+              <template #content>
+                <p>{{ item.comment }}</p>
+                <span class="comment-time">{{ dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</span>
+              </template>
+            </a-comment>
+          </a-list-item>
+        </template>
+      </a-list>
 
-    <!-- 第二部分 評論列表 -->
-    <a-list
-      class="comment-list"
-      :header="`${comments.length} 則回覆`"
-      item-layout="horizontal"
-      :data-source="comments"
-    >
-      <template #renderItem="{ item }">
-        <a-list-item>
-          <a-comment :author="item.author" :avatar="item.avatar">
-            <template #actions>
-              <span v-for="(action, index) in item.actions" :key="index">{{ action }}</span>
-            </template>
-            <template #content>
-              <p>{{ item.content }}</p>
-            </template>
-            <template #datetime>
-              <a-tooltip :title="item.datetime.format('YYYY-MM-DD HH:mm:ss')">
-                <span>{{ item.datetime.fromNow() }}</span>
-              </a-tooltip>
-            </template>
-          </a-comment>
-        </a-list-item>
-      </template>
-    </a-list>
-
-    <!-- 第三部分 新增評論輸入框 -->
-    <a-comment class="new-comment">
-      <template #avatar>
-        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="漢·索羅" />
-      </template>
-      <template #content>
-        <a-form-item>
-          <a-textarea 
-            v-model:value="newComment" 
-            :rows="4" 
-            placeholder="新增評論..." 
-            class="comment-textarea"
-          />
-        </a-form-item>
-        <a-form-item>
-          <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">
-            新增評論
-          </a-button>
-        </a-form-item>
-      </template>
-    </a-comment>
-  </section>
+      <a-comment class="new-comment">
+        <template #avatar>
+          <a-avatar src="https://joeschmoe.io/api/v1/random" alt="用戶" />
+        </template>
+        <template #content>
+          <a-form-item>
+            <a-textarea 
+              v-model:value="newComment" 
+              :rows="4" 
+              placeholder="新增評論..." 
+              class="comment-textarea"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">
+              新增評論
+            </a-button>
+          </a-form-item>
+        </template>
+      </a-comment>
+    </section>
+  </div>
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute } from 'vue-router'; 
+import axiosapi from "@/plugins/axios.js"; 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ref } from 'vue';
 import { StarFilled, StarOutlined, HeartFilled, HeartOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 
 dayjs.extend(relativeTime);
 
+const post = ref({
+  postId: '',
+  postTitle: '',
+  contentText: '',
+  isLiked: false,
+  isCollected: false,
+  likesCount: 0,
+  collectionsCount: 0,
+});
+const comments = ref([]);
+const newComment = ref('');
+const submitting = ref(false);
+const route = useRoute(); 
+
 const likes = ref<number>(0);
 const collects = ref<number>(0);
 const shares = ref<number>(0);
-const action = ref<string>(''); // 初始化為空字符串
-const newComment = ref<string>('');
-const submitting = ref<boolean>(false);
+const liked = ref<boolean>(false);
+const collected = ref<boolean>(false);
+const userId = ref<number>(1);
 
-// 假設的圖片數據
-const userImages = ref<string[]>([
-  'https://aliyuncdn.antdv.com/vue.png',
-  'https://aliyuncdn.antdv.com/logo.png',
-  // 可以在這裡添加更多圖片的 URL
-]);
+onMounted(() => {
+  const postId = route.params.id as string; 
+  fetchPost(postId);
+  fetchComments(postId);
+  fetchLikeStatus(postId, userId.value);
+  fetchCollectStatus(postId, userId.value);
+});
 
-// 點讚和收藏的處理函數
-const toggleLike = () => {
-  if (action.value === 'liked') {
-    likes.value -= 1; // 減少讚數
-    action.value = ''; // 重置狀態
-  } else {
-    likes.value += 1; // 增加讚數
-    action.value = 'liked'; // 設置為已點讚
-  }
-};
+onBeforeUnmount(() => {
+  post.value = {
+    postId: '',
+    postTitle: '',
+    contentText: '',
+    isLiked: false,
+    isCollected: false,
+    likesCount: 0,
+    collectionsCount: 0,
+  };
+  comments.value = [];
+  newComment.value = '';
+});
 
-const toggleCollect = () => {
-  if (action.value === 'collected') {
-    collects.value -= 1; // 減少收藏數
-    action.value = ''; // 重置狀態
-  } else {
-    collects.value += 1; // 增加收藏數
-    action.value = 'collected'; // 設置為已收藏
-  }
-};
+function fetchPost(postId: string) {
+  axiosapi.get(`/post/${postId}`).then(response => {
+    post.value = {
+      ...response.data,
+      isLiked: response.data.isLiked || false,
+      isCollected: response.data.isCollected || false,
+    };
+    likes.value = response.data.likesCount || 0;
+    collects.value = response.data.collectionsCount || 0;
+    shares.value = response.data.shares || 0;
+  }).catch(error => {
+    console.error("獲取文章失敗:", error);
+  });
+}
 
-const toggleShare = () => {
-  if (action.value === 'shared') {
-    shares.value -= 1; // 減少分享數
-    action.value = ''; // 重置狀態
-  } else {
-    shares.value += 1; // 增加分享數
-    action.value = 'shared'; // 設置為已分享
-  }
-};
+function fetchComments(postId: string) {
+  axiosapi.get(`/comment?postId=${postId}`).then(response => {
+    comments.value = response.data.map(comment => ({
+      ...comment,
+      userDetail: comment.userDetail || { id: 'unknown' },
+      createdAt: dayjs(comment.createdAt)
+    }));
+  }).catch(error => {
+    console.error("獲取評論失敗:", error);
+  });
+}
 
-// 評論數據
-const comments = ref([
-  {
-    actions: ['回覆'],
-    author: '漢·索羅',
-    avatar: 'https://joeschmoe.io/api/v1/random',
-    content: '傑哥與我們的相愛，產生了濃濃的愛與液，那股芬芳是我們都無法品嘗的滋味~',
-    datetime: dayjs().subtract(1, 'days'), // 使用 Dayjs 對象
-  },
-  {
-    actions: ['回覆'],
-    author: '漢·索羅',
-    avatar: 'https://joeschmoe.io/api/v1/random',
-    content: '那我不就跟吉哥產生了濃濃的愛與液，讓你們恨之入骨！',
-    datetime: dayjs().subtract(2, 'days'), // 使用 Dayjs 對象
-  },
-]);
+function fetchLikeStatus(postId: string, userId: number) {
+  axiosapi.get(`/likes/${postId}/${userId}`).then(() => {
+    liked.value = true;
+    post.value.isLiked = true;
+  }).catch(() => {
+    liked.value = false;
+    post.value.isLiked = false;
+  });
+}
 
-// 處理新增評論
-const handleSubmit = () => {
+function fetchCollectStatus(postId: string, userId: number) {
+  axiosapi.get(`/collections/${postId}/${userId}`).then(() => {
+    collected.value = true;
+    post.value.isCollected = true;
+  }).catch(() => {
+    collected.value = false;
+    post.value.isCollected = false;
+  });
+}
+
+function handleSubmit() {
   if (!newComment.value) {
-    return; // 如果沒有輸入內容則返回
+    return;
   }
 
   submitting.value = true;
 
-  setTimeout(() => {
+  const postId = route.params.id as string;
+  axiosapi.post(`/comment`, {
+    comment: newComment.value,
+    post: { postId: postId },
+    createdAt: dayjs().toISOString(),
+    userDetail: { id: userId.value }
+  }).then(response => {
+    comments.value.unshift({
+      ...response.data,
+      userDetail: { id: userId.value },
+      createdAt: dayjs()
+    });
+    newComment.value = '';
+  }).catch(error => {
+    console.error("新增評論失敗:", error);
+  }).finally(() => {
     submitting.value = false;
-    comments.value = [
-      {
-        actions: ['回覆'],
-        author: '漢·索羅',
-        avatar: 'https://joeschmoe.io/api/v1/random',
-        content: newComment.value, // 使用用戶輸入的內容
-        datetime: dayjs(), // 使用 Dayjs 對象
-      },
-      ...comments.value, // 將新評論添加到現有評論前面
-    ];
-    newComment.value = ''; // 清空輸入框
-  }, 1000);
+  });
+}
+
+const toggleLike = () => {
+  const postId = post.value.postId;
+  if (post.value.isLiked) {
+    axiosapi.delete(`/likes/${postId}/${userId.value}`).then(() => {
+      post.value.isLiked = false;
+      likes.value = Math.max(likes.value - 1, 0);
+      updatePostData(postId); // 更新后端数据
+    }).catch(error => {
+      console.error("取消點讚失敗:", error);
+    });
+  } else {
+    axiosapi.post(`/likes`, {
+      posts: { postId: postId },
+      userDetail: { id: userId.value }
+    }).then(() => {
+      post.value.isLiked = true;
+      likes.value += 1;
+      updatePostData(postId); // 更新后端数据
+    }).catch(error => {
+      console.error("點讚失敗:", error);
+    });
+  }
 };
+
+const toggleCollect = () => {
+  const postId = post.value.postId;
+  if (post.value.isCollected) {
+    axiosapi.delete(`/collections/${postId}/${userId.value}`).then(() => {
+      post.value.isCollected = false;
+      collects.value = Math.max(collects.value - 1, 0);
+      updatePostData(postId); // 更新后端数据
+    }).catch(error => {
+      console.error("取消收藏失敗:", error);
+    });
+  } else {
+    axiosapi.post(`/collections`, {
+      posts: { postId: postId },
+      userDetail: { id: userId.value }
+    }).then(() => {
+      post.value.isCollected = true;
+      collects.value += 1;
+      updatePostData(postId); // 更新后端数据
+    }).catch(error => {
+      console.error("收藏失敗:", error);
+    });
+  }
+};
+
+const toggleShare = () => {
+  shares.value += 1;
+  updatePostData(post.value.postId); // 更新后端数据
+};
+
+function updatePostData(postId: string) {
+  axiosapi.put(`/post/${postId}`, {
+    likesCount: likes.value,
+    collectionsCount: collects.value,
+    shares: shares.value
+  }).catch(error => {
+    console.error("更新文章數據失敗:", error);
+  });
+}
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100vw;
+  height: 100vh;
+  padding: 16px;
+}
+
+.post-content {
+  max-width: 1200px;
+  width: 100%;
+  background-color: white;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.actions {
+  margin-top: 16px;
+}
+
 .comment-list {
   margin-top: 16px;
 }
 
 .new-comment {
-  width: 800px; /* 設定新增評論的寬度 */
-  height: 250px; /* 設定新增評論的高度 */
-  padding: 16px; /* 添加內邊距 */
-  border: 1px solid #e8e8e8; /* 添加邊框 */
-  border-radius: 4px; /* 添加圓角 */
-  background-color: #f9f9f9; /* 背景顏色 */
-  margin-top: 16px; /* 上方間距 */
-  overflow: hidden; /* 禁止滾動 */
-}
-
-.image-preview-group {
-  margin-top: 16px; /* 照片區域的上方間距 */
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  padding: 16px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  margin-top: 16px;
+  overflow: hidden;
 }
 
 .comment-textarea {
-  font-size: 16px; /* 設置字體大小 */
+  font-size: 16px;
+}
+
+.comment-time {
+  color: #888;
+  font-size: 12px;
 }
 </style>
