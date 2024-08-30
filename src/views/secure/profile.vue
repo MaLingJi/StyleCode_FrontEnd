@@ -391,7 +391,7 @@ onMounted(function () {
   showData(userStore.userId);
 });
 onUnmounted(() => {
-  if (photoUrl.value) {
+  if (photoPreview.value) {
     URL.revokeObjectURL(photoPreview.value); // 釋放臨時 URL
   }
 });

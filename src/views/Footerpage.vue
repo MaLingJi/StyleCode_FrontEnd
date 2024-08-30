@@ -1,5 +1,5 @@
 <template>
-  <div class="footer-content">
+  <div class="footer-content ">
     <div class="footer-section">
       <h3>Follow us</h3>
       <a href="#"><i class="fab fa-facebook"></i></a>
@@ -8,8 +8,8 @@
     <div class="footer-section">
       <h3>We accept</h3>
       <!-- <img src="../../public/LINE-Pay(v)_W85_n.png" alt="LinePay" width="35"> -->
-      <img src="https://resources.easystore.co/website/images/partners/partner-logo/mono/logo-line-pay.png" alt="LinePay" width="80">
-      <!-- <img src="https://rasky.com/wp-content/uploads/2020/07/Mastercard-logo-black-and-white.png" alt="Mastercard" width="50"> -->
+      <img src="https://resources.easystore.co/website/images/partners/partner-logo/mono/logo-line-pay.png" alt="LinePay" width="50">
+      <img src="https://rasky.com/wp-content/uploads/2020/07/Mastercard-logo-black-and-white.png" alt="Mastercard" width="50">
     </div>
     <!-- <div class="footer-section"> -->
       <!-- <h3>Quick links</h3> -->

@@ -108,6 +108,10 @@ import axiosapi from '@/plugins/axios.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2'
 
+import useUserStore from "@/stores/user.js"
+    const userStore = useUserStore();
+    console.log(userStore.userId);
+
 const router = useRouter();
 const categories = ref([]);
 const subcategories = ref([]);
@@ -195,6 +199,7 @@ const submitProduct = async () => {
       subcategoryId: { subcategoryId: product.subcategoryId }
     };
     const response = await axiosapi.post('/admin/products/create', productData);
+    
     console.log("Response:", response);
     const createdProductId = response.data.productId;
 
