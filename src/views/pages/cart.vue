@@ -12,7 +12,8 @@
                                 style="display: flex; justify-content: space-between;align-items: center;">
                                 <span class="ts-text">已經是會員？登入後可以更方便管理訂單！</span>
                                 <div class="ts-wrap">
-                                 <RouterLink to="/secure/login"><button class="ts-button">會員登入</button></RouterLink> 
+                                        <RouterLink to="/secure/login"><button class="ts-button">會員登入</button>
+                                        </RouterLink>
                                 </div>
                         </div>
                 </div>
@@ -104,13 +105,19 @@ const checkInventoryAndProceed = async () => {
                                 quantity: item.quantity,
                         }))
                 })
-                console.log('responsedata:' + response.value);
+                console.log('responsedata:' + response.data);
                 if (response.data != '') {
-                        // 庫存充足，轉到付款頁面
                         router.push('/payment')
-                } else {
-                        // 庫存不足，顯示錯誤消息
-                        alert('抱歉，部分商品庫存不足，請調整購物車內容。')
+                }
+                else{
+                        Swal.fire({
+                                icon: 'error',
+                                title: '加入購物車失敗',
+                                text: '庫存不足',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                        })
                 }
         } catch (error) {
                 console.error('檢查庫存時發生錯誤:', error)
@@ -119,11 +126,7 @@ const checkInventoryAndProceed = async () => {
 }
 
 
-const nextStep = () => {
-        if (currentStep.value < 3) {
-                currentStep.value++;
-        }
-};
+
 </script>
 
 <style scoped>

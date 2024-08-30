@@ -3,12 +3,12 @@
         <div class="header">
             <div class="stats">
                 <div>累積訂單數:{{ orders.length }}</div>
-                <div>累積訂單金額:{{ formatCurrency(totalAmount) }}</div>   
+                <div>累積訂單金額:{{ formatCurrency(totalAmount) }}</div>
             </div>
 
 
-            <div class="datePicker">
-                <DatePicker v-model="range" mode="dateTime" is-range @input="fetchOrders" />
+            <div class="datePicker" style="width: 400px;">
+                <DatePicker  expanded v-model="range" mode="dateTime" is-range @input="fetchOrders" />
             </div>
         </div>
 
@@ -17,7 +17,8 @@
                 <OrderManageLineChart :orders="orders"></OrderManageLineChart>
             </div>
             <div class="chart pieChart">
-                <OrderManageProChart :orders="orders"></OrderManageProChart>
+                <!-- <OrderManageProChart :orders="orders"></OrderManageProChart> -->
+                <OrderData :orders="orders"></OrderData>
             </div>
         </div>
     </div>
@@ -30,7 +31,7 @@ import 'v-calendar/style.css';
 import axiosapi from '@/plugins/axios.js';
 import OrderManageLineChart from './OrderManageLineChart.vue';
 import OrderManageProChart from './OrderManageProChart.vue';
-
+import OrderData from './OrderData.vue';
 
 
 const range = ref({
@@ -109,12 +110,13 @@ const formatCurrency = (amount) => {
 }
 
 .header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     background-color: white;
     padding: 15px;
     border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .stats {
@@ -122,10 +124,9 @@ const formatCurrency = (amount) => {
     font-weight: bold;
 }
 
-
-
 .datePicker {
-    justify-self: end;
+    margin-left: auto;
+    /* 將日期選擇器推到右邊 */
 }
 
 .charts {
@@ -138,10 +139,7 @@ const formatCurrency = (amount) => {
     background-color: white;
     border-radius: 10px;
     padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.pie-chart,
-.line-chart {
-    height: 400px;
-}
 </style>

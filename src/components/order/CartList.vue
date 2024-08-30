@@ -26,7 +26,7 @@
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>
-                                <span v-show="stockStatus.get(item.productDetailsId)">已達庫存上限</span>
+                                <span v-show="stockStatus.get(item.productDetailsId)" class="ts-text is-negative" >已達庫存上限</span>
                             </div>
                         </div>
                     </td>
@@ -124,6 +124,7 @@ const updateQuantity = (item) => {
             quantity: item.quantity
 
         }).then(response => {
+            console.log('update response'+response.data)
             if (response.data != '') {
                 updateParent();
                 stockStatus.value.set(item.productDetailsId, false)
