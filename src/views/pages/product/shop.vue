@@ -1,46 +1,54 @@
 <template>
-  <div class="ts-container">
-       <!-- 使用分類元件 -->
-    <CategoryMenu 
+  <div class="shop-page-layout">
+
+    <header class="fixed-top-nav">
+    <div class="ts-container">
+      <!-- 使用分類元件 -->
+      <CategoryMenu 
       :categories="categories"
       @filterByCategory="filterProductsByCategory"
       @filterBySubcategory="filterProductsBySubcategory"
-    />
-  </div>
-  <div class="ts-divider"></div>
-  <div class="ts-container is-narrow has-vertically-padded-big">
-    <div class="ts-grid is-3-columns is-relaxed is-stretched">
-      <div class="column" v-for="product in getPaginatedProducts()" :key="product.productId">
-        <!-- 商品元件 -->
-        <ProductCard :product="product" />
-      </div>
+      />
     </div>
-
-     <!-- 分頁元件 -->
-    <div class="ts-pagination is-secondary">
-      <Paginate 
-        v-model="currentPage" 
-        :page-count="getPageCount()" 
-        :page-range="3" 
-        :margin-pages="1"
-        :click-handler="handlePageChange" 
-        :prev-text="''" 
-        :next-text="''" 
-        :prev-class="'item'"
-        :next-class="'item'" 
-        :prev-link-class="'item is-back'"
-        :next-link-class="'item is-next'" 
-        :container-class="'ts-pagination'"
-        :page-class="'item'" 
-        :active-class="'is-active'" 
-        :first-last-button="true"
-        :first-button-text="'第一頁'"
-        :last-button-text="'最後一頁'"
-        :first-button-class="'item is-first'"
-        :last-button-class="'item is-last'"
+  </header>
+    <main class="main-content">
+      
+      <div class="ts-divider"></div>
+      <div class="ts-container is-narrow has-vertically-padded-big">
+        <div class="ts-grid is-3-columns is-relaxed is-stretched">
+          <div class="column" v-for="product in getPaginatedProducts()" :key="product.productId">
+            <!-- 商品元件 -->
+            <ProductCard :product="product" />
+          </div>
+        </div>
+        
+        <!-- 分頁元件 -->
+        <div class="ts-pagination is-secondary">
+          <Paginate 
+      v-model="currentPage" 
+      :page-count="getPageCount()" 
+      :page-range="3" 
+      :margin-pages="1"
+      :click-handler="handlePageChange" 
+      :prev-text="''" 
+      :next-text="''" 
+      :prev-class="'item'"
+      :next-class="'item'" 
+      :prev-link-class="'item is-back'"
+      :next-link-class="'item is-next'" 
+      :container-class="'ts-pagination'"
+      :page-class="'item'" 
+      :active-class="'is-active'" 
+      :first-last-button="true"
+      :first-button-text="'第一頁'"
+      :last-button-text="'最後一頁'"
+      :first-button-class="'item is-first'"
+      :last-button-class="'item is-last'"
       />
     </div>
   </div>
+</main>
+</div>
 </template>
 
 <script setup>
@@ -56,7 +64,7 @@ const products = ref([]);
 const selectedCategoryId = ref(null);
 const selectedSubcategoryId = ref(null);
 const currentPage = ref(1);
-const itemsPerPage = 9;
+const itemsPerPage = 18;
 
 // 元件掛載時獲取分類和商品數據
 onMounted(async () => {
@@ -146,6 +154,10 @@ const getPaginatedProducts = () => {
   display: flex;
   justify-content: center;
   color: #000;
+}
+
+.shop-page-layout {
+  padding-top: 60px; /* 調整此值以匹配導航欄和分類菜單的總高度 */
 }
 
 </style>
