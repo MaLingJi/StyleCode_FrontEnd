@@ -41,7 +41,9 @@
                 <RouterLink to="/backstage" class="item">後台</RouterLink>
                 <button class="item" @click="logout">登出</button>
               </div>
-              <RouterLink to="/secure/login" class="ts-button is-circular is-outlined" v-if="!userStore.isLogedin">登入</RouterLink>
+              <RouterLink to="/secure/login" v-if="!userStore.isLogedin"
+              ><span class="ts-icon is-user-icon is-big"></span
+            ></RouterLink>
             </div>
           </div>
         </div>
