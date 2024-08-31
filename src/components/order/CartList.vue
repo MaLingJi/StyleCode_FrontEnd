@@ -13,7 +13,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in cartItems" style="vertical-align: middle;">
-                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" style="width: 50px;"/></td>
+                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" style="width: 100px; height: 100px;" /></td>
                     <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
                     <td>
@@ -51,6 +51,8 @@ import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import useUserStore from "@/stores/user.js"
+import { watch } from 'vue';
+
 
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
@@ -170,21 +172,33 @@ onMounted(async () => {
     props.cartItems.forEach(item => {
         stockStatus.value.set(item.productDetailsId, false);
     });
+}
+);
 
-    //把接過來的props先用API找到封面照片放進pdPhotos 並設定對應的id跟照片
-        for (const item of props.cartItems) {
-            try {
-                const response = await axiosapi.get(`/${item.productDetailsId}/cover`);
-                console.log('responsecover'+response.data)
-                pdPhotos.value.push({ id: item.productDetailsId, url: response.data.imgUrl })
-                console.log('pdphotos'+pdPhotos.value)
-            }
-            catch (error) {
-                console.error('pdphotosWrong' + error)
-            }
+//加載順序 一開始props還沒傳進來 用watch確定有東西進來再把東西塞進pdPhotos
+watch(() => props.cartItems, (newItems) => {
+    if (newItems.length > 0) {
+        console.log('cartItems updated:', newItems);
+        loadPhotos(newItems);
+    }
+}, { immediate: true });
+
+
+const loadPhotos = async (items) => {
+    for (const item of items) {
+        try {
+            const response = await axiosapi.get(`/${item.productId}/cover`);
+            pdPhotos.value.push({
+                id: item.productId,
+                url: response.data.imgUrl,
+                detailsId: item.productDetailsId
+            });
+
+        } catch (error) {
+            console.error('Error fetching photo:', error);
         }
     }
-);
+};
 
 //貨幣加工
 const formatCurrency = (amount) => {
@@ -193,7 +207,7 @@ const formatCurrency = (amount) => {
 
 //當cartlist用 cartitem迴圈時 拿pdPhotos內的id跟cartItem的id 若有相同就回傳
 const findImgUrl = (productDetailsId) => {
-    const photo = pdPhotos.value.find(photo => photo.id === productDetailsId)
+    const photo = pdPhotos.value.find(photo => photo.detailsId === productDetailsId)
     return photo ? photo.url : null;
 }
 // 把找到的商品名稱路徑加上全域路徑
