@@ -1,7 +1,5 @@
 <template>
-        <div style="height: 400px;">
-                <Line :data="chartData" :options="options" />
-        </div>
+        <Line :data="chartData" :options="options" />
 </template>
 
 <script setup>
@@ -41,8 +39,16 @@ const chartData = computed(() => ({
         datasets: [
                 {
                         label: '範圍內訂單總金額',
-                        backgroundColor: '#f87979',
+                        backgroundColor: 'rgba(135, 206, 250, 0.5)', // 淺藍色半透明背景
+                        borderColor: 'rgb(30, 144, 255)',            // 稍深的藍色邊線
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgb(30, 144, 255)',   // 數據點顏色
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(30, 144, 255)',  // 懸停時的邊框顏色
                         data: amounts.value,
+                        fill: true,
+                        tension: 0.4
                 }
         ]
 }))

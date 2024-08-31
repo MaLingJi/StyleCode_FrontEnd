@@ -1,16 +1,16 @@
 <template>
     <!DOCTYPE html>
     <html class="is-secondary">
-    <div class="ts-container">
+    <div class="ts-container" style="margin-top: 10px;">
         <div class="ts-selection is-fluid">
             <label class="item">
                 <input type="radio" name="language" value="1" v-model="status" />
                 <div class="text">已付款</div>
             </label>
-            <label class="item">
+            <!-- <label class="item">
                 <input type="radio" name="language" value="2" v-model="status" />
                 <div class="text">已取消</div>
-            </label>
+            </label> -->
         </div>
     </div>
     <div class="ts-container">
