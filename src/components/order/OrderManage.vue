@@ -30,13 +30,13 @@ import { DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import axiosapi from '@/plugins/axios.js';
 import OrderManageLineChart from './OrderManageLineChart.vue';
-import OrderManageProChart from './OrderManageProChart.vue';
+// import OrderManageProChart from './OrderManageProChart.vue';
 import OrderData from './OrderData.vue';
 
 
 const range = ref({
-    start: new Date(),
-    end: new Date()
+    start: new Date().setHours(0,0,0,0),
+    end: new Date().setHours(23, 59, 59, 999)
 });
 
 const orders = ref([]);
