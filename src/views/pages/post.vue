@@ -111,13 +111,13 @@ const handleSubmit = async () => {
           formData.append('postId', postId); // 將 postId 添加到 FormData 中
 
           // 將圖片上傳請求發送到後端
-        const imageResponse = await axiosapi.post('/images', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        // const imageResponse = await axiosapi.post('/images', formData, {
+        //     headers: {
+        //         'Content-Type': 'multipart/form-data',
+        //     },
+        // });
 
-        console.log('圖片已上傳:', imageResponse.data);
+        // console.log('圖片已上傳:', imageResponse.data);
           // 提交後清空表單
         title.value = '';
         description.value = '';

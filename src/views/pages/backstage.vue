@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import AddProduct from '@/components/product/addProduct.vue';
+import AddProduct from '@/components/product/AddProduct.vue';
 import CategoryManager from '@/components/product/categoryManager.vue'
 import SubcategoryManager from '@/components/product/subcategoryManager.vue'
 import ProductManager from '@/components/product/productManager.vue'

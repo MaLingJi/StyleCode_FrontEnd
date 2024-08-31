@@ -40,6 +40,13 @@ const props = defineProps({
 
 const emit = defineEmits(['filterByCategory', 'filterBySubcategory']);
 
+
+// emit('filterByCategory', categoryId);
+
+
+// emit('filterBySubcategory', subcategoryId, parentCategoryId);
+
+
 const containerRef = ref(null);
 const isHidden = ref(false);
 let lastScrollTop = 0;

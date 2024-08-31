@@ -5,7 +5,7 @@
         <div class="carousel-container">
           <!-- 照片輪播 -->
           <transition name="fade" mode="out-in">
-            <div class="ts-image main-image" :key="currentImageIndex">
+            <div class="ts-image main-image" :key="currentImageIndex" @click="openLightbox(currentImageIndex)">
               <img :src="getImageUrl(currentImage)" :alt="product.productName" />
             </div>
           </transition>
@@ -82,6 +82,16 @@
             </p>
           </div>
         </div>
+      </div>
+    </div>
+
+        <!-- Lightbox 組件 -->
+    <div v-if="lightboxVisible" class="lightbox" @click="closeLightbox">
+      <div class="lightbox-content" @click.stop>
+        <img :src="getImageUrl(currentLightboxImage)" :alt="product.productName" />
+        <button class="lightbox-close" @click="closeLightbox">&times;</button>
+        <button class="lightbox-prev" @click="prevLightboxImage">&lt;</button>
+        <button class="lightbox-next" @click="nextLightboxImage">&gt;</button>
       </div>
     </div>
   </div>
@@ -237,6 +247,34 @@ const addToCart = () => {
     quantity: quantity.value,
   });
 };
+
+// Lightbox 相關狀態
+const lightboxVisible = ref(false);
+const currentLightboxIndex = ref(0);
+
+// Lightbox 相關方法
+const openLightbox = (index) => {
+  currentLightboxIndex.value = index;
+  lightboxVisible.value = true;
+};
+
+const closeLightbox = () => {
+  lightboxVisible.value = false;
+};
+
+const prevLightboxImage = () => {
+  currentLightboxIndex.value = (currentLightboxIndex.value - 1 + product.value.pimages.length) % product.value.pimages.length;
+};
+
+const nextLightboxImage = () => {
+  currentLightboxIndex.value = (currentLightboxIndex.value + 1) % product.value.pimages.length;
+};
+
+const currentLightboxImage = computed(() => {
+  return product.value.pimages?.[currentLightboxIndex.value]?.imgUrl;
+});
+
+
 </script>
 
 <style scoped>
@@ -246,22 +284,25 @@ const addToCart = () => {
 
 .carousel-container {
   position: relative;
-  width: 500px;
-  height: 500px;
-  overflow: hidden;
+  width: 100%;
+  max-width: 500px; /* Match the max-width of product card */
   margin: 0 auto;
 }
 
 .main-image {
   width: 100%;
-  height: 100%;
+  padding-bottom: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-  .main-image img {
+.main-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
 }
 
 
@@ -339,5 +380,65 @@ const addToCart = () => {
   height: auto;
   margin-top: 1rem;
   object-fit: cover; 
+}
+
+/* Lightbox 樣式 */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.lightbox-close,
+.lightbox-prev,
+.lightbox-next {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.lightbox-close {
+  top: 10px;
+  right: 10px;
+}
+
+.lightbox-prev {
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+.lightbox-next {
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+/* 使主圖片可點擊 */
+.main-image {
+  cursor: pointer;
 }
 </style>

@@ -58,8 +58,8 @@
 import { ref } from 'vue';
 import axiosapi from "@/plugins/axios.js"
 import useUserStore from "@/stores/user.js"
-import { useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/product'; 
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const productStore = useProductStore();
@@ -69,7 +69,7 @@ const userStore = useUserStore();
 const handleSearch = async () => {
   if (searchQuery.value.trim()) {
     try {
-      const response = await axiosapi.get(`/products?name=${searchQuery.value}`);
+      const response = await axiosapi.get(`/products/search/${searchQuery.value}`);
       productStore.setSearchResults(response.data);
       router.push('/shop');
     } catch (error) {
@@ -103,5 +103,4 @@ function logout() {
   height: 90px; /* 調整這個值以匹配你的導航欄高度 */
 }
 
-/* 其他樣式保持不變 */
 </style>

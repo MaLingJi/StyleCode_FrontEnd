@@ -17,7 +17,7 @@ import editShare from "@/views/pages/share/editShare.vue";
 import post from "@/views/pages/post.vue";
 
 
-import addProduct from '@/components/product/addProduct.vue'
+import addProduct from '@/components/product/AddProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
