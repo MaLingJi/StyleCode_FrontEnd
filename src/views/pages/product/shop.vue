@@ -18,7 +18,7 @@
               <div class="ts-content">
                 <h3>排列方式</h3>
                 <div class="ts-select is-fluid">
-                  <select v-model="sortOption" @change="sortProducts">
+                  <select v-model="productStore.sortOption" @change="sortProducts">
                     <option value="">預設</option>
                     <option value="priceAsc">價格由低到高</option>
                     <option value="priceDesc">價格由高到低</option>
@@ -32,15 +32,15 @@
 
       <div class="column is-13-wide">
         <div class="ts-grid is-3-columns is-relaxed is-stretched">
-          <div class="column" v-for="product in getPaginatedProducts()" :key="product.productId">
+          <div class="column" v-for="product in productStore.getPaginatedProducts" :key="product.productId">
             <ProductCard :product="product" />
           </div>
         </div>
         
         <div class="ts-pagination is-secondary">
           <Paginate 
-            v-model="currentPage" 
-            :page-count="getPageCount()" 
+            v-model="productStore.currentPage"
+            :page-count="productStore.getPageCount" 
             :page-range="3" 
             :margin-pages="1"
             :click-handler="handlePageChange" 
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import axiosapi from "@/plugins/axios.js";
 import Paginate from 'vuejs-paginate-next';
 import CategoryMenu from "@/components/product/CategoryMenu.vue";
@@ -75,13 +75,6 @@ import { useProductStore } from '@/stores/product';
 
 const productStore = useProductStore();
 const categories = ref([]);
-const products = ref([]);
-const selectedCategoryId = ref(null);
-const selectedSubcategoryId = ref(null);
-const currentPage = ref(1);
-const itemsPerPage = 18;
-const searchQuery = ref('');
-const sortOption = ref('');
 
 onMounted(async () => {
   try {
@@ -91,115 +84,27 @@ onMounted(async () => {
       showSubcategories: false,
     }));
 
-    await fetchProducts();
+    await productStore.fetchAllProducts();
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 });
 
-watch(() => productStore.searchResults, (newSearchResults) => {
-  if (newSearchResults.length > 0) {
-    products.value = newSearchResults;
-    currentPage.value = 1;
-    for (let product of products.value) {
-        axiosapi.get(`/${product.productId}/cover`).then(function(response){
-          product.coverImage = response.data.imgUrl;
-        });
-      } 
-    }
-    else {
-      fetchProducts();
-    }
-  });
-
-const fetchProducts = async (categoryId = null, subcategoryId = null) => {
-  try {
-    let url = "/products/filter";
-    if (categoryId) url += `?categoryId=${categoryId}`;
-    if (subcategoryId) url += `${categoryId ? '&' : '?'}subcategoryId=${subcategoryId}`;
-    
-    const response = await axiosapi.get(url);
-    products.value = response.data;
-    
-    for (let product of products.value) {
-      try {
-        const response = await axiosapi.get(`/${product.productId}/cover`);
-        product.coverImage = response.data.imgUrl;
-      } catch (error) {
-        console.error(`Error fetching cover image for product ${product.productId}:`, error);
-        product.coverImage = null;
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
+const filterProductsByCategory = (categoryId) => {
+  productStore.fetchProductsByCategory(categoryId);
 };
 
-const filterProductsByCategory = async (categoryId) => {
-  selectedCategoryId.value = categoryId;
-  selectedSubcategoryId.value = null;
-  currentPage.value = 1;
-  productStore.clearSearchResults();
-  await fetchProducts(categoryId);
-};
-
-const filterProductsBySubcategory = async (subcategoryId) => {
-  selectedCategoryId.value = categoryId;
-  selectedSubcategoryId.value = subcategoryId;
-  currentPage.value = 1;
-  productStore.clearSearchResults();
-  await fetchProducts(selectedCategoryId.value, subcategoryId);
+const filterProductsBySubcategory = (subcategoryId, categoryId) => {
+  productStore.fetchProductsBySubcategory(categoryId, subcategoryId);
 };
 
 const handlePageChange = (pageNum) => {
-  currentPage.value = pageNum;
+  productStore.setPage(pageNum);
   window.scrollTo(0, 0);
 };
 
-const getFilteredProducts = () => {
-  return products.value;
-};
-
-const getPageCount = () => {
-  return Math.ceil(getFilteredProducts().length / itemsPerPage);
-};
-
-const getPaginatedProducts = () => {
-  const filteredProducts = getFilteredProducts();
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  return filteredProducts.slice(startIndex, endIndex);
-};
-
-const sortProducts = async () => {
-  try {
-    let url = '/products';
-    if (selectedCategoryId.value) {
-      url = `/products/category/${selectedCategoryId.value}/sort`;
-    } else if (selectedSubcategoryId.value) {
-      url = `/products/subcategory/${selectedSubcategoryId.value}/sort`;
-    } else {
-      url = '/products/sort';
-    }
-    
-    url += `?direction=${sortOption.value === 'priceAsc' ? 'ASC' : 'DESC'}`;
-    
-    const response = await axiosapi.get(url);
-    products.value = response.data;
-    currentPage.value = 1;
-
-    for (let product of products.value) {
-      try {
-        const response = await axiosapi.get(`/${product.productId}/cover`);
-        product.coverImage = response.data.imgUrl;
-      } catch (error) {
-        console.error(`Error fetching cover image for product ${product.productId}:`, error);
-        product.coverImage = null;
-      }
-    }
-  } catch (error) {
-    console.error("Error sorting products:", error);
-  }
+const sortProducts = () => {
+  productStore.sortProducts();
 };
 
 </script>

@@ -18,7 +18,7 @@
           v-for="subcategory in category.subcategories"
           :key="subcategory.subcategoryId"
           class="subcategory-button"
-          @click="$emit('filterBySubcategory', subcategory.subcategoryId)"
+          @click="$emit('filterBySubcategory', subcategory.subcategoryId, category.categoryId)"
         >
           {{ subcategory.subcategoryName }}
         </button>
@@ -39,13 +39,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['filterByCategory', 'filterBySubcategory']);
-
-
-// emit('filterByCategory', categoryId);
-
-
-// emit('filterBySubcategory', subcategoryId, parentCategoryId);
-
 
 const containerRef = ref(null);
 const isHidden = ref(false);
