@@ -208,7 +208,6 @@ const addToCart = () => {
     alert("商品已售罄或下架");
     return;
   }
-
   axiosapi.post('/cart/add', {
     "userId": user,
     "productDetailsId": selectedDetail.value.productDetailsId,
