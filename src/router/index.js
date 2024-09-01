@@ -1,17 +1,28 @@
 // router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
-import { useUserStore } from '@/stores/user'; // 确保你使用了正确的路径
-import Comment from '@/components/Comment.vue'; // 确保你使用了正确的路径
+import useUserStore from '@/stores/user'; 
+import comment from '@/views/pages/comment.vue'; 
 
 const routes = [
   {
-    path: '/post/:postId',
-    component: Comment,
+    path: '/post/:postId', // 使用冒號來定義路由參數
+    component: comment,
     props: route => {
-      const userStore = useUserStore(); // 获取 Pinia store 实例
+      const userStore = useUserStore(); // 獲取用戶存儲
+      const postId = Number(route.params.postId);
+
+      // 確保 postId 是有效的
+      if (isNaN(postId)) {
+        console.error("Invalid postId:", route.params.postId);
+        return {
+          postId: null,
+          userId: userStore.userId 
+        };
+      }
+
       return {
-        postId: Number(route.params.postId),
-        userId: userStore.userId // 从 Pinia store 中获取 userId
+        postId,
+        userId: userStore.userId 
       };
     }
   }

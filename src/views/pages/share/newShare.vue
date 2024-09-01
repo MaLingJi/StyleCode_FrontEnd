@@ -111,7 +111,7 @@ function submitPost() {
     axiosapi.post("/post", postData)
         .then(postResponse => {
             const postId = postResponse.data.postId;
-
+            console.log('User ID:', userStore.userId);
             // 2. 如果有圖片，發送圖片上傳請求
             if (imageFiles.value.length > 0) {
                 const formData = new FormData();
