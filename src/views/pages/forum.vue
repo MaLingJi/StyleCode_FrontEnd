@@ -155,9 +155,6 @@ export default defineComponent({
 
     const commentPost = (id: string) => {
       const post = listData.value.find(item => item.postId === id);
-      // if (post) {
-      //   post.comments += 1; 
-      // }
     };
 
     return {
