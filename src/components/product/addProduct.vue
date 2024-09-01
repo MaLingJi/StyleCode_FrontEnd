@@ -219,7 +219,8 @@ const submitProduct = async () => {
       title: '成功！',
       text: '商品新增成功！',
       icon: 'success',
-      confirmButtonText: '確認'
+      confirmButtonText: '確認',
+      confirmButtonColor: 'rgb(35 40 44)',
     }).then((result) => {
       if (result.isConfirmed) {
         router.push('/shop');
