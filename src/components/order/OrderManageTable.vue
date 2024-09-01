@@ -2,9 +2,9 @@
         <table class="ts-table ">
             <thead>
                 <tr>
-                    <th>商品名稱</th>
-                    <th>商品分類</th>
-                    <th>銷售數量</th>
+                    <th>名稱</th>
+                    <th>分類</th>
+                    <th>數量</th>
                 </tr>
             </thead>
             <tbody>

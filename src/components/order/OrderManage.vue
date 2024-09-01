@@ -1,13 +1,11 @@
 <template>
-    <div class="dashboard ts-content is-padded">
+    <div class="dashboard ts-container is-padded">
         <div class="ts-grid">
             <div class="stats column is-8-wide ts-box   ">
-
                 <OrderManageStats :orders="orders"></OrderManageStats>
-
-                <div>
-                    <OrderManagePieChart></OrderManagePieChart>
-                </div>
+                <div claa="pieChart">
+                <OrderManagePieChart :orders="orders"></OrderManagePieChart>
+                  </div>
             </div>
             <div class="headers column is-8-wide ts-box is-horizontal">
                 <div class="header datePicker">
@@ -58,6 +56,7 @@ const fetchOrders = async () => {
                 endDate: formatDate(range.value.end)
             }
         });
+        console.log(response)
         orders.value = response.data;
     } catch (error) {
         console.error('fetchOrderByDateFail', error);
@@ -87,8 +86,12 @@ watch(range, () => {
 </script>
 
 <style scoped>
+
 .dashboard {
     padding: 1.5rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .ts-box {
@@ -103,23 +106,25 @@ watch(range, () => {
 /* 对于特定的元素，如果需要更多空间 */
 .datePicker {
     margin-top: 1rem;
-    width:100%;
+    width: 100%;
 }
 
 /* 确保图表有足够的空间 */
-.chart {
-    min-height: 300px;
-    padding: 1rem;
+.charts {
+    min-height: 500px;
 }
 
 .chart.orderTable {
-    min-height: 300px;
-    max-height: 500px; /* 设置最大高度 */
-    overflow-y: auto; /* 添加垂直滚动条 */
+    min-height: 500px;
+    max-height: 600px;
+    /* 设置最大高度 */
+    overflow-y: auto;
+    /* 添加垂直滚动条 */
 }
 
 /* 确保表格内容正确显示 */
 .chart.orderTable :deep(table) {
     width: 100%;
 }
+
 </style>

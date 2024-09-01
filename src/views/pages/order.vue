@@ -21,6 +21,7 @@
                         <th>訂單編號</th>
                         <th>日期</th>
                         <th>總金額</th>
+                        <th>付款方式</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -30,6 +31,7 @@
                             <td>{{ order.orderId }}</td>
                             <td>{{ formatDate(order.orderDate) }}</td>
                             <td>{{ formatCurrency(order.totalAmounts) }}</td>
+                            <td>{{ order.paymentMethod === 1 ? 'LinePay' : '其他' }}</td>
                             <td>
                                 <button class="ts-button is-outlined" @click="toggleOrderDetails(order.orderId)">
                                     {{ expandedOrderId === order.orderId ? '收起' : '展開' }}
@@ -45,7 +47,6 @@
                                                 <th>商品名稱</th>
                                                 <th>數量</th>
                                                 <th>價格</th>
-                                                <th>付款方式</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -53,7 +54,6 @@
                                                 <td>{{ detail.productName }}</td>
                                                 <td>{{ detail.quantity }}</td>
                                                 <td>{{ formatCurrency(detail.price) }}</td>
-                                                <td>{{ detail.paymentMethod === 1 ? 'LinePay' : '其他' }}</td>
                                             </tr>
                                         </tbody>
                                     </table>

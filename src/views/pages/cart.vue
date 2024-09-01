@@ -51,7 +51,7 @@ import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
 import Circle from '@/components/order/Circle.vue';
 import useUserStore from "@/stores/user.js"
-
+import Swal from 'sweetalert2';
 
 const cartItems = ref([]);
 const user = useUserStore().userId
@@ -108,16 +108,32 @@ const checkInventoryAndProceed = async () => {
                 })
                 console.log('responsedata:' + response.data);
                 if (response.data != '') {
-                        router.push('/payment')
+                        Swal.fire({
+                                title: '前往中!',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                        Swal.showLoading()
+                                }
+                        }).then((result) => {
+                                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                                if (result.dismiss === Swal.DismissReason.timer) {
+                                        router.push('/payment')
+                                }
+                        })
                 }
-                else{
+                else {
                         Swal.fire({
                                 icon: 'error',
                                 title: '加入購物車失敗',
                                 text: '庫存不足',
                                 showConfirmButton: false,
-                                timer: 1000,
                                 timerProgressBar: true,
+                                showCancelButton: true,
+                                confirmButtonText: '確定',
+
                         })
                 }
         } catch (error) {

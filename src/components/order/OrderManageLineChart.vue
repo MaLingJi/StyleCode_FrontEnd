@@ -26,6 +26,7 @@ const dailyTotal = computed(() => {
                 const date = order.orderDate.split('T')[0];
                 total[date] = (total[date] || 0) + order.totalAmounts
         }
+ 
         return total;
 })
 
@@ -40,7 +41,7 @@ const chartData = computed(() => ({
                 {
                         label: '範圍內訂單總金額',
                         backgroundColor: 'rgba(135, 206, 250, 0.5)', // 淺藍色半透明背景
-                        borderColor: 'rgb(30, 144, 255)',            // 稍深的藍色邊線
+                        borderColor: 'rgb(0, 191, 255)',            // 稍深的藍色邊線
                         borderWidth: 2,
                         pointBackgroundColor: 'rgb(30, 144, 255)',   // 數據點顏色
                         pointBorderColor: '#fff',
