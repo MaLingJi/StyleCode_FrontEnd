@@ -3,16 +3,17 @@
         <html class="is-secondary">
         <div class="ts-container">
                 <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-                        <span class="ts-text">圈圈1</span>
+                        <Circle :current-step="1" />
+                        <!-- <span class="ts-text">圈圈1</span> -->
                 </div>
 
-                <div class="ts-box" style="margin-top: 20px;">
+                <div v-if="!user" class="ts-box" style="margin-top: 20px;">
                         <div class="ts-content"
                                 style="display: flex; justify-content: space-between;align-items: center;">
                                 <span class="ts-text">已經是會員？登入後可以更方便管理訂單！</span>
                                 <div class="ts-wrap">
-                                        <button class="ts-button">會員登入</button>
-                                        <button class="ts-button">要幹嘛</button>
+                                        <RouterLink to="/secure/login"><button class="ts-button">會員登入</button>
+                                        </RouterLink>
                                 </div>
                         </div>
                 </div>
@@ -44,20 +45,23 @@
 </template>
 
 <script setup>
-import CartList from '@/components/CartList.vue';
+import CartList from '@/components/order/CartList.vue';
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
-
+import Circle from '@/components/order/Circle.vue';
+import useUserStore from "@/stores/user.js"
 
 
 const cartItems = ref([]);
+const user = useUserStore().userId
 // const isLoggedIn = ref(false);  // 新增：用於追蹤登入狀態
 
 const loadCartItems = async () => {
         try {
-                const response = await axiosapi.get('/cart/find/1');
+                const response = await axiosapi.get(`/cart/find/${user}`);
                 cartItems.value = response.data;
+
                 console.log("Cart items loaded:", cartItems.value);
         } catch (error) {
                 console.error('Failed to load cart items:', error);
@@ -102,13 +106,19 @@ const checkInventoryAndProceed = async () => {
                                 quantity: item.quantity,
                         }))
                 })
-                console.log('responsedata:' + response.value);
+                console.log('responsedata:' + response.data);
                 if (response.data != '') {
-                        // 庫存充足，轉到付款頁面
                         router.push('/payment')
-                } else {
-                        // 庫存不足，顯示錯誤消息
-                        alert('抱歉，部分商品庫存不足，請調整購物車內容。')
+                }
+                else{
+                        Swal.fire({
+                                icon: 'error',
+                                title: '加入購物車失敗',
+                                text: '庫存不足',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                        })
                 }
         } catch (error) {
                 console.error('檢查庫存時發生錯誤:', error)
@@ -117,17 +127,42 @@ const checkInventoryAndProceed = async () => {
 }
 
 
-// const checkLoginStatus = async () => {
-//   try {
-//     // 這裡應該調用檢查登入狀態的 API
-//     const response = await axios.get('http://localhost:8080/user/checkLoginStatus');
-//     isLoggedIn.value = response.data.isLoggedIn;
-//   } catch (error) {
-//     console.error('Failed to check login status:', error);
-//     isLoggedIn.value = false;
-//   }
-// };
 
 </script>
 
-<style></style>
+<style scoped>
+.progress-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 300px;
+        margin-bottom: 20px;
+}
+
+.step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: white;
+}
+
+.step.active {
+        background-color: #007bff;
+}
+
+.line {
+        flex-grow: 1;
+        height: 2px;
+        background-color: #ccc;
+        margin: 0 10px;
+}
+
+.line.active {
+        background-color: #007bff;
+}
+</style>

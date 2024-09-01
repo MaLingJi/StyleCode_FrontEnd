@@ -108,7 +108,7 @@ export default defineComponent({
     const userStore = useUserStore();
     const listData = ref([]); // 使用 ref 來存儲文章數據
     const path = import.meta.env.VITE_POST_IMAGE_URL; 
-    
+
     const pagination = ref({
       onChange: (page: number) => {
         console.log(page);
@@ -123,14 +123,13 @@ export default defineComponent({
 
     function callFind() {
       axiosapi.get("/post").then(function (response) {
-        console.log("response: ", response);
+        console.log("response: ", response.data);
         
         // 確保獲取的數據中包含 postId、postTitle 和 images
         listData.value = response.data; 
         pagination.value.total = listData.value.length; 
-
       }).catch(function (error) {
-        console.log("發現錯誤", error);
+        console.error("發現錯誤", error.response ? error.response.data : error.message);
       });
     }
 
@@ -175,50 +174,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.container {
+.buttons {
   display: flex;
-  justify-content: center; 
-  align-items: flex-start; 
-  width: 100vw; 
-  height: 100vh; 
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; 
+  justify-content: center;
+  margin-top: 16px;
 }
-
-.content {
+img {
   width: 100%; 
+  height: 200px; 
+  object-fit: cover;
+}
+.content {
+  width: 90%; /*或80%*/
   max-width: 1200px; 
+  margin: 0 auto; 
   background-color: white; 
   border-radius: 8px; 
   padding: 32px; 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
   box-sizing: border-box; 
 }
-
 .rule-box {
-  background-color: #f7f7f7;
-  padding: 24px;
+  background-color: #f0f0f0;
+  padding: 1px 24px; /* 內邊距 */
   border-radius: 8px;
-  margin-bottom: 24px;
-}
-
-.buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-
-.ts-checklist {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-
-img {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  height: auto;
 }
 </style>

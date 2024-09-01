@@ -4,7 +4,7 @@
 
     <div class="ts-container">
         <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-            <span class="ts-text">圈圈2</span>
+            <Circle :current-step="2" />
         </div>
     </div>
 
@@ -20,7 +20,7 @@
         </div>
 
         <div v-if="showOrderDetails">
-            <OrderList :cart-items="cartItems" @update:car-items="updateCartItems"></OrderList>
+            <PaymentPageList :cart-items="cartItems" @update:car-items="updateCartItems"></PaymentPageList>
         </div>
 
 
@@ -38,17 +38,18 @@
 <script setup>
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
-import OrderList from '@/components/OrderList.vue';
-
-
+import PaymentPageList from '@/components/order/PaymentPageList.vue';
+import Circle from '@/components/order/Circle.vue';
+import useUserStore from "@/stores/user.js"
 
 
 const cartItems = ref([]);
 const showOrderDetails = ref(true);
+const user = useUserStore().userId;
 
 const loadCartItems = async () => {
     try {
-        const response = await axiosapi.get('/cart/find/1');
+        const response = await axiosapi.get(`/cart/find/${user}`);
         cartItems.value = response.data;
         console.log("Cart items loaded:", cartItems.value);
     } catch (error) {
@@ -62,7 +63,7 @@ const lpPayment = async () => {
     try {
         const paymentData = {
             totalAmounts: totalAmount.value,
-            userId: 1,
+            userId: user,
             items: cartItems.value.map(item => ({
                 productDetailsId: item.productDetailsId,
                 quantity: item.quantity,

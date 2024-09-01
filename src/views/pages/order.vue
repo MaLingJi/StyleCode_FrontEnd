@@ -28,7 +28,7 @@
                     <template v-for="order in orders" :key="order.orderId">
                         <tr>
                             <td>{{ order.orderId }}</td>
-                            <td>{{ order.orderDate }}</td>
+                            <td>{{ formatDate(order.orderDate) }}</td>
                             <td>{{ formatCurrency(order.totalAmounts) }}</td>
                             <td>
                                 <button class="ts-button is-outlined" @click="toggleOrderDetails(order.orderId)">
@@ -45,6 +45,7 @@
                                                 <th>商品名稱</th>
                                                 <th>數量</th>
                                                 <th>價格</th>
+                                                <th>付款方式</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -52,6 +53,7 @@
                                                 <td>{{ detail.productName }}</td>
                                                 <td>{{ detail.quantity }}</td>
                                                 <td>{{ formatCurrency(detail.price) }}</td>
+                                                <td>{{ detail.paymentMethod === 1 ? 'LinePay' : '其他' }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -78,19 +80,20 @@
 import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { watch } from 'vue';
+import useUserStore from "@/stores/user.js"
 
 
 const status = ref(1);
 const orders = ref([]);
 const expandedOrderId = ref(null);
 const orderDetails = ref([]);
-
+const user = useUserStore().userId;
 
 
 
 watch(status, () => {
     axiosapi
-        .get('/order/find/1?status=' + status.value)
+        .get(`/order/find/${user}?status=${status.value}`)
         .then(response => {
             console.log(response)
             if (response.data !== '') {
@@ -107,6 +110,12 @@ watch(status, () => {
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
+
+const formatDate = (dateString) => {
+    if (!dateString) return ''
+    return dateString.replace('T', ' ').split('.')[0]
+}
+
 
 const toggleOrderDetails = orderId => {
     if (expandedOrderId.value === orderId) {

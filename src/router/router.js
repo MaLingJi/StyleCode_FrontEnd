@@ -16,7 +16,7 @@ import editShare from "@/views/pages/share/editShare.vue";
 import post from "@/views/pages/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
-import addProduct from '@/components/product/addProduct.vue'
+import addProduct from '@/components/product/AddProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
@@ -44,8 +44,8 @@ const routes = [
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post },
-  { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: 'addProduct', path: '/addproduct',component: addProduct},
+  { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
   { name: "paymentPage-link", path: "/payment", component: paymentPage },
