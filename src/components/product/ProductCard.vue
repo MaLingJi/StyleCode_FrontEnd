@@ -1,7 +1,11 @@
 <template>
-  <div class="ts-box product-card" @click="navigateToProductDetails">
+  <div class="ts-box product-card" 
+       @click="navigateToProductDetails"  
+       @mouseenter="handleMouseEnter"
+       @mouseleave="handleMouseLeave">
     <div class="ts-image image-container">
-      <img :src="getImageUrl(product.coverImage)" :alt="product.productName" />
+      <img :src="getImageUrl(product.coverImage)" :alt="product.productName" class="base-image" />
+      <img v-if="hoverImageUrl" :src="hoverImageUrl" :alt="product.productName" class="hover-image" :class="{ 'show': isHovering }" @error="handleImageError"/>
     </div>
     <div class="ts-content">
       <h3>{{ product.productName }}</h3>
@@ -11,9 +15,13 @@
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import axiosapi from "@/plugins/axios.js";
 
 const router = useRouter();
+const hoverImageUrl = ref('');
+const isHovering = ref(false);
 
 const props = defineProps({
   product: {
@@ -33,6 +41,44 @@ const getImageUrl = (imageName) => {
 const navigateToProductDetails = () => {
   router.push({ name: 'productDetails-link', params: { id: props.product.productId } });
 };
+
+const loadHoverImage = async () => {
+  if (!hoverImageUrl.value) {
+    try {
+      const response = await axiosapi.get(`/${props.product.productId}/images/hover?imageName=move.webp`);
+      if (response.data && response.data.imgUrl) {
+        hoverImageUrl.value = getImageUrl(response.data.imgUrl);
+      }
+    } catch (error) {
+      console.error("Error loading hover image:", error);
+    }
+  }
+};
+
+const handleMouseEnter = () => {
+  isHovering.value = true;
+};
+
+const handleMouseLeave = () => {
+  isHovering.value = false;
+};
+
+const handleImageError = () => {
+  console.error('Failed to load hover image:', hoverImageUrl.value);
+  hoverImageUrl.value = ''; // 清空 hover 圖片 URL，這樣就只顯示封面圖
+};
+
+onMounted(() => {
+  // 在背景預加載 hover 圖片，但不立即顯示
+  loadHoverImage();
+});
+
+watch(() => props.product, () => {
+  // 當產品變化時重置 hover 圖片 URL
+  hoverImageUrl.value = '';
+  loadHoverImage();
+}, { deep: true });
+
 </script>
 
 <style scoped>
@@ -40,8 +86,8 @@ const navigateToProductDetails = () => {
   transition: all 0.3s ease;
   border: 2px solid transparent;
   width: 100%;
-  max-width: 500px; /* 限制卡片最大寬度 */
-  margin: 0 auto; /* 居中卡片 */
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .product-card:hover {
@@ -52,7 +98,7 @@ const navigateToProductDetails = () => {
 .image-container {
   width: 100%;
   height: 0;
-  padding-bottom: 100%; /* 創建一個正方形的容器 */
+  padding-bottom: 100%;
   position: relative;
   overflow: hidden;
 }
@@ -63,12 +109,21 @@ const navigateToProductDetails = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片覆蓋整個區域，可能會裁剪 */
-  transition: all 0.3s ease;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
 }
 
-.product-card:hover .ts-image img {
-  transform: scale(1.05);
+.base-image {
+  opacity: 1;
+}
+
+.hover-image {
+  opacity: 0;
+  z-index: 1; /* 確保 hover 圖片在封面圖上層 */
+}
+
+.hover-image.show {
+  opacity: 1;
 }
 
 .ts-content {
@@ -80,10 +135,6 @@ const navigateToProductDetails = () => {
   font-size: 1.1em;
   transition: color 0.3s ease;
 }
-
-/* .product-card:hover .ts-content h3 {
-  color: #007bff;
-} */
 
 .ts-content p {
   margin: 0;

@@ -234,6 +234,14 @@ const addToCart = () => {
   })
     .catch(
       error => {
+        Swal.fire({
+        icon: 'error',
+        title: '加入購物車失敗',
+        text: '庫存不足',
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+      })
         console.error(error)
       }
     )
