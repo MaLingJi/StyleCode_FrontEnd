@@ -35,8 +35,10 @@
           </div>
         </div>
         <div class="column is-16-wide">
-          <div class="ts-textarea">
-            <textarea v-model="product.productDescription" placeholder="商品描述" rows="4" required></textarea>
+          <div class="ts-textarea product-description-container">
+            <textarea v-model="product.productDescription" placeholder="商品描述" rows="5" 
+        required
+        class="product-description-textarea"></textarea>
           </div>
         </div>
       </div>
@@ -296,6 +298,33 @@ function handleApiError(error, defaultMessage) {
 
 .preview-image:hover .delete-overlay {
   opacity: 1;
+}
+.ts-textarea{
+  border-width: 30px;
+}
+
+.product-description-container {
+  width: 100%;
+  max-width: 1000px; /* 調整這個值以匹配您表單的寬度 */
+  margin: 0 auto;
+}
+
+.product-description-textarea {
+  width: 100%;
+  min-height: 100px; /* 調整高度以匹配約 4-5 行文字 */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical; /* 允許用戶垂直調整大小 */
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .product-description-container {
+    max-width: 100%;
+  }
 }
 
 </style>
