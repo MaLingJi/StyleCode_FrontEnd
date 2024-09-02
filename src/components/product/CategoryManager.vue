@@ -237,7 +237,7 @@ function handleApiError(error, defaultMessage) {
       // 可能需要登出用戶或重定向到登錄頁面
       router.push('/secure/login');
     } else if (error.response.data && error.response.data.message) {
-      errorMessage = error.response.data.message;
+      errorMessage = "操作失敗";
     }
   }
 

@@ -50,7 +50,7 @@
             </div>
             <div class="column is-4-wide">
               <div class="ts-input is-fluid">
-                <input type="text" v-model="detail.size" placeholder="尺寸 S-M-L" required>
+                <input type="text" v-model="detail.size" placeholder="尺寸" required>
               </div>
             </div>
             <div class="column is-4-wide">
@@ -253,7 +253,7 @@ function handleApiError(error, defaultMessage) {
       errorMessage = '您沒有權限執行此操作';
       router.push('/secure/login');
     } else if (error.response.data && error.response.data.message) {
-      errorMessage = error.response.data.message;
+      errorMessage = "操作失敗";
     }
   }
 

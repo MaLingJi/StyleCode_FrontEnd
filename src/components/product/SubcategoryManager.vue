@@ -251,7 +251,7 @@ function cancelEdit() {
       errorMessage = '您沒有權限執行此操作';
       router.push('/secure/login');
     } else if (error.response.data && error.response.data.message) {
-      errorMessage = error.response.data.message;
+      errorMessage = "操作失敗";
     }
   }
 
