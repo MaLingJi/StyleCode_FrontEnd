@@ -94,7 +94,9 @@ import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js"
 import Swal from "sweetalert2";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const route = useRoute();
 const product = ref({});
 const selectedColor = ref("");
@@ -198,6 +200,24 @@ const addToCart = () => {
     alert("商品已售罄或下架");
     return;
   }
+
+  if (!user) {
+    Swal.fire({
+      title: '請先登入',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '登入',
+      cancelButtonText: '再看一下'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTimeout(() => { router.push('/secure/login') }, 1000)
+      }
+    });
+    return;
+  }
+
   axiosapi.post('/cart/add', {
     "userId": user,
     "productDetailsId": selectedDetail.value.productDetailsId,
@@ -256,7 +276,7 @@ const addToCart = () => {
   height: 100%;
 }
 
-  .main-image img {
+.main-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -337,6 +357,6 @@ const addToCart = () => {
   max-width: 100%;
   height: auto;
   margin-top: 1rem;
-  object-fit: cover; 
+  object-fit: cover;
 }
 </style>

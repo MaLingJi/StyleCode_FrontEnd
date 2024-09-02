@@ -53,6 +53,8 @@ import Circle from '@/components/order/Circle.vue';
 import useUserStore from "@/stores/user.js"
 import Swal from 'sweetalert2';
 
+
+
 const cartItems = ref([]);
 const user = useUserStore().userId
 // const isLoggedIn = ref(false);  // 新增：用於追蹤登入狀態
@@ -74,7 +76,7 @@ onMounted(loadCartItems);
 
 const updateCartItems = (updatedItems) => {
         cartItems.value = updatedItems;
-        console.log("updateValue:" + cartItems.value)
+        console.log(" After update Value: " + JSON.stringify(cartItems.value))
 };
 
 
@@ -86,7 +88,6 @@ const totalAmount = computed(() => {
                 const price = Number(item.productPrice)
                 const quantity = Number(item.quantity)
                 total += price * quantity;
-                console.log(`Item: ${item.productName}, Price: ${price}, Quantity: ${quantity}, Subtotal: ${price * quantity}`);
         }
         console.log("Total amount:", total);
         return total;
@@ -106,8 +107,8 @@ const checkInventoryAndProceed = async () => {
                                 quantity: item.quantity,
                         }))
                 })
-                console.log('responsedata:' + response.data);
-                if (response.data != '') {
+                console.log('response data :' + JSON.stringify(response.data));
+                if (response.data === 'ok') {
                         Swal.fire({
                                 title: '前往中!',
                                 icon: 'info',
@@ -130,10 +131,8 @@ const checkInventoryAndProceed = async () => {
                                 title: '加入購物車失敗',
                                 text: '庫存不足',
                                 showConfirmButton: false,
+                                timer: 1000,
                                 timerProgressBar: true,
-                                showCancelButton: true,
-                                confirmButtonText: '確定',
-
                         })
                 }
         } catch (error) {

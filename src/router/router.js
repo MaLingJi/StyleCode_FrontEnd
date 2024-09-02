@@ -23,7 +23,7 @@ import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
 import shareDetails from "@/views/pages/share/shareDetails.vue";
-
+import refund from "@/views/pages/refund.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -51,6 +51,7 @@ const routes = [
   { name: "post-link", path: "/post", component: post },
   { name: "paymentPage-link", path: "/payment", component: paymentPage },
   { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
+  { name: "refund-link", path: "/refund/:orderId", component: refund},
 ];
 
 

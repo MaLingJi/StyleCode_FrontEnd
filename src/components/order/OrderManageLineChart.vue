@@ -49,7 +49,7 @@ const chartData = computed(() => ({
                         pointHoverBorderColor: 'rgb(30, 144, 255)',  // 懸停時的邊框顏色
                         data: amounts.value,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.2
                 }
         ]
 }))
