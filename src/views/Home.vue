@@ -19,10 +19,15 @@
         <div class="ts-app-center">
             <div class="ts-container">
                 <div class="ts-grid is-3-columns is-relaxed is-stretched">
+                    <div v-for="post in filteredPosts.slice(0, 6)" :key="post.postId" class="column">
+                        <ShareCard :post="post" />
+                    </div>
+                </div>
+                <!-- <div class="ts-grid is-3-columns is-relaxed is-stretched">
                     <div class="column" v-for="post in posts.slice(0, 6)" :key="post.postId">
                         <ShareCard :post="post"></ShareCard>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -33,7 +38,7 @@
 
 <script setup>
 import ShareCard from '@/components/share/ShareCard.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
@@ -50,6 +55,10 @@ const posts = ref([]);
 
 onMounted(function () {
     callFind();
+});
+
+const filteredPosts = computed(() => {
+  return posts.value.filter(post => post.deletedAt === null && post.contentType === 'share');
 });
 
 function callFind() {

@@ -10,8 +10,12 @@
     <div class="ts-divider"></div>
     <div class="ts-container">
         <div class="ts-grid is-3-columns is-relaxed is-stretched">
-            <div class="column" v-for="post in posts" :key="post.postId">
-                <ShareCard :post="post"></ShareCard>
+            <div 
+                v-for="post in filteredPosts"
+                :key="post.postId"
+                class="column"
+            >
+                <ShareCard  :post="post" />
             </div>
         </div>
     </div>
@@ -20,18 +24,19 @@
 
 <script setup>
 import ShareCard from '@/components/share/ShareCard.vue';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
-
-const router = useRouter();
 
 // const post = ref({});
 const posts = ref([]);
 
 onMounted(function () {
     callFind();
+});
+
+const filteredPosts = computed(() => {
+  return posts.value.filter(post => post.deletedAt === null && post.contentType === 'share');
 });
 
 function callFind() {
@@ -42,10 +47,10 @@ function callFind() {
         allowOutsideClick: false,
     });
     axiosapi.get("/post").then(function (response) {
-        console.log("response: ", response);
+        // console.log("response: ", response);
 
         posts.value = response.data;
-        // console.log("posts.value: ", posts.value);
+        console.log("posts.value: ", posts.value);
 
         setTimeout(function () {
             Swal.close();
