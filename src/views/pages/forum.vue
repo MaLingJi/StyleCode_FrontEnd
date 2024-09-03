@@ -177,7 +177,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-<<<<<<< HEAD
 .forum-page {
   display: flex;
   flex-direction: column;
@@ -206,27 +205,6 @@ export default defineComponent({
   border-radius: 8px;
   padding: 32px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-=======
-.buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-img {
-  width: 100%; 
-  height: 200px; 
-  object-fit: cover;
-}
-.content {
-  width: 90%; /*或80%*/
-  max-width: 1200px; 
-  margin: 0 auto; 
-  background-color: white; 
-  border-radius: 8px; 
-  padding: 32px; 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
-  box-sizing: border-box; 
->>>>>>> origin/MLJ
 }
 .rule-box {
   background-color: #f0f0f0;

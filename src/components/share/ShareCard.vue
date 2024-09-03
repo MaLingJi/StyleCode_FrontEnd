@@ -4,9 +4,11 @@
             <img :src="imgUrl" />
         </div>
         <div class="ts-divider"></div>
-        <div class="ts-content">
-            暱稱: {{ props.post.userName ? props.post.userName : 'Unknown User' }}
-        </div>
+        <div class="share-info">
+      <h3>{{ post.userName || 'Unknown User' }}</h3>
+      <p>{{ post.postTitle }}</p>
+    </div>
+        
     </div>
 </template>
 
@@ -37,4 +39,49 @@ function navigateToShareDetails(postId) {
 }
 </script>
 
-<style></style>
+<style scoped>
+.share-card {
+  width: 210.83px; /* 設定固定寬度 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.share-card:hover {
+  transform: translateY(-5px);
+}
+
+.share-image {
+  height: 316.25px; /* 設定固定高度 */
+  overflow: hidden;
+}
+
+.share-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.share-info {
+  padding: 10px;
+}
+
+.share-info h3 {
+  margin: 0;
+  font-size: 1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share-info p {
+  margin: 5px 0 0;
+  font-size: 0.9em;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

@@ -6,7 +6,7 @@
           <div class="column is-fluid">
             <div class="ts-wrap is-middle-aligned main-nav">
               <RouterLink to="/" class="ts-text is-undecorated logo-link">
-                <img src="/MDFK.png" width="45" alt="Logo">
+                <img src="/MDFK-removebg-preview.png" width="45" alt="Logo">
               </RouterLink>
               <nav class="desktop-nav">
                 <RouterLink to="/share" class="nav-link">穿搭</RouterLink>

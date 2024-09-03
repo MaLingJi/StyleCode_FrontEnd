@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <div class="full-width-carousel">
       <div class="carousel-container" :style="{ transform: `translateX(-${currentPage * 100}%)` }">
         <div v-for="(page, pageIndex) in carouselPages" :key="pageIndex" class="carousel-page">
@@ -8,37 +7,6 @@
             <div class="carousel-caption">
               <h3>{{ post.userName || 'Unknown User' }}</h3>
               <p>{{ post.postTitle }}</p>
-=======
-    <div class="ts-app-layout is-vertical">
-        <div class="ts-app-center">
-            <div class="ts-content">照片輪播</div>
-        </div>
-
-        <div class="ts-app-center">
-            <div class="ts-content">討論區文章輪播</div>
-        </div>
-
-        <div class="ts-app-center">
-            <div class="ts-content">
-                <div class="ts-text is-massive">
-                    今日推薦穿搭
-                </div>
-            </div>
-        </div>
-
-        <div class="ts-app-center">
-            <div class="ts-container">
-                <div class="ts-grid is-3-columns is-relaxed is-stretched">
-                    <div v-for="post in filteredPosts.slice(0, 6)" :key="post.postId" class="column">
-                        <ShareCard :post="post" />
-                    </div>
-                </div>
-                <!-- <div class="ts-grid is-3-columns is-relaxed is-stretched">
-                    <div class="column" v-for="post in posts.slice(0, 6)" :key="post.postId">
-                        <ShareCard :post="post"></ShareCard>
-                    </div>
-                </div> -->
->>>>>>> origin/MLJ
             </div>
           </div>
         </div>
@@ -54,13 +22,27 @@
         ></span>
       </div>
     </div>
-<<<<<<< HEAD
+    <!-- 新增的分享文章網格 -->
+    <div class="shared-posts-section">
+      <h2>最新分享</h2>
+      <div class="shared-posts-grid" style="cursor: pointer">
+        <ShareCard v-for="post in limitedSharedPosts" :key="post.postId" :post="post" />
+      </div>
+    </div>
+
+     <!-- 添加網站理念部分 -->
+     <div class="site-philosophy">
+      <h2>我們的理念</h2>
+      <p>在這裡分享您的穿搭靈感，讓時尚激發無限可能！</p>
+      <!-- 可以根據需要添加更多內容 -->
+    </div>
   </template>
   
   <script setup>
   import { ref, onMounted, computed ,onUnmounted} from 'vue';
   import { useRouter } from 'vue-router';
   import axiosapi from '@/plugins/axios.js';
+  import ShareCard from '@/components/share/ShareCard.vue';
   
   const router = useRouter();
   const posts = ref([]);
@@ -87,17 +69,35 @@
   });
   
   async function loadImages() {
-    for (const post of posts.value) {
-      try {
-        const response = await axiosapi.get(`/images/post/${post.postId}`);
-        const imagePath = response.data[0].imgUrl;
-        imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${imagePath}`;
-      } catch (error) {
-        console.error('Error fetching image URL:', error);
-        imageUrls.value[post.postId] = '../../../public/No_image.png'; // 預設圖片
-      }
+  for (const post of posts.value) {
+    if (post.imageUrls && post.imageUrls.length > 0) {
+      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${post.imageUrls[0]}`;
+    } else {
+      imageUrls.value[post.postId] = '../../../public/No_image.png';
     }
   }
+}
+
+const limitedSharedPosts = computed(() => {
+  return sharedPosts.value.slice(0, 15); // 限制為15個帖子（3行x5列）
+});
+
+const sharedPosts = ref([]);
+
+onMounted(async () => {
+  try {
+    const response = await axiosapi.get('/post/latest?limit=9');
+    posts.value = response.data;
+    await loadImages();
+    startAutoSlide();
+
+    // 獲取分享文章
+    const sharedResponse = await axiosapi.get('/post?contentType=分享&limit=20'); // 根據您的API調整
+    sharedPosts.value = sharedResponse.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+});
   
   function getImageUrl(post) {
     return imageUrls.value[post.postId] || '../../../public/No_image.png';
@@ -216,65 +216,39 @@
   .carousel-indicators span.active {
     background: white;
   }
-  </style>
-=======
-    <div class="ts-divider"></div>
-    <div class="ts-content">Footer</div>
 
-</template>
-
-<script setup>
-import ShareCard from '@/components/share/ShareCard.vue';
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import axiosapi from '@/plugins/axios.js';
-import Swal from 'sweetalert2';
-// import useUserStore from "@/stores/user.js"
-// const userStore = useUserStore();
-// console.log("userId: ", userStore.userId);
-// console.log("isLogin: ", userStore.isLogedin);
-// console.log("permissions: ", userStore.permissions);
-// console.log("token: ", userStore.userToken);
-
-const router = useRouter();
-
-const posts = ref([]);
-
-onMounted(function () {
-    callFind();
-});
-
-const filteredPosts = computed(() => {
-  return posts.value.filter(post => post.deletedAt === null && post.contentType === 'share');
-});
-
-function callFind() {
-    console.log("callFind");
-    Swal.fire({
-        text: "Loading......",
-        showConfirmButton: false,
-        allowOutsideClick: false,
-    });
-    axiosapi.get("/post").then(function (response) {
-        console.log("response: ", response);
-
-        posts.value = response.data;
-        // console.log("posts.value: ", posts.value);
-
-        setTimeout(function () {
-            Swal.close();
-        }, 500);
-    }).catch(function (error) {
-        console.log("callFind error", error);
-        Swal.fire({
-            text: '失敗：' + error.message,
-            icon: 'error',
-            allowOutsideClick: false,
-            confirmButtonText: '確認',
-        });
-    });
+  .shared-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5列 */
+  gap: 20px;
+  max-width: 1200px; /* 或者其他適合您設計的最大寬度 */
+  margin: 0 auto;
 }
-</script>
 
-<style></style>
->>>>>>> origin/MLJ
+.shared-posts-section {
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.shared-posts-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.site-philosophy {
+  background-color: #e0e0e0;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.site-philosophy h2 {
+  margin-bottom: 20px;
+}
+
+.site-philosophy p {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+  </style>
