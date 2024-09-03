@@ -1,58 +1,103 @@
 <template>
-    <div class="ts-container">
-        <div class="ts-app-layout is-horizontal">
-            <div class="ts-grid">
-                <div class="column is-fluid">
-                    <div class="cell is-fluid is-vertical">
-                        <div class="ts-grid">
-                            <div class="ts-image">
-                                <img :src="userPhoto" width="40">
-                            </div>
-                            <div class="ts-header">{{ userName }}</div>
+    <div class="ts-container has-vertically-spaced-large">
+        <div class="ts-grid">
+            <div class="column is-fluid">
+                <div class="cell is-fluid is-vertical">
+                    <div class="ts-grid">
+                        <div class="ts-image">
+                            <img :src="userPhoto" width="40">
                         </div>
-                        <div class="ts-divider"></div>
-                        <div class="ts-text is-heavy is-big">標題</div>
-                        <div class="ts-input is-solid">
-                            <textarea v-model="postTitle" placeholder="請輸入文章標題"></textarea>
-                        </div>
-                        <div class="ts-text is-heavy is-big">內容</div>
-                        <div class="ts-input is-solid">
-                            <textarea v-model="contentText" placeholder="請輸入文章內容"></textarea>
-                        </div>
-                        <div class="ts-text is-heavy is-big">上傳圖片</div>
-                        <div class="ts-file">
-                            <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" multiple />
-                        </div>
+                        <div class="ts-header">{{ userName }}</div>
+                        <div class="te-text">{{ products }}</div>
+                    </div>
+                    <div class="ts-divider"></div>
+                    <div class="ts-text is-heavy is-big">標題</div>
+                    <div class="ts-input is-solid">
+                        <textarea v-model="postTitle" placeholder="請輸入文章標題"></textarea>
+                    </div>
+                    <div class="ts-text is-heavy is-big">內容</div>
+                    <div class="ts-input is-solid">
+                        <textarea v-model="contentText" placeholder="請輸入文章內容"></textarea>
+                    </div>
+                    <div class="ts-text is-heavy is-big">上傳圖片</div>
+                    <div class="ts-file">
+                        <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" multiple />
+                    </div>
 
-                        <div class="image-previews">
-                            <div v-for="(image, index) in imageFiles" :key="index" class="image-preview"
-                                @mouseover="hoverIndex = index" @mouseleave="hoverIndex = null">
-                                <img :src="image.previewUrl" alt="Preview Image" />
-                                <div class="image-controls" v-if="hoverIndex === index">
-                                    <i class="ts-icon is-pen-to-square-icon" @click="editImage(index)"></i>
-                                    <i class="ts-icon is-trash-can-icon" @click="removeImage(index)"></i>
+                    <div class="image-previews">
+                        <div v-for="(image, index) in imageFiles" :key="index" class="image-preview"
+                            @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
+                            <img :src="image.previewUrl" alt="Preview Image" />
+                            <div class="image-controls" v-if="hoverIndexImages === index">
+                                <i class="ts-icon is-pen-to-square-icon" @click="editImage(index)"></i>
+                                <i class="ts-icon is-trash-can-icon" @click="removeImage(index)"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <button class="ts-button" @click="submitPost">送出文章</button>
+                </div>
+            </div>
+            <div class="column is-3-wide">
+                <div class="cell is-vertical">
+                    <div class="ts-text is-heavy is-big">單品分享</div>
+
+                    <!-- 新增或編輯單品表單 -->
+                    <div v-if="showProductForm" class="product-form">
+                        <div class="ts-input is-underlined">
+                            <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
+                        </div>
+                        <div class="ts-input is-underlined">
+                            <input type="text" v-model="newProduct.subcategory" placeholder="單品分類" />
+                        </div>
+                        <div class="ts-wrap is-center-aligned">
+                            <button class="ts-button is-primary" @click="isEditing ? updateProduct() : addProduct()">
+                                {{ isEditing ? '更新' : '新增' }}
+                            </button>
+                            <button class="ts-button is-secondary" @click="cancelProductForm">取消</button>
+                        </div>
+                    </div>
+
+                    <!-- 顯示已新增的單品 -->
+                    <div class="product-list" v-if="products.length">
+                        <div class="ts-card" v-for="(product, index) in products" :key="index"
+                            @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
+                            <div class="ts-content is-center-aligned">
+                                <p>商品: {{ product.productName }}</p>
+                                <p>分類: {{ product.subcategory }}</p>
+
+                                <!-- 編輯與刪除按鈕 -->
+                                <div class="product-controls" v-if="hoverIndexImages === index">
+                                    <button class="edit-button" @click="editProduct(index)">
+                                        <span class="ts-icon is-pen-to-square-icon"></span>
+                                    </button>
+                                    <button class="delete-button" @click="deleteProduct(index)">
+                                        <span class="ts-icon is-trash-can-icon"></span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <br>
-                        <button class="ts-button" @click="submitPost">送出文章</button>
                     </div>
-                </div>
-            </div>
-            <div class="column">
-                <div class="cell is-vertical">
+                    <br>
+                    <!-- 新增按鈕 -->
+                    <div v-if="!showProductForm">
+                        <button class="ts-button" @click="startAddProduct">+ 新增單品</button>
+                    </div>
+
                     <div class="ts-text is-heavy is-big">標籤</div>
-                    <div class="ts-input">
+                    <div class="ts-input is-underlined">
                         <input type="text" placeholder="搜尋標籤…" v-model="inputTagValue" @blur="addTag" />
                     </div>
-                    <div class="ts-chip">
-                        <span v-for="(tag, index) in tags" :key="index" class="ts-label">
+                    <div v-for="(tag, index) in tags" :key="index" class="ts-chip is-dense is-outlined"
+                        @mouseover="hoverIndexTags = index" @mouseleave="hoverIndexTags = null">
+                        <span class="ts-label">
                             {{ tag }}
                         </span>
-                    </div>
-                    <div class="ts-input">
-                        <input type="text" placeholder="搜尋標籤…" v-model="inputTagValue" @blur="addTag" />
+                        <!-- 叉叉按鈕 -->
+                        <button v-if="hoverIndexTags === index" class="delete-tag" @click="removeTag(index)">
+                            &times;
+                        </button>
                     </div>
                 </div>
 
@@ -69,21 +114,85 @@ import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
 
 const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
-const postPhotoPath = import.meta.env.VITE_POST_IMAGE_URL;
-const productPhotoPath = import.meta.env.VITE_PRODUCT_IMAGE_URL;
-
 const router = useRouter();
 const userStore = useUserStore();
 
 const postTitle = ref('');
 const contentText = ref('');
 const imageFiles = ref([]);
-const hoverIndex = ref(null);
+const hoverIndexTags = ref(null);
+const hoverIndexImages = ref(null);
 const inputTagValue = ref('');
 const tags = ref([]);
 const userName = ref('');
 const userPhoto = ref('');
 const editingImageIndex = ref(null); // 用來追蹤正在編輯的圖片索引
+
+const isEditing = ref(false);
+const editingIndex = ref(null);
+// 控制顯示/隱藏新增單品表單
+const showProductForm = ref(false);
+
+// 存儲單品資料
+const products = ref([]);
+
+// 新增的單品資料
+const newProduct = ref({
+    productName: '',
+    subcategory: ''
+});
+
+// 編輯單品
+function editProduct(index) {
+    isEditing.value = true;
+    showProductForm.value = true;
+    editingIndex.value = index;
+    newProduct.value.productName = products.value[index].productName;
+    newProduct.value.subcategory = products.value[index].subcategory;
+}
+
+// 更新單品
+function updateProduct() {
+    if (editingIndex.value !== null) {
+        products.value[editingIndex.value].productName = newProduct.value.productName;
+        products.value[editingIndex.value].subcategory = newProduct.value.subcategory;
+    }
+    resetForm();
+}
+
+// 取消新增/編輯
+function cancelProductForm() {
+    resetForm();
+}
+
+// 重置表單
+function resetForm() {
+    isEditing.value = false;
+    showProductForm.value = false;
+    editingIndex.value = null;
+    newProduct.value.productName = '';
+    newProduct.value.subcategory = '';
+}
+
+// 刪除單品
+function deleteProduct(index) {
+    products.value.splice(index, 1);
+}
+
+// 開始新增單品
+function startAddProduct() {
+    showProductForm.value = true;
+    isEditing.value = false;
+    editingIndex.value = null;
+}
+
+// 添加單品到列表
+function addProduct() {
+    if (newProduct.value.productName && newProduct.value.subcategory) {
+        products.value.push({ ...newProduct.value });
+        resetForm();
+    }
+}
 
 const request = {
     headers: {
@@ -96,6 +205,10 @@ function addTag() {
         tags.value.push(inputTagValue.value.trim());
         inputTagValue.value = '';
     }
+}
+
+function removeTag(index) {
+    tags.value.splice(index, 1); // 從 tags 列表中刪除對應的標籤
 }
 
 onMounted(() => {
@@ -221,10 +334,23 @@ function submitPost() {
 </script>
 
 <style scoped>
-.ts-chip .ts-label {
-    background-color: #9d7e7e;
-    padding: 5px 5px;
+.ts-chip {
+    /* display: flex; */
+    flex-wrap: wrap;
+    position: relative;
+    /* 設置相對定位，以便定位叉叉按鈕 */
+    display: inline-block;
+    /* 使每個 chip 獨立顯示 */
+    margin: 4px;
+    /* 添加一點間距 */
+}
+
+.ts-label {
+    /* background-color: #9d7e7e; */
+    padding: 1px 1px;
     border-radius: 10px;
+    white-space: nowrap;
+    /* margin-bottom: 8px; */
 }
 
 .image-previews {
@@ -256,5 +382,64 @@ function submitPost() {
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.product-form {
+    margin-top: 1rem;
+}
+
+.product-list {
+    margin-top: 1rem;
+}
+
+.ts-button.is-circle {
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+}
+
+.ts-card {
+    margin-top: 1rem;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.ts-content.is-center-aligned {
+    white-space: normal;
+    /* 允許內容自動換行 */
+    word-wrap: break-word;
+    /* 長單詞換行 */
+    overflow-wrap: break-word;
+    /* 使長字串在必要時換行 */
+    text-align: center;
+    /* 內容置中對齊 */
+}
+
+p {
+    margin: 0;
+    /* 消除 p 元素默認的外邊距 */
+    overflow-wrap: anywhere;
+    /* 強制在任何需要的地方換行 */
+}
+
+.delete-tag {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: red;
+    font-size: 14px;
+    cursor: pointer;
+    display: none;
+    /* 默認不顯示 */
+}
+
+.ts-chip:hover .delete-tag {
+    display: inline;
+    /* 滑鼠移入時顯示 */
 }
 </style>
