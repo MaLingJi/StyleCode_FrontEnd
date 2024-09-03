@@ -36,7 +36,7 @@
                 <div class="ts-box">
                     <div class="ts-content">
                         <h4 class="ts-header">{{ post.postTitle }}</h4>
-                        <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p>
+                        <!-- <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p> -->
                         <p><i class="ts-icon is-clock-icon"></i> {{ formatDate(post.createdAt) }}</p>
 
                         <div class="ts-divider"></div>
@@ -52,9 +52,15 @@
 
                         <div class="ts-divider"></div>
 
+                        <!-- <div class="ts-chip">
+                            <span v-for="(tag, index) in tags" :key="index" class="ts-label">
+                                {{ tag }}
+                            </span>
+                        </div> -->
+
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
-                            <span class="ts-label" v-for="tag in tags" :key="tag">{{ tag }}</span>
+                            <span class="ts-chip" v-for="tag in tags" :key="tag">{{ tag.tagName }}</span>
                         </div>
 
                     </div>
@@ -115,8 +121,9 @@ onMounted(() => {
             console.log("post.value: ", post.value);
             // images.value = post.value.images || [];
             clothingItems.value = post.value.clothingItems || [];
-            tags.value = post.value.tags || ["Taiwan", "Taichung"];
+            tags.value = post.value.postTags || ["Taiwan", "Taichung"];
             brands.value = post.value.brands || ["Maison MIHARA YASUHIRO", "BEAMS"];
+            console.log("tag: ", tags.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);
@@ -302,5 +309,11 @@ function formatDate(date) {
 /* 使主圖片可點擊 */
 .main-image {
     cursor: pointer;
+}
+
+.ts-chip .ts-label {
+    background-color: #9d7e7e;
+    padding: 5px 5px;
+    border-radius: 10px;
 }
 </style>
