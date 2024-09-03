@@ -38,7 +38,7 @@
     <!-- 分頁元件 -->
     <div class="ts-pagination is-secondary">
       <Paginate 
-        v-model="currentPage" 
+        v-model="currentPage"  
         :page-count="getPageCount()" 
         :page-range="3" 
         :margin-pages="1"
@@ -70,36 +70,39 @@
   import useUserStore from "@/stores/user.js"
   import { useRouter } from 'vue-router';
 
-  const userStore = useUserStore()
-  const router = useRouter();
+  const userStore = useUserStore() // Pinia用戶存儲
+  const router = useRouter(); // 跳轉頁面
 
-  const categories = ref([]);
-  const newCategory = ref('');
-  const editingId = ref(null);
-  const editingName = ref('');
-  const currentPage = ref(1);
-  const itemsPerPage = 8;
+  const categories = ref([]); // 存儲所有分類
+  const newCategory = ref(''); // 新分類的名稱
+  const editingId = ref(null); // 用於編輯功能
+  const editingName = ref(''); // 用於編輯功能
+  const currentPage = ref(1); //  當前頁碼
+  const itemsPerPage = 8; // 每頁顯示的項目數
   
+  // 鉤子: 組件掛載時獲取分類數據
   onMounted(async () => {
     await fetchCategories();
   });
   
-  // 分頁
+  // 計算當前頁的分類
   const paginatedCategories = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   return categories.value.slice(start, end);
 });
 
+// 計算總頁數
 function getPageCount() {
   return Math.ceil(categories.value.length / itemsPerPage);
 }
 
+// 處理頁碼變化
 function handlePageChange(page) {
   currentPage.value = page;
 }
 
-// 分類
+//  獲取所有分類
   async function fetchCategories() {
     try {
       const response = await axiosapi.get('/categories');
@@ -109,6 +112,7 @@ function handlePageChange(page) {
     }
   }
   
+  // 添加新分類
   async function addCategory() {
     try {
       await axiosapi.post('/admin/categories/create', { categoryName: newCategory.value },{
@@ -133,11 +137,13 @@ function handlePageChange(page) {
   }
 };
 
+ //  開始編輯分類
   function startEditing(category) {
     editingId.value = category.categoryId;
     editingName.value = category.categoryName;
 }
 
+// 更新分類
 async function updateCategory(id) {
 
   const result = await Swal.fire({
@@ -190,6 +196,7 @@ async function updateCategory(id) {
   editingName.value = '';
 }
   
+ //  刪除分類
   async function deleteCategory(id) {
 
     const result = await Swal.fire({
@@ -226,7 +233,7 @@ async function updateCategory(id) {
   }
 }
 
-  
+//  統一處理API錯誤,包括權限錯誤的處理  
 function handleApiError(error, defaultMessage) {
   console.error('API Error:', error);
   let errorMessage = defaultMessage;

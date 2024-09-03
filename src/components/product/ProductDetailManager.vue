@@ -158,7 +158,7 @@
   </template>
   
   <script setup>
-  import { ref, reactive, onMounted, computed } from 'vue';
+  import { ref, reactive, onMounted, computed, onUnmounted } from 'vue';
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
   import Swal from 'sweetalert2'
@@ -175,7 +175,7 @@
   const productDetails = ref([]);
   const editingDetailId = ref(null);
   const editingDetail = reactive({});
-  const newDetail = reactive({ color: '', size: '', stock: 0, onSale: true });
+  // const newDetail = reactive({ color: '', size: '', stock: 0, onSale: true });
   const newDetails = ref([{ color: '', size: '', stock: 0, onSale: false }]);
   const currentPage = ref(1);
   const itemsPerPage = 5;
@@ -184,6 +184,7 @@
 const subcategories = ref([]);
 const selectedCategoryId = ref('');
 const selectedSubcategoryId = ref('');
+
   
 onMounted(async () => {
   await fetchCategories();
@@ -266,10 +267,14 @@ async function loadProductDetails() {
     try {
       const response = await axiosapi.get(`/products/${selectedProductId.value}`);
       selectedProduct.value = response.data;
-      productDetails.value = response.data.productDetails;
+      productDetails.value = response.data.productDetails.map(detail => ({
+        ...detail,
+        onSale: detail.stock > 0 // 根據庫存動態設置上架狀態
+      }));
       currentPage.value = 1; // 重置頁碼
     } catch (error) {
       console.error('Error fetching product details:', error);
+      handleApiError(error, '獲取商品詳情失敗');
     }
   }
 }
@@ -413,6 +418,7 @@ function handleApiError(error, defaultMessage) {
     confirmButtonText: '確認'
   });
 }
+
   </script>
   
   <style scoped>
