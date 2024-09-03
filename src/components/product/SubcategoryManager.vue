@@ -12,9 +12,8 @@
             </option>
           </select>
         </div>
-        <br>
-        <br>
-        <div class="ts-input is-fluid">
+        
+        <div class="ts-input is-fluid" style="margin: 10px 0px 0px 0px ;">
             <input v-model="newSubcategory.subcategoryName" placeholder="輸入新子分類名稱" required>
           <button type="submit" class="ts-button is-positive">新增子分類</button>
         </div>

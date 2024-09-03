@@ -11,7 +11,7 @@
       </form>
   
       <!-- 分類列表 -->
-      <table class="ts-table">
+      <table class="ts-table" style="margin: 15px 0px 0px 0px ;">
         <thead>
           <tr>
             <th >分類名稱</th>
