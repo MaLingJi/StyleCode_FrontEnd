@@ -83,7 +83,7 @@ import { useRoute } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
+import Swal from 'sweetalert2';
 const route = useRoute();
 const orderId = route.params.orderId;
 const orderData = ref({});
@@ -95,7 +95,7 @@ const router = useRouter()
 
 onMounted(async () => {
     try {
-        const response = await axiosapi.get(`/order/findOrderId/${orderId}`);
+        const response = await axiosapi.get(`/order/findByOrderId/${orderId}`);
         if (response.data) {
             orderData.value = response.data;
         } else {
@@ -114,8 +114,23 @@ const sendRefundApply = async (event) => {
             refundReason: refundReason.value
         });
         if (response.data) {
-            await router.push('/secure/profile');
+            Swal.fire({
+                title: '成功!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            }).then((result) => {
+                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    router.push('/secure/profile');
+                }
+            })
         } else {
+
             console.log('退款申請失敗');
         }
     } catch (error) {
