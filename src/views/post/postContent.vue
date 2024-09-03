@@ -4,19 +4,18 @@
       <div v-if="loading">載入中...</div>
       <div v-else>
         <h1>{{ post.postTitle }}</h1>
-        <p v-if="!isEditing">{{ post.contentText }}</p>
-        <a-textarea v-if="isEditing" v-model="post.contentText" placeholder="編輯內容" />
+        <p>{{ post.contentText }}</p>
 
         <!-- 顯示圖片 -->
         <div v-if="Array.isArray(post.images) && post.images.length > 0" class="post-images">
           <img 
-            v-for="(image, index) in post.images" 
+            v-for="image in post.images" 
             :key="image.imageId" 
             :src="image.imgUrl" 
             alt="Post Image" 
-            class="post-image" 
+            class="post-image"
           />
-          <a-button v-if="isEditing" type="danger" @click="removeImage(index)">刪除圖片</a-button>
+          <!-- @error="handleImageError"   -->
         </div>
 
         <div class="actions">
@@ -48,13 +47,10 @@
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ shares }}</span>
           </span>
-
-          <!-- 編輯和刪除按鈕 -->
-          <a-button v-if="!isEditing" type="primary" @click="editPost">編輯</a-button>
-          <a-button v-if="isEditing" type="primary" @click="savePost">保存</a-button>
-          <a-button type="danger" @click="confirmDelete">刪除</a-button>
         </div>
 
+        <!-- 編輯按鈕 -->
+        <a-button type="primary" @click="() => goToEditPage(post.postId)">編輯</a-button>
         <a-list
           class="comment-list"
           :header="`${comments.length} 則回覆`"
@@ -65,13 +61,8 @@
             <a-list-item>
               <a-comment :author="`用戶 ${item.userDetail.id}`" :avatar="item.avatar">
                 <template #content>
-                  <p v-if="!item.isEditing">{{ item.comment }}</p>
-                  <a-textarea v-if="item.isEditing" v-model:value="item.editContent" />
+                  <p>{{ item.comment }}</p>
                   <span class="comment-time">{{ dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</span>
-                  <a-button v-if="item.userDetail.id === userId" @click="toggleEdit(item)">
-                    {{ item.isEditing ? '保存' : '編輯' }}
-                  </a-button>
-                  <a-button v-if="item.userDetail.id === userId" type="danger" @click="deleteComment(item.commentId)">刪除</a-button>
                 </template>
               </a-comment>
             </a-list-item>
@@ -105,7 +96,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
 import dayjs from 'dayjs';
 import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
@@ -120,12 +111,15 @@ interface Post {
   isCollected: boolean;
   likesCount: number;
   collectionsCount: number;
-  images: Array<{ imageId: number;imgUrl: string;}>; // 假設圖片數據結構
+  images: Array<{ imageId: number;imgUrl: string;}>; 
+  comment: Array<{ commentId: number; comment: string; createdAt: string; deletedAt: string | null; }>;
+  likes: Array<{ likesId: { userId: number; postId: number }; post: Post }>;
 }
 
 const userStore = useUserStore();
 const userId = Number(userStore.userId);
 const route = useRoute();
+const router = useRouter();
 const postId = Number(route.params.id);
 const post = ref({} as Post);
 const comments = ref([]);
@@ -136,33 +130,26 @@ const collects = ref(0);
 const shares = ref(0);
 const loading = ref(true);
 const isEditing = ref(false);
+const path = import.meta.env.VITE_POST_IMAGE_URL; 
 
 // 獲取文章數據
 const fetchPostData = async () => {
   try {
     const response = await axiosapi.get(`/post/${postId}`);
-    console.log(response.data); // 查看返回的post数据格式
+    console.log(response.data); // 查看返回的post數據格式
     post.value = response.data;
     likes.value = post.value.likesCount || 0; 
     collects.value = post.value.collectionsCount || 0;
-    if (typeof post.value.images === 'string') {
-      try {
-        post.value.images = JSON.parse(post.value.images);
-      } catch (error) {
-        console.error("解析images字符串失败:", error);
-        post.value.images = []; // 解析失败时初始化为空数组
-      }
-    } else if (!Array.isArray(post.value.images)) {
-      post.value.images = []; // 如果 images 不是数组，则初始化为空数组
+    if (Array.isArray(post.value.images)) {
+      post.value.images = post.value.images.map(image => ({
+        ...image,
+        imgUrl: `${path}${image.imgUrl}` // 使用 path 變數來構建完整的 URL
+      }));
+    } else {
+      post.value.images = []; // 如果不是數組,初始化為空數組
     }
   } catch (error) {
     console.error("獲取文章數據失敗:", error);
-  }
-};
-// 刪除圖片
-const removeImage = (index) => {
-  if (post.value.images && post.value.images.length > index) {
-    post.value.images.splice(index, 1); // 刪除指定索引的圖片
   }
 };
   // 獲取評論數據
@@ -173,11 +160,16 @@ const removeImage = (index) => {
   } else {
     try {
       const response = await axiosapi.get(`/comment`);
-      comments.value = response.data.filter(comment => comment.post.postId === postId); // 根據 postId 過濾評論
+      // comments.value = response.data.filter(comment => comment.post.postId === postId); // 根據 postId 過濾評論
     } catch (error) {
       console.error("獲取評論數據失敗:", error);
     }
   }
+};
+
+// 導航到編輯頁面
+const goToEditPage = (postId: number) => {
+  router.push({ name: "editPost-link", params: { id: postId } });
 };
 
 // 監聽路由參數變化
@@ -203,12 +195,12 @@ const handleSubmit = async () => {
   if (!newComment.value) return;
 
   try {
-    await axiosapi.post(`/comment`, { post: { postId: postId },userDetail: { id: userId },comment: newComment.value
+    await axiosapi.post(`/comment`, { post: { postId: postId },userDetail: { id: userStore.userId },comment: newComment.value
     });
 
     // 提交成功後，立即更新評論列表
     const newCommentData = { 
-      userDetail: { id: userId },
+      userDetail: { id: userStore.userId },
       comment: newComment.value,
       createdAt: new Date().toISOString()
     };
@@ -218,7 +210,7 @@ const handleSubmit = async () => {
 
     newComment.value = '';
   } catch (error) {
-    console.error("新增評論失敗:", error);
+    console.error("新增評論失敗:", error.response ? error.response.data : error);
   }
 };
 
@@ -226,6 +218,11 @@ const handleSubmit = async () => {
   const saveCommentsToLocalStorage = () => {
   localStorage.setItem(`comments_${postId}`, JSON.stringify(comments.value));
 };
+// // 處理圖片載入錯誤
+// const handleImageError = (event: Event) => {
+//   const target = event.target as HTMLImageElement;
+//   target.src = 'https://via.placeholder.com/500'; // 替換為佔位符圖片 URL
+// };
 
   // 刪除評論
   const deleteComment = async (commentId: number) => {
@@ -252,43 +249,6 @@ const handleSubmit = async () => {
   }
 };
 
-// 定義 toggleEdit 函數
-const toggleEdit = (item) => {
-  item.isEditing = !item.isEditing;
-  if (item.isEditing) {
-    item.editContent = item.comment;
-  } else {
-    editComment(item.commentId, item.editContent); // 保存編輯
-  }
-};
-// 編輯文章
-const editPost = () => {
-  isEditing.value = true;
-};
-
-// 保存編輯的內容
-const savePost = async () => {
-  try {
-    await axiosapi.put(`/post/${post.value.postId}`, { 
-      // postTitle: post.value.postTitle, 
-      contentText: post.value.contentText,
-      images: post.value.images
-    }); 
-    isEditing.value = false; // 退出編輯模式
-  } catch (error) {
-    console.error("保存貼文錯誤:", error.response ? error.response.data : error);
-  }
-};
-
-// 確認刪除
-const confirmDelete = async () => {
-  try {
-    await axiosapi.delete(`/post/${post.value.postId}`); // 刪除 API
-    // 可以在這裡添加導航到列表頁或顯示成功提示
-  } catch (error) {
-    console.error("刪除貼文錯誤:", error.response ? error.response.data : error);
-  }
-};
 // 點擊喜歡
 const toggleLike = async () => {
   if (post.value.isLiked) {
@@ -303,7 +263,7 @@ const toggleLike = async () => {
   } else {
     // 用戶尚未點讚，執行新增讚
     try {
-      await axiosapi.post(`/likes`, { posts: { postId: postId }, userDetail: { id: userId } });
+      await axiosapi.post(`/likes`, { posts: { postId: postId }, userDetail: { id: userStore.userId } });
       post.value.isLiked = true;
       likes.value++;
     } catch (error) {
@@ -329,7 +289,7 @@ const toggleCollect = async () => {
     try {
       await axiosapi.post(`/collections`, {
         post: { postId: postId },
-        userDetail: { id: userId },
+        userDetail: { id: userStore.userId },
       });
       post.value.isCollected = true;
       collects.value += 1;
@@ -362,70 +322,35 @@ onMounted(async () => {
   await fetchComments();
   loading.value = false; // 完成載入
 });
+
 </script>
 
 <style scoped>
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  width: 100vw;
-  height: 100vh;
-  padding: 16px;
+  width: 80%; /* 根據需要調整縮小的百分比 */
+  max-width: 1200px; /* 可以設定一個最大寬度 */
+  margin: 0 auto; /* 居中對齊 */
 }
-
 .post-content {
-  max-width: 1200px;
-  width: 100%;
-  background-color: white;
-  padding: 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
 }
 
-.actions {
-  margin-top: 16px;
-}
-
-.comment-list {
-  margin-top: 16px;
-}
-
-.new-comment {
-  width: 100%;
-  max-width: 800px;
-  height: auto;
-  padding: 16px;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  margin-top: 16px;
-  overflow: hidden;
-}
-
-.comment-textarea {
-  font-size: 16px;
-}
-
-.comment-time {
-  color: #888;
-  font-size: 12px;
-}
 .post-images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* 圖片之間的間距 */
+  display: flex; 
+  flex-wrap: wrap; /* 允许换行 */
+  justify-content: center; /*图片在容器中水平居中*/
+  gap: 10px;
+  margin: auto; /* 容器在页面上居中 */
+  max-width: 80%; 
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 .post-image {
-  max-width: 100%; /* 確保圖片不超過容器寬度 */
-  height: auto; /* 自動調整高度 */
-}
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* 按鈕之間的間距 */
-}
-.more-actions {
-  margin-left: 8px;
+  width: 100%;
+  max-width: 100%; 
+  height: auto; /* auto高度自动调整 */
+  object-fit: cover; /* 确保图片在容器中覆盖并保持比例 */
+  border-radius: 8px; 
+  width: calc(33.333% - 10px); 
 }
 </style>

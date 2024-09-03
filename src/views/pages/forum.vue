@@ -123,10 +123,11 @@ export default defineComponent({
 
     function callFind() {
       axiosapi.get("/post").then(function (response) {
-        console.log("response: ", response.data);
-        
+        console.log("回復:", response.data);
+        // 過濾掉已刪除的帖子名字要一樣
+        listData.value = response.data.filter(post => !post.deletedAt);
+        pagination.value.total = listData.value.length; 
         // 確保獲取的數據中包含 postId、postTitle 和 images
-        listData.value = response.data; 
         pagination.value.total = listData.value.length; 
       }).catch(function (error) {
         console.error("發現錯誤", error.response ? error.response.data : error.message);
