@@ -3,12 +3,13 @@
     <div>
       <Navigationbar></Navigationbar>
     </div>
-
   </header>
+
   
 <RouterView></RouterView>
-<footer>
 
+
+<footer>
   <Footerpage></Footerpage>  
 </footer>
 </template>
@@ -18,4 +19,6 @@
     import Navigationbar from './views/Navigationbar.vue';
     import Footerpage from '@/views/Footerpage.vue'
 </script>
-<style scoped></style>
+<style scoped>
+
+</style>

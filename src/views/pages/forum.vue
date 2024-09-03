@@ -79,7 +79,7 @@
               </template>
               <a-list-item-meta :description="item.contentText">
                 <template #title>
-                  <router-link :to="`/comment/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
+                  <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
                 </template>
                 <template #avatar><a-avatar :src="item.avatar" /></template>
               </a-list-item-meta>
@@ -94,7 +94,8 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
-import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue'; 
+import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
+import useUserStore from "@/stores/user.js";
 
 export default defineComponent({
   components: {
@@ -105,8 +106,10 @@ export default defineComponent({
     MessageOutlined,
   },
   setup() {
+    const userStore = useUserStore();
     const listData = ref([]); // 使用 ref 來存儲文章數據
-    const path = process.env.VITE_POST_IMAGE_URL; // 確保環境變數正確設置
+    const path = import.meta.env.VITE_POST_IMAGE_URL; 
+
     const pagination = ref({
       onChange: (page: number) => {
         console.log(page);
@@ -121,14 +124,13 @@ export default defineComponent({
 
     function callFind() {
       axiosapi.get("/post").then(function (response) {
-        console.log("response: ", response);
+        console.log("response: ", response.data);
         
         // 確保獲取的數據中包含 postId、postTitle 和 images
         listData.value = response.data; 
         pagination.value.total = listData.value.length; 
-
       }).catch(function (error) {
-        console.log("callFind error", error);
+        console.error("發現錯誤", error.response ? error.response.data : error.message);
       });
     }
 
@@ -154,9 +156,9 @@ export default defineComponent({
 
     const commentPost = (id: string) => {
       const post = listData.value.find(item => item.postId === id);
-      if (post) {
-        post.comments += 1; 
-      }
+      // if (post) {
+      //   post.comments += 1; 
+      // }
     };
 
     return {
@@ -166,6 +168,7 @@ export default defineComponent({
       collectPost,
       commentPost,
       path,
+      userStore,
     };
   },
 });
@@ -174,6 +177,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+<<<<<<< HEAD
 .forum-page {
   display: flex;
   flex-direction: column;
@@ -202,31 +206,32 @@ export default defineComponent({
   border-radius: 8px;
   padding: 32px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-.rule-box {
-  background-color: #f7f7f7;
-  padding: 24px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-}
-
+=======
 .buttons {
   display: flex;
   justify-content: center;
   margin-top: 16px;
 }
-
-.ts-checklist {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-
 img {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  height: auto;
+  width: 100%; 
+  height: 200px; 
+  object-fit: cover;
+}
+.content {
+  width: 90%; /*或80%*/
+  max-width: 1200px; 
+  margin: 0 auto; 
+  background-color: white; 
+  border-radius: 8px; 
+  padding: 32px; 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+  box-sizing: border-box; 
+>>>>>>> origin/MLJ
+}
+.rule-box {
+  background-color: #f0f0f0;
+  padding: 1px 24px; /* 內邊距 */
+  border-radius: 8px;
 }
 
 :global(.footer) {

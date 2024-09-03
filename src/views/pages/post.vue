@@ -88,42 +88,47 @@ const handleSubmit = async () => {
     console.log('驗證透過');
 
     try {
-          const userStore = useUserStore(); // 獲取用戶存儲
-          // 先發送文章數據
-        const postData = {
-              userDetail: { id: userStore.userId }, // 確保這裡獲取正確的用戶 ID
+        const userStore = useUserStore();
+        console.log('User Store:', userStore);//
+        console.log('User ID:', userStore.userId);//
+        
+            const postData = {
+            userDetail: { id: userStore.userId }, 
             postTitle: title.value,
             contentType: "論壇",
             contentText: description.value,
         };
 
-          // 發送 POST 請求到後端 API
+        // 發送 POST 請求到後端 API
         const response = await axiosapi.post('/post', postData);
         console.log('貼文已創立:', response.data);
         const postId = response.data.postId;
-          // 將文件添加到FormData
+
+        //如果有上傳的圖片，則處理圖片上傳
+        if (fileList.value.length > 0) {
         const formData = new FormData();
         fileList.value.forEach(file => {
             if (file.originFileObj) {
-                  formData.append('file', file.originFileObj); // 將每個文件添加到FormData中，使用 'file' 作為鍵
+                formData.append('file', file.originFileObj); 
             }
         });
-          formData.append('postId', postId); // 將 postId 添加到 FormData 中
+        formData.append('postId', postId); 
 
           // 將圖片上傳請求發送到後端
-        // const imageResponse = await axiosapi.post('/images', formData, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data',
-        //     },
-        // });
+        const imageResponse = await axiosapi.post('/images', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
 
-        // console.log('圖片已上傳:', imageResponse.data);
-          // 提交後清空表單
+        console.log('圖片已上傳:', imageResponse.data);
+    }
+        // 提交後清空表單
         title.value = '';
         description.value = '';
-          fileList.value = []; // 清空上傳的文件列表
+        fileList.value = []; 
 
-          // 跳轉到論壇頁面
+        // 跳轉到論壇頁面
         router.push({ name: 'forum-link' });
     } catch (error) {
         console.error('建立貼文時出錯:', error);

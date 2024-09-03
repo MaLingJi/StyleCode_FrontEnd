@@ -26,6 +26,7 @@
 
 
 import { createRouter, createWebHistory } from 'vue-router';
+<<<<<<< HEAD
 import { useUserStore } from '@/stores/user';
 import Comment from '@/components/Comment.vue';
 // import backstage from '@/views/pages/backstage.vue'
@@ -52,6 +53,33 @@ const routes = [
     path: '/',
     name: 'home-link',
     component: Home // 確保你有一個 Home 組件
+=======
+import useUserStore from '@/stores/user'; 
+import comment from '@/views/pages/comment.vue'; 
+
+const routes = [
+  {
+    path: '/post/:postId', // 使用冒號來定義路由參數
+    component: comment,
+    props: route => {
+      const userStore = useUserStore(); // 獲取用戶存儲
+      const postId = Number(route.params.postId);
+
+      // 確保 postId 是有效的
+      if (isNaN(postId)) {
+        console.error("Invalid postId:", route.params.postId);
+        return {
+          postId: null,
+          userId: userStore.userId 
+        };
+      }
+
+      return {
+        postId,
+        userId: userStore.userId 
+      };
+    }
+>>>>>>> origin/MLJ
   }
 ];
 
@@ -60,6 +88,7 @@ const router = createRouter({
   routes
 });
 
+<<<<<<< HEAD
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
 
@@ -93,3 +122,6 @@ export default router;
 // }
 
 // 這樣，當未登錄用戶嘗試訪問後台時，他們會被重定向到登錄頁面，登錄成功後會被帶回後台（如果他們有權限的話）。
+=======
+export default router;
+>>>>>>> origin/MLJ

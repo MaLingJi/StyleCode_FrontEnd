@@ -27,8 +27,8 @@ export default defineConfig({
   },
   // 添加環境變數的配置
   define: {
-    'process.env': {
-      VITE_POST_IMAGE_URL: process.env.VITE_POST_IMAGE_URL,
-    },
+    // 'process.env': {
+    //   VITE_POST_IMAGE_URL: process.env.VITE_POST_IMAGE_URL,
+    // },
   },
 });
