@@ -49,7 +49,7 @@ const fetchOrders = async () => {
     try {
         console.log(formatDate(range.value.start))
         console.log(formatDate(range.value.end))
-        const response = await axiosapi.get(`/order/findByDate`, {
+        const response = await axiosapi.get(`/admin/findByDate`, {
 
             params: {
                 startDate: formatDate(range.value.start),

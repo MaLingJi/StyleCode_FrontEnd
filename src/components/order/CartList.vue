@@ -151,7 +151,7 @@ const removeItem = (item) => {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: 'rgb(35 40 44)',
-        cancelButtonColor: '#d33',
+        cancelButtonColor: '#9e9e9e',
         confirmButtonText: '確認',
         cancelButtonText: '取消'
     }).then((result) => {

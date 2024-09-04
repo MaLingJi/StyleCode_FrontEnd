@@ -4,14 +4,14 @@
       <div class="column is-7-wide">
         <!-- 照片輪播 -->
         <div class="carousel-container">
-           <!-- 主要圖片展示 -->
+          <!-- 主要圖片展示 -->
           <transition name="fade" mode="out-in">
             <div class="ts-image main-image" :key="currentImageIndex" @click="openLightbox(currentImageIndex)">
-                <!-- 當前圖片 -->
+              <!-- 當前圖片 -->
               <img :src="getImageUrl(currentImage)" :alt="product.productName" />
             </div>
           </transition>
-           <!-- 照片輪播按鈕，往前一張或下一張 -->
+          <!-- 照片輪播按鈕，往前一張或下一張 -->
           <button class="carousel-button prev" @click="prevImage">&lt;</button>
           <button class="carousel-button next" @click="nextImage">&gt;</button>
         </div>
@@ -33,7 +33,7 @@
           NT$ {{ selectedDetail ? selectedDetail.price : " " }}
         </p>
         <div class="ts-divider"></div>
-          <!-- 顏色和尺寸選擇 -->
+        <!-- 顏色和尺寸選擇 -->
         <div class="ts-grid">
           <div class="column is-8-wide">
             <div class="ts-select is-fluid">
@@ -77,7 +77,7 @@
             </button>
           </div>
         </div>
-          <!-- 商品描述區域 -->
+        <!-- 商品描述區域 -->
         <div class="ts-box is-segment has-top-spaced-large">
           <div class="ts-content">
             <h3 class="ts-header">商品說明</h3>
@@ -93,15 +93,15 @@
       </div>
     </div>
 
-      <!-- Lightbox 組件，顯示點擊的圖片 -->
+    <!-- Lightbox 組件，顯示點擊的圖片 -->
     <div v-if="lightboxVisible" class="lightbox" @click="closeLightbox">
       <div class="lightbox-content" @click.stop>
         <img :src="getImageUrl(currentLightboxImage)" :alt="product.productName" />
         <!-- Lightbox 關閉按鈕 -->
         <button class="lightbox-close" @click="closeLightbox">&times;</button>
-         <!-- Lightbox 上一張圖片按鈕 -->
+        <!-- Lightbox 上一張圖片按鈕 -->
         <button class="lightbox-prev" @click="prevLightboxImage">&lt;</button>
-          <!-- Lightbox 下一張圖片按鈕 -->
+        <!-- Lightbox 下一張圖片按鈕 -->
         <button class="lightbox-next" @click="nextLightboxImage">&gt;</button>
       </div>
     </div>
@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch  } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js"
@@ -191,8 +191,8 @@ onMounted(async () => {
 // 獲取可選擇的顏色
 const availableColors = computed(() => {
   return [
- // Set 是 JavaScript 中的一種數據結構，它只儲存唯一值。這裡使用 new Set(...) 來過濾掉重複的顏色，確保每種顏色只出現一次。
-    ...new Set( 
+    // Set 是 JavaScript 中的一種數據結構，它只儲存唯一值。這裡使用 new Set(...) 來過濾掉重複的顏色，確保每種顏色只出現一次。
+    ...new Set(
       // map 方法從 productDetails 數組中提取每個商品詳細信息的 color 屬性。map 會返回一個新數組，其中包含所有商品的顏色。
       product.value.productDetails?.map((detail) => detail.color) || []
     ), // (?.) 是可選鏈操作符，確保在 productDetails 為 undefined 或 null 的情況下不會導致錯誤，而是返回 undefined。
@@ -269,8 +269,8 @@ const addToCart = () => {
       title: '請先登入',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: 'rgb(35 40 44)',
+      cancelButtonColor: '#9e9e9e',
       confirmButtonText: '登入',
       cancelButtonText: '再看一下'
     }).then((result) => {
@@ -281,7 +281,7 @@ const addToCart = () => {
     return;
   }
 
-  axiosapi.post('/cart/add', {
+  axiosapi.post('/member/cart/add', {
     "userId": user,
     "productDetailsId": selectedDetail.value.productDetailsId,
     "quantity": quantity.value
@@ -308,13 +308,13 @@ const addToCart = () => {
     .catch(
       error => {
         Swal.fire({
-        icon: 'error',
-        title: '加入購物車失敗',
-        text: '庫存不足',
-        showConfirmButton: false,
-        timer: 1000,
-        timerProgressBar: true,
-      })
+          icon: 'error',
+          title: '加入購物車失敗',
+          text: '庫存不足',
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        })
         console.error(error)
       }
     )
@@ -355,19 +355,22 @@ const currentLightboxImage = computed(() => {
 
 <style scoped>
 .product-details {
-  padding: 2rem 0; /* 商品詳情頁面的內邊距 */
+  padding: 2rem 0;
+  /* 商品詳情頁面的內邊距 */
 }
 
 .carousel-container {
   position: relative;
   width: 100%;
-  max-width: 500px; /* 照片輪播區域的最大寬度 */
+  max-width: 500px;
+  /* 照片輪播區域的最大寬度 */
   margin: 0 auto;
 }
 
 .main-image {
   width: 100%;
-  padding-bottom: 100%; /* 保持圖片比例 */
+  padding-bottom: 100%;
+  /* 保持圖片比例 */
   position: relative;
   overflow: hidden;
 }
@@ -378,7 +381,8 @@ const currentLightboxImage = computed(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 圖片覆蓋容器，保持比例 */
+  object-fit: cover;
+  /* 圖片覆蓋容器，保持比例 */
 }
 
 
@@ -395,17 +399,20 @@ const currentLightboxImage = computed(() => {
 }
 
 .carousel-button.prev {
-  left: 10px; /* 上一張按鈕的位置 */
+  left: 10px;
+  /* 上一張按鈕的位置 */
 }
 
 .carousel-button.next {
-  right: 10px; /* 下一張按鈕的位置 */
+  right: 10px;
+  /* 下一張按鈕的位置 */
 }
 
 .thumbnail-grid {
   margin-top: 1rem;
   display: flex;
-  justify-content: center; /* 縮略圖居中 */
+  justify-content: center;
+  /* 縮略圖居中 */
 }
 
 .thumbnail {
@@ -422,14 +429,16 @@ const currentLightboxImage = computed(() => {
 .thumbnail.active,
 .thumbnail:hover {
   opacity: 1;
-  border: 2px solid var(--ts-gray-400);/* 選中或懸停時的邊框樣式 */
+  border: 2px solid var(--ts-gray-400);
+  /* 選中或懸停時的邊框樣式 */
 }
 
 
 .thumbnail img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 縮略圖覆蓋容器，保持比例 */
+  object-fit: cover;
+  /* 縮略圖覆蓋容器，保持比例 */
 }
 
 .fade-enter-active,
@@ -465,7 +474,8 @@ const currentLightboxImage = computed(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 背景半透明 */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* 背景半透明 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -481,7 +491,8 @@ const currentLightboxImage = computed(() => {
 .lightbox-content img {
   max-width: 100%;
   max-height: 90vh;
-  object-fit: contain; /* Lightbox 圖片保持比例 */
+  object-fit: contain;
+  /* Lightbox 圖片保持比例 */
 }
 
 .lightbox-close,
@@ -498,7 +509,8 @@ const currentLightboxImage = computed(() => {
 
 .lightbox-close {
   top: 10px;
-  right: 10px;/* 關閉按鈕的位置 */
+  right: 10px;
+  /* 關閉按鈕的位置 */
 }
 
 .lightbox-prev {

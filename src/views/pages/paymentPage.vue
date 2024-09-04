@@ -83,8 +83,8 @@ const lpPayment = async () => {
                 text: '您確定要進行付款嗎？',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: 'rgb(35 40 44)',
+                cancelButtonColor: '#9e9e9e',
                 confirmButtonText: '確認付款',
                 cancelButtonText: '取消'
             })

@@ -67,7 +67,7 @@
                                             <span class="ts-text">{{ order.refundReason }} </span>
                                             <div class="ts-wrap" v-if="order.refundStatus == 1">
                                                 <button class="ts-button" @click="agreeRefund(order)">同意</button>
-                                                <button class="ts-button" @click="rejectRefund(order)">拒絕</button>
+                                                <button class="ts-button" @click="rejectRefund(order)" style="background-color:#9e9e9e;border: 0;">拒絕</button>
                                             </div>
                                             <div v-else>
                                                 狀態:{{getStatusText(order.status)}}
@@ -110,7 +110,7 @@ const router = useRouter()
 
 const loadOrders = async () => {
     try {
-        const response = await axiosapi.get(`/order/findByRefundStatus/${status.value}`);
+        const response = await axiosapi.get(`/admin/findByRefundStatus/${status.value}`);
         console.log('findByRefundStatus : ' + JSON.stringify(response.data));
         if (response.data !== '') {
             orders.value = response.data;
@@ -156,7 +156,7 @@ const getOrderDetails = async (orderId) => {
 
 const agreeRefund = async (order) => {
     try {
-        const response = await axiosapi.post('/pay/agreeRefund', {
+        const response = await axiosapi.post('/admin/agreeRefund', {
             orderId: order.orderId
         });
         if (response.data != '') {
@@ -188,7 +188,7 @@ const agreeRefund = async (order) => {
 
 const rejectRefund = async (order) => {
     try {
-        const response = await axiosapi.post('/pay/rejectRefund', {
+        const response = await axiosapi.post('/admin/rejectRefund', {
             orderId: order.orderId
         });
         if (response.data != '') {
