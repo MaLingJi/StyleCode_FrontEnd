@@ -32,8 +32,6 @@ const routes = [
   { name: "403-link", path: "/403", component: Forbidden },
   
   { name: "secure-login-link", path: "/secure/login", component: Login },
-  { name: "shop-link", path: "/shop", component: Shop },
-  { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
   { name: "forum-link", path: "/forum", component: Forum },
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
@@ -43,19 +41,22 @@ const routes = [
   
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
-  { name: "profile-ling", path: "/secure/profile", component: profile},
+  { name: "profile-ling", path: "/secure/profile/:initialView?", component: profile ,  props: true},
   { name: "editPost-link", path: "/editPost/:id", component: editPost},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post },
-  { name: 'addProduct', path: '/addproduct',component: addProduct},
-  { name: "productDetails-link", path: '/product/:id', component: productDetails},
+  
+  { name: "refund-link", path: "/refund/:orderId", component: refund},
+  { name: "refundReview-link", path: "/refundReview", component: refundReview},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
   { name: "paymentPage-link", path: "/payment", component: paymentPage },
   { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
-  { name: "refund-link", path: "/refund/:orderId", component: refund},
-  { name: "refundReview-link", path: "/refundReview", component: refundReview},
+  
+  { name: "shop-link", path: "/shop", component: Shop },
+  { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
+  { name: 'addProduct', path: '/addproduct',component: addProduct},
   { name: "profile-ling", path: "/secure/profile/", component: profile},
 ];
 
