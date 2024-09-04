@@ -80,6 +80,7 @@
               <a-list-item-meta :description="item.contentText">
                 <template #title>
                   <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
+                  <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
                 </template>
                 <template #avatar><a-avatar :src="item.avatar" /></template>
               </a-list-item-meta>

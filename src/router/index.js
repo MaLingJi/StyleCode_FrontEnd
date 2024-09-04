@@ -74,6 +74,18 @@ const routes = [
         };
       }
 
+      const userStore = useUserStore(); // 獲取用戶存儲
+      const postId = Number(route.params.postId);
+
+      // 確保 postId 是有效的
+      if (isNaN(postId)) {
+        console.error("Invalid postId:", route.params.postId);
+        return {
+          postId: null,
+          userId: userStore.userId 
+        };
+      }
+
       return {
         postId,
         userId: userStore.userId 
