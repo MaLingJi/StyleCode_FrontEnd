@@ -36,17 +36,17 @@
           <div class="ts-content is-dense">
             <div class="ts-grid">
               <div class="column is-fluid">
-                <div class="ts-header">訂單與出貨</div>
+                <div class="ts-header">訂單</div>
               </div>
               <div class="column">
-                <span class="ts-icon is-truck-icon"></span>
+                <span class="ts-icon is-clipboard-icon"></span>
               </div>
             </div>
           </div>
           <div class="ts-menu is-dense is-small">
-            <a class="item" @click=switchComp(OrderManagement)>管理訂單</a>
-            <a href="#!" class="item">設定物流</a>
-            <a href="#!" class="item">月結統計</a>
+            <a class="item" @click=switchComp(OrderManagement)>訂單分析</a>
+            <a href="#!" class="item">訂單列表</a>
+            <a class="item" @click=switchComp(refundReview)>退款申請</a>
           </div>
           <div class="ts-divider has-top-spaced-small"></div>
           <div class="ts-content is-dense">
@@ -100,6 +100,7 @@ import ProductManager from '@/components/product/ProductManager.vue'
 import ProductDetailManager from '@/components/product/ProductDetailManager.vue'
 import { shallowRef, onMounted } from 'vue';
 import OrderManagement from '@/components/order/OrderManage.vue';
+import refundReview from './refundReview.vue';
 
 import useUserStore from "@/stores/user.js"
     const userStore = useUserStore();

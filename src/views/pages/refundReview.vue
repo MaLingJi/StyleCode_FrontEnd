@@ -1,15 +1,13 @@
-<template>
-    <!DOCTYPE html>
-    <html class="is-secondary" style="width: 900px;">
+/<template>
     <div class="ts-container" style="margin-top: 10px;">
         <div class="ts-selection is-fluid">
             <label class="item">
                 <input type="radio" name="language" value="1" v-model="status" />
-                <div class="text">已付款</div>
+                <div class="text">申請中</div>
             </label>
             <label class="item">
                 <input type="radio" name="language" value="2" v-model="status" />
-                <div class="text">已取消</div>
+                <div class="text">已審核</div>
             </label>
         </div>
     </div>
@@ -23,7 +21,7 @@
                         <th>總金額</th>
                         <th>付款方式</th>
                         <th></th>
-                        <th></th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -38,7 +36,6 @@
                                     {{ expandedOrderId === order.orderId ? '收起' : '展開' }}
                                 </button>
                             </td>
-                            <td><button class="ts-button is-outlined" @click="refund(order)">退款</button></td>
                         </tr>
                         <tr v-if="expandedOrderId === order.orderId">
                             <td colspan="6" class="is-secondary is-padded is-insetted">
@@ -61,6 +58,18 @@
                                             </tr>
                                         </tbody>
                                     </table>
+
+                                    <div class="ts-box" style="margin-top: 20px;">
+                                        <div class="ts-content"
+                                            style="display: flex; justify-content: space-between;align-items: center;">
+                                            <span class="ts-text">退款理由:{{ order.refundReason }}</span>
+                                            <div class="ts-wrap">
+                                                <button class="ts-button" @click="agreeRefund(order)">同意</button>
+                                                <button class="ts-button">拒絕</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <div v-else>
                                     正在加載訂單詳情...
@@ -77,7 +86,6 @@
         </div>
     </div>
 
-    </html>
 </template>
 
 <script setup>
@@ -86,7 +94,7 @@ import { ref } from 'vue';
 import { watch } from 'vue';
 import useUserStore from "@/stores/user.js"
 import { useRouter } from 'vue-router';
-
+import Swal from 'sweetalert2';
 
 const status = ref(1);
 const orders = ref([]);
@@ -96,12 +104,11 @@ const user = useUserStore().userId;
 const router = useRouter()
 
 
-
 watch(status, () => {
     axiosapi
-        .get(`/order/find/${user}?status=${status.value}`)
+        .get(`/order/findByRefundStatus/${status.value}`)
         .then(response => {
-            console.log(response)
+            console.log('findByRefundStatus : ' + JSON.stringify(response.data))
             if (response.data !== '') {
                 orders.value = response.data;
             } else {
@@ -135,7 +142,6 @@ const toggleOrderDetails = orderId => {
 const getOrderDetails = async (orderId) => {
     await axiosapi.get('/order/findOd/' + orderId)
         .then(response => {
-            console.log(response)
             orderDetails.value = response.data
         }).catch(
             error => {
@@ -144,17 +150,38 @@ const getOrderDetails = async (orderId) => {
         )
 }
 
-const refund = (order) => {
-    router.push(`/refund/${order.orderId}`)
+const agreeRefund = async (order) => {
+    try {
+        const response = await axiosapi.post('/pay/agreeRefund', {
+            orderId: order.orderId
+        });
+        if (response.data != '') {
+            console.log(response.data)
+            Swal.fire({
+                icon: 'success',
+                title: '操作成功',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+            })
+        } else {
+            console.log(response.data)
+            Swal.fire({
+                icon: 'error',
+                title: '請稍後再試',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        alert('操作出錯');
+    }
 };
+
 
 
 </script>
 
-<style>
-.ts-table th,
-.ts-table td,
-.ts-table tr {
-    text-align: center;
-}
-</style>
+<style></style>

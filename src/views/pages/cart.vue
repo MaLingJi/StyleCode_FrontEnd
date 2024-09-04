@@ -51,6 +51,8 @@ import { computed, onMounted, ref } from 'vue';
 import router from '@/router/router';
 import Circle from '@/components/order/Circle.vue';
 import useUserStore from "@/stores/user.js"
+import Swal from 'sweetalert2';
+
 
 
 const cartItems = ref([]);
@@ -74,7 +76,7 @@ onMounted(loadCartItems);
 
 const updateCartItems = (updatedItems) => {
         cartItems.value = updatedItems;
-        console.log("updateValue:" + cartItems.value)
+        console.log(" After update Value: " + JSON.stringify(cartItems.value))
 };
 
 
@@ -86,7 +88,6 @@ const totalAmount = computed(() => {
                 const price = Number(item.productPrice)
                 const quantity = Number(item.quantity)
                 total += price * quantity;
-                console.log(`Item: ${item.productName}, Price: ${price}, Quantity: ${quantity}, Subtotal: ${price * quantity}`);
         }
         console.log("Total amount:", total);
         return total;
@@ -106,11 +107,25 @@ const checkInventoryAndProceed = async () => {
                                 quantity: item.quantity,
                         }))
                 })
-                console.log('responsedata:' + response.data);
-                if (response.data != '') {
-                        router.push('/payment')
+                console.log('response data :' + JSON.stringify(response.data));
+                if (response.data === 'ok') {
+                        Swal.fire({
+                                title: '前往中!',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                        Swal.showLoading()
+                                }
+                        }).then((result) => {
+                                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                                if (result.dismiss === Swal.DismissReason.timer) {
+                                        router.push('/payment')
+                                }
+                        })
                 }
-                else{
+                else {
                         Swal.fire({
                                 icon: 'error',
                                 title: '加入購物車失敗',

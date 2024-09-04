@@ -115,6 +115,7 @@ import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js"
 import Swal from "sweetalert2";
+import { useRouter } from 'vue-router';
 
 const route = useRoute(); // 使用 vue-router 獲取當前路由
 const product = ref({}); // 用於存儲產品數據
@@ -124,6 +125,7 @@ const quantity = ref(1); // 存儲購買數量，預設為 1
 const selectedDetail = ref(null); // 存儲選中的商品詳細信息
 const currentImageIndex = ref(0); // 存儲當前顯示的圖片索引
 const user = useUserStore().userId // 從 Pinia 中獲取當前用戶 ID
+const router = useRouter();
 
 // 獲取圖片的完整 URL
 const getImageUrl = (imageName) => {
@@ -261,6 +263,24 @@ const addToCart = () => {
     });
     return;
   }
+
+  if (!user) {
+    Swal.fire({
+      title: '請先登入',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '登入',
+      cancelButtonText: '再看一下'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTimeout(() => { router.push('/secure/login') }, 1000)
+      }
+    });
+    return;
+  }
+
   axiosapi.post('/cart/add', {
     "userId": user,
     "productDetailsId": selectedDetail.value.productDetailsId,
@@ -435,7 +455,7 @@ const currentLightboxImage = computed(() => {
   max-width: 100%;
   height: auto;
   margin-top: 1rem;
-  object-fit: cover; 
+  object-fit: cover;
 }
 
 /* Lightbox 樣式 */
