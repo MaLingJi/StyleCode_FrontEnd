@@ -107,7 +107,17 @@ const checkInventoryAndProceed = async () => {
                                 quantity: item.quantity,
                         }))
                 })
-                console.log('response data :' + JSON.stringify(response.data));
+                console.log('cartItem:' + cartItems.value)
+                if (cartItems.value == '') {
+                        Swal.fire({
+                                icon: 'error',
+                                title: '提交失敗',
+                                text: '購物車不得為空',
+                                confirmButtonText: '確認',
+                                showConfirmButton: true
+                        })
+                        return
+                }
                 if (response.data === 'ok') {
                         Swal.fire({
                                 title: '前往中!',

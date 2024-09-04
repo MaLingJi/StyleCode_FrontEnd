@@ -79,17 +79,18 @@ const lpPayment = async () => {
         if (response.data) {
             // 重定向到 LINE Pay 支付頁面
             Swal.fire({
-                title: '前往中!',
-                icon: 'info',
-                showConfirmButton: false,
-                timer: 1000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading()
-                }
-            }).then((result) => {
+                title: '確認付款',
+                text: '您確定要進行付款嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '確認付款',
+                cancelButtonText: '取消'
+            })
+            .then((result) => {
                 // 確保 SweetAlert 的計時器結束後才執行路由跳轉
-                if (result.dismiss === Swal.DismissReason.timer) {
+                if (result.isConfirmed) {
                     window.location.href = response.data
                 }
             })

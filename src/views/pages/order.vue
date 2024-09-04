@@ -9,7 +9,11 @@
             </label>
             <label class="item">
                 <input type="radio" name="language" value="2" v-model="status" />
-                <div class="text">已取消</div>
+                <div class="text">退款申請中</div>
+            </label>
+            <label class="item">
+                <input type="radio" name="language" value="3" v-model="status" />
+                <div class="text">已退款</div>
             </label>
         </div>
     </div>
@@ -38,7 +42,8 @@
                                     {{ expandedOrderId === order.orderId ? '收起' : '展開' }}
                                 </button>
                             </td>
-                            <td><button class="ts-button is-outlined" @click="refund(order)">退款</button></td>
+                            <td v-if="order.status == 1"><button class="ts-button is-outlined"
+                                    @click="refund(order)">退款</button></td>
                         </tr>
                         <tr v-if="expandedOrderId === order.orderId">
                             <td colspan="6" class="is-secondary is-padded is-insetted">
@@ -69,7 +74,7 @@
                         </tr>
                     </template>
                     <tr>
-                        <td class="is-secondary is-padded is-insetted" colspan="6">
+                        <td class="is-secondary is-padded is-insetted" colspan="7">
                         </td>
                     </tr>
                 </tbody>
@@ -86,7 +91,7 @@ import { ref } from 'vue';
 import { watch } from 'vue';
 import useUserStore from "@/stores/user.js"
 import { useRouter } from 'vue-router';
-
+import Swal from 'sweetalert2';
 
 const status = ref(1);
 const orders = ref([]);
@@ -145,8 +150,47 @@ const getOrderDetails = async (orderId) => {
 }
 
 const refund = (order) => {
-    router.push(`/refund/${order.orderId}`)
+    Swal.fire({
+                title: '確認付款',
+                text: '您確定要進行付款嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '確認付款',
+                cancelButtonText: '取消'
+            })
+            .then((result) => {
+                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                if (result.isConfirmed) {
+                    router.push(`/refund/${order.orderId}`)
+                }
+            })
+    Swal.fire({
+        title: '前往中!',
+        icon: 'info',
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading()
+        }
+    }).then((result) => {   
+        // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+        if (result.dismiss === Swal.DismissReason.timer) {
+            router.push(`/refund/${order.orderId}`)
+        }
+    })
 };
+
+// const getStatusText = (status) => {
+//     switch(status) {
+//         case 1: return '已付款';
+//         case 2: return '退款申請中';
+//         case 3: return '已退款';
+//     }
+// }
+
 
 
 </script>

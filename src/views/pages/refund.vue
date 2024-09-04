@@ -115,20 +115,21 @@ const sendRefundApply = async (event) => {
         });
         if (response.data) {
             Swal.fire({
-                title: '成功!',
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 1000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading()
-                }
-            }).then((result) => {
-                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    router.push('/secure/profile');
-                }
+                title: '確認退款',
+                text: '您確定要申請退款嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '確認申請退款',
+                cancelButtonText: '取消'
             })
+                .then((result) => {
+                    // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                    if (result.isConfirmed) {
+                        router.push('/secure/profile');
+                    }
+                })
         } else {
 
             console.log('退款申請失敗');
