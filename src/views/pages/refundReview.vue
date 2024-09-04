@@ -64,7 +64,7 @@
                                     <div class="ts-box" style="margin-top: 20px;">
                                         <div class="ts-content"
                                             style="display: flex; justify-content: space-between;align-items: center;">
-                                            <span class="ts-text">退款理由:{{ order.refundReason }}</span>
+                                            <span class="ts-text">{{ order.refundReason }} </span>
                                             <div class="ts-wrap" v-if="order.refundStatus == 1">
                                                 <button class="ts-button" @click="agreeRefund(order)">同意</button>
                                                 <button class="ts-button" @click="rejectRefund(order)">拒絕</button>

@@ -114,19 +114,19 @@ const checkInventoryAndProceed = async () => {
                                 title: '提交失敗',
                                 text: '購物車不得為空',
                                 confirmButtonText: '確認',
+                                confirmButtonColor: 'rgb(35 40 44)',
                                 showConfirmButton: true
                         })
                         return
                 }
                 if (response.data === 'ok') {
                         Swal.fire({
-                                title: '前往中!',
-                                icon: 'info',
-                                showConfirmButton: false,
+                                title: '讀取中...',
+                                allowOutsideClick: false,
                                 timer: 1000,
-                                timerProgressBar: true,
+                                showConfirmButton: false,
                                 didOpen: () => {
-                                        Swal.showLoading()
+                                        Swal.showLoading();
                                 }
                         }).then((result) => {
                                 // 確保 SweetAlert 的計時器結束後才執行路由跳轉

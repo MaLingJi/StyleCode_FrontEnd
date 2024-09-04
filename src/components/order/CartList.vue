@@ -13,7 +13,8 @@
             </thead>
             <tbody>
                 <tr v-for="item in cartItems" style="vertical-align: middle;">
-                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" style="width: 100px; height: 100px;" /></td>
+                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))"
+                            style="width: 100px; height: 100px;" /></td>
                     <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
                     <td>
@@ -52,7 +53,7 @@ import { ref } from 'vue';
 import { onMounted } from 'vue';
 import useUserStore from "@/stores/user.js"
 import { watch } from 'vue';
-
+import Swal from 'sweetalert2';
 
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
@@ -144,28 +145,37 @@ const updateQuantity = (item) => {
 }
 
 const removeItem = (item) => {
-    if (!confirm('確定要從購物車移除此商品嗎？')) return;
-
-    axiosapi.delete('/cart/delete', {
-        data: {
-            userId: user,
-            productDetailsId: item.productDetailsId
+    Swal.fire({
+        title: '移除商品',
+        text: '您確定要移除商品嗎？',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'rgb(35 40 44)',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確認',
+        cancelButtonText: '取消'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axiosapi.delete('/cart/delete', {
+                data: {
+                    userId: user,
+                    productDetailsId: item.productDetailsId
+                }
+            }).then(response => {
+                console.log(response);
+                if (response != null) {
+                    const index = props.cartItems.indexOf(item);
+                    if (index > -1) {
+                        props.cartItems.splice(index, 1);
+                    }
+                    updateParent();
+                }
+            }).catch(error => {
+                console.error('Failed to load cart items' + error)
+            })
         }
-    }).then(response => {
-        console.log(response);
-        if (response != null) {
-            const index = props.cartItems.indexOf(item);
-            if (index > -1) {
-                props.cartItems.splice(index, 1);
-            }
-            updateParent();
-        }
-    }).catch(error => {
-        console.error('Failed to load cart items' + error)
-    })
-
-
-
+    }
+    )
 }
 
 onMounted(async () => {

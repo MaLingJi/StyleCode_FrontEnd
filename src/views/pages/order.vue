@@ -150,46 +150,21 @@ const getOrderDetails = async (orderId) => {
 }
 
 const refund = (order) => {
+
     Swal.fire({
-                title: '確認付款',
-                text: '您確定要進行付款嗎？',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '確認付款',
-                cancelButtonText: '取消'
-            })
-            .then((result) => {
-                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
-                if (result.isConfirmed) {
-                    router.push(`/refund/${order.orderId}`)
-                }
-            })
-    Swal.fire({
-        title: '前往中!',
-        icon: 'info',
-        showConfirmButton: false,
+        title: '讀取中...',
+        allowOutsideClick: false,
         timer: 1000,
-        timerProgressBar: true,
+        showConfirmButton: false,
         didOpen: () => {
-            Swal.showLoading()
+            Swal.showLoading();
         }
-    }).then((result) => {   
-        // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+    }).then((result) => {
         if (result.dismiss === Swal.DismissReason.timer) {
             router.push(`/refund/${order.orderId}`)
-        }
-    })
+        };
+    });
 };
-
-// const getStatusText = (status) => {
-//     switch(status) {
-//         case 1: return '已付款';
-//         case 2: return '退款申請中';
-//         case 3: return '已退款';
-//     }
-// }
 
 
 
