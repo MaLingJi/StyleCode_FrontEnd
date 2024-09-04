@@ -8,7 +8,7 @@
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <div class="te-text">{{ products }}</div>
+                        <div class="te-text">{{ productTags }}</div>
                     </div>
                     <div class="ts-divider"></div>
                     <div class="ts-text is-heavy is-big">標題</div>
@@ -49,7 +49,7 @@
                             <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
                         </div>
                         <div class="ts-input is-underlined">
-                            <input type="text" v-model="newProduct.subcategory" placeholder="單品分類" />
+                            <input type="text" v-model="newProduct.subcategoryName" placeholder="單品分類" />
                         </div>
                         <div class="ts-wrap is-center-aligned">
                             <button class="ts-button is-primary" @click="isEditing ? updateProduct() : addProduct()">
@@ -60,12 +60,12 @@
                     </div>
 
                     <!-- 顯示已新增的單品 -->
-                    <div class="product-list" v-if="products.length">
-                        <div class="ts-card" v-for="(product, index) in products" :key="index"
+                    <div class="product-list" v-if="productTags.length">
+                        <div class="ts-card" v-for="(product, index) in productTags" :key="index"
                             @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
                             <div class="ts-content is-center-aligned">
                                 <p>商品: {{ product.productName }}</p>
-                                <p>分類: {{ product.subcategory }}</p>
+                                <p>分類: {{ product.subcategoryName }}</p>
 
                                 <!-- 編輯與刪除按鈕 -->
                                 <div class="product-controls" v-if="hoverIndexImages === index">
@@ -134,12 +134,13 @@ const editingIndex = ref(null);
 const showProductForm = ref(false);
 
 // 存儲單品資料
-const products = ref([]);
+const productTags = ref([]);
 
 // 新增的單品資料
 const newProduct = ref({
     productName: '',
-    subcategory: ''
+    subcategoryId: 1,
+    subcategoryName: ''
 });
 
 // 編輯單品
@@ -147,15 +148,15 @@ function editProduct(index) {
     isEditing.value = true;
     showProductForm.value = true;
     editingIndex.value = index;
-    newProduct.value.productName = products.value[index].productName;
-    newProduct.value.subcategory = products.value[index].subcategory;
+    newProduct.value.productName = productTags.value[index].productName;
+    newProduct.value.subcategoryName = productTags.value[index].subcategoryName;
 }
 
 // 更新單品
 function updateProduct() {
     if (editingIndex.value !== null) {
-        products.value[editingIndex.value].productName = newProduct.value.productName;
-        products.value[editingIndex.value].subcategory = newProduct.value.subcategory;
+        productTags.value[editingIndex.value].productName = newProduct.value.productName;
+        productTags.value[editingIndex.value].subcategoryName = newProduct.value.subcategoryName;
     }
     resetForm();
 }
@@ -171,12 +172,12 @@ function resetForm() {
     showProductForm.value = false;
     editingIndex.value = null;
     newProduct.value.productName = '';
-    newProduct.value.subcategory = '';
+    newProduct.value.subcategoryName = '';
 }
 
 // 刪除單品
 function deleteProduct(index) {
-    products.value.splice(index, 1);
+    productTags.value.splice(index, 1);
 }
 
 // 開始新增單品
@@ -188,8 +189,8 @@ function startAddProduct() {
 
 // 添加單品到列表
 function addProduct() {
-    if (newProduct.value.productName && newProduct.value.subcategory) {
-        products.value.push({ ...newProduct.value });
+    if (newProduct.value.productName && newProduct.value.subcategoryName) {
+        productTags.value.push({ ...newProduct.value });
         resetForm();
     }
 }
@@ -286,10 +287,13 @@ function submitPost() {
             postTitle: postTitle.value,
             contentText: contentText.value,
             contentType: 'share',
-            userId: userStore.userId
+            userId: userStore.userId,
+            productTags: productTags.value
         },
         tagNames: tags.value
     };
+
+    console.log("postData", postData);
 
     // 1. 先發送發文請求
     axiosapi.post("/post/postwithtags", postData)
