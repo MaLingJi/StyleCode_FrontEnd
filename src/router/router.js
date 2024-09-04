@@ -16,6 +16,7 @@ import editShare from "@/views/pages/share/editShare.vue";
 import post from "@/views/pages/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
+import editPost from "@/views/post/editPost.vue"
 import addProduct from '@/components/product/AddProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
@@ -43,6 +44,7 @@ const routes = [
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "profile-ling", path: "/secure/profile", component: profile},
+  { name: "editPost-link", path: "/editPost/:id", component: editPost},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post },
