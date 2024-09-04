@@ -23,32 +23,17 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js"; 
 
-interface Post {
-  postId: number;
-  postTitle: string;
-  contentText: string;
-  images: Array<{ imgUrl: string }>;
-}
-
-interface Comment {
-  id: number;
-  content: string;
-  userId: number;
-  isEditing?: boolean;
-  editContent?: string;
-}
-
 const route = useRoute();
 const postId = Number(route.params.id);
-const post = ref<Post>({} as Post);
+const post = ref({ postId: 0, postTitle: '', contentText: '', images: [] });
 const newComment = ref('');
-const comments = ref<Comment[]>([]);
+const comments = ref([]);
 const userStore = useUserStore();
 const currentUserId = Number(userStore.userId);
 
@@ -101,7 +86,7 @@ const handleSubmit = async () => {
 };
 
 // 編輯評論
-const editComment = async (commentId: number, newContent: string) => {
+const editComment = async (commentId, newContent) => {
   try {
     await axiosapi.put(`/comment/${commentId}`, { content: newContent });
     const index = comments.value.findIndex(comment => comment.id === commentId);
@@ -114,9 +99,9 @@ const editComment = async (commentId: number, newContent: string) => {
 };
 
 // 切換編輯狀態
-const toggleEdit = (comment: Comment) => {
+const toggleEdit = (comment) => {
   if (comment.isEditing) {
-    editComment(comment.id, comment.editContent!);
+    editComment(comment.id, comment.editContent);
     comment.isEditing = false;
   } else {
     comment.editContent = comment.content;
@@ -125,7 +110,7 @@ const toggleEdit = (comment: Comment) => {
 };
 
 // 刪除評論
-const deleteComment = async (commentId: number) => {
+const deleteComment = async (commentId) => {
   try {
     await axiosapi.delete(`/comment/${commentId}`);
     comments.value = comments.value.filter(comment => comment.id !== commentId);

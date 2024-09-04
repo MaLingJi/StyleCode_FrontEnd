@@ -48,21 +48,38 @@
             <span style="padding-left: 8px; cursor: auto">{{ shares }}</span>
           </span>
         </div>
-
         <!-- 編輯按鈕 -->
         <a-button type="primary" @click="() => goToEditPage(post.postId)">編輯</a-button>
+        
         <a-list
           class="comment-list"
           :header="`${comments.length} 則回覆`"
           item-layout="horizontal"
           :data-source="comments"
         >
-          <template #renderItem="{ item }">
+        <template #renderItem="{ item }">
             <a-list-item>
               <a-comment :author="`用戶 ${item.userDetail.id}`" :avatar="item.avatar">
                 <template #content>
-                  <p>{{ item.comment }}</p>
+                  <p v-if="!item.isEditing">{{ item.comment }}</p>
+                  <a-textarea 
+                    v-if="item.isEditing" 
+                    v-model:value="item.editContent" 
+                    rows="2" 
+                    placeholder="編輯評論..."
+                  />
                   <span class="comment-time">{{ dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</span>
+                </template>
+                <template #actions>
+                  <a-button 
+                    type="primary" 
+                    v-if="!item.isEditing" 
+                    @click="startEditing(item)">編輯</a-button>
+                  <a-button 
+                    type="primary" 
+                    v-if="item.isEditing" 
+                    @click="() => saveComment(item.commentId, item.editContent)">保存</a-button>
+                  <a-button class="delete-button" @click="() => deleteComment(item.commentId)">刪除</a-button>
                 </template>
               </a-comment>
             </a-list-item>
@@ -94,7 +111,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute,useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
@@ -102,26 +119,7 @@ import dayjs from 'dayjs';
 import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
 
-// 定義 Post 接口
-interface Post {
-  postId: number;
-  postTitle: string;
-  contentText: string;
-  isLiked: boolean;
-  isCollected: boolean;
-  likesCount: number;
-  collectionsCount: number;
-  images: Array<{ imageId: number;imgUrl: string;}>; 
-  comment: Array<{ commentId: number; comment: string; createdAt: string; deletedAt: string | null; }>;
-  likes: Array<{ likesId: { userId: number; postId: number }; post: Post }>;
-}
-
-const userStore = useUserStore();
-const userId = Number(userStore.userId);
-const route = useRoute();
-const router = useRouter();
-const postId = Number(route.params.id);
-const post = ref({} as Post);
+const post = ref({});
 const comments = ref([]);
 const newComment = ref('');
 const submitting = ref(false);
@@ -129,8 +127,13 @@ const likes = ref(0);
 const collects = ref(0);
 const shares = ref(0);
 const loading = ref(true);
-const isEditing = ref(false);
-const path = import.meta.env.VITE_POST_IMAGE_URL; 
+const path = import.meta.env.VITE_POST_IMAGE_URL;
+
+const userStore = useUserStore();
+const userId = Number(userStore.userId);
+const route = useRoute();
+const router = useRouter();
+const postId = Number(route.params.id);
 
 // 獲取文章數據
 const fetchPostData = async () => {
@@ -141,9 +144,11 @@ const fetchPostData = async () => {
     likes.value = post.value.likesCount || 0; 
     collects.value = post.value.collectionsCount || 0;
     if (Array.isArray(post.value.images)) {
-      post.value.images = post.value.images.map(image => ({
+      post.value.images = post.value.images
+      .filter(image => !image.deletedAt)  // 過濾已刪除的圖片
+      .map(image => ({
         ...image,
-        imgUrl: `${path}${image.imgUrl}` // 使用 path 變數來構建完整的 URL
+        imgUrl: `${path}${image.imgUrl}` //用 path 變數構建完整的URL
       }));
     } else {
       post.value.images = []; // 如果不是數組,初始化為空數組
@@ -155,12 +160,14 @@ const fetchPostData = async () => {
   // 獲取評論數據
   const fetchComments = async () => {
   const storedComments = localStorage.getItem(`comments_${postId}`);
+  
   if (storedComments) {
     comments.value = JSON.parse(storedComments); // 從本地存儲恢復評論
   } else {
     try {
       const response = await axiosapi.get(`/comment`);
       // comments.value = response.data.filter(comment => comment.post.postId === postId); // 根據 postId 過濾評論
+      console.log("獲取的評論數據:", comments.value); // 調試
     } catch (error) {
       console.error("獲取評論數據失敗:", error);
     }
@@ -168,7 +175,7 @@ const fetchPostData = async () => {
 };
 
 // 導航到編輯頁面
-const goToEditPage = (postId: number) => {
+const goToEditPage = (postId) => {
   router.push({ name: "editPost-link", params: { id: postId } });
 };
 
@@ -195,19 +202,14 @@ const handleSubmit = async () => {
   if (!newComment.value) return;
 
   try {
-    await axiosapi.post(`/comment`, { post: { postId: postId },userDetail: { id: userStore.userId },comment: newComment.value
-    });
-
-    // 提交成功後，立即更新評論列表
+    await axiosapi.post(`/comment`, { post: { postId: postId }, userDetail: { id: userStore.userId }, comment: newComment.value });
     const newCommentData = { 
       userDetail: { id: userStore.userId },
       comment: newComment.value,
       createdAt: new Date().toISOString()
     };
     comments.value.push(newCommentData); // 添加新評論到列表
-    // 保存到本地存儲
     saveCommentsToLocalStorage();
-
     newComment.value = '';
   } catch (error) {
     console.error("新增評論失敗:", error.response ? error.response.data : error);
@@ -225,8 +227,9 @@ const handleSubmit = async () => {
 // };
 
   // 刪除評論
-  const deleteComment = async (commentId: number) => {
+  const deleteComment = async (commentId) => {
   try {
+    console.log("刪除評論ID:", commentId); // 調試輸出
     await axiosapi.delete(`/comment/${commentId}`);
     comments.value = comments.value.filter(comment => comment.commentId !== commentId);
     saveCommentsToLocalStorage();
@@ -236,8 +239,9 @@ const handleSubmit = async () => {
 };
 
   // 編輯評論
-  const editComment = async (commentId: number, newContent: string) => {
+  const editComment = async (commentId , newContent) => {
   try {
+    console.log("編輯評論ID:", commentId); // 調試輸出
     await axiosapi.put(`/comment/${commentId}`, { comment: newContent });
     const index = comments.value.findIndex(comment => comment.commentId === commentId);
     if (index !== -1) {
@@ -246,6 +250,21 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error("編輯評論失敗:", error);
+  }
+};
+
+// 開始編輯評論
+const startEditing = (comment) => {
+  comment.isEditing = true;
+  comment.editContent = comment.comment; // 將原始評論內容設置為編輯內容
+};
+
+// 保存已編輯的評論
+const saveComment = async (commentId, newContent) => {
+  await editComment(commentId, newContent);
+  const index = comments.value.findIndex(comment => comment.commentId === commentId);
+  if (index !== -1) {
+    comments.value[index].isEditing = false; // 編輯完成後關閉編輯狀態
   }
 };
 
@@ -299,10 +318,14 @@ const toggleCollect = async () => {
   }
 };
 
-// 分享按鈕邏輯
-const toggleShare = () => {
-  shares.value++;
-  // 可添加分享的 API 請求
+// 點擊分享
+const toggleShare = async () => {
+  try {
+    await axiosapi.post(`/shares`, { posts: { postId: postId }, userDetail: { id: userStore.userId } });
+    shares.value += 1;
+  } catch (error) {
+    console.error("分享失敗:", error.response ? error.response.data : error.message);
+  }
 };
 
 // 監聽路由參數變化
@@ -322,7 +345,6 @@ onMounted(async () => {
   await fetchComments();
   loading.value = false; // 完成載入
 });
-
 </script>
 
 <style scoped>
@@ -334,7 +356,6 @@ onMounted(async () => {
 .post-content {
   padding: 20px;
 }
-
 .post-images {
   display: flex; 
   flex-wrap: wrap; /* 允许换行 */
@@ -344,7 +365,6 @@ onMounted(async () => {
   max-width: 80%; 
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
-
 .post-image {
   width: 100%;
   max-width: 100%; 
@@ -352,5 +372,29 @@ onMounted(async () => {
   object-fit: cover; /* 确保图片在容器中覆盖并保持比例 */
   border-radius: 8px; 
   width: calc(33.333% - 10px); 
+}
+.edit-button {
+  background-color: #1890ff; /* 藍色背景 */
+  color: #fff; 
+  border: none; 
+  padding: 6px 12px; 
+  border-radius: 4px; 
+  cursor: pointer; /* 滑鼠指標樣式 */
+  transition: background-color 0.3s; 
+}
+.edit-button:hover {
+  background-color: #40a9ff; /* 滑鼠懸停時改變背景顏色 */
+}
+.delete-button {
+  background-color: #ff4d4f; 
+  color: #fff; 
+  border: none; 
+  padding: 6px 12px; 
+  border-radius: 4px; 
+  cursor: pointer; /* 滑鼠指標樣式 */
+  transition: background-color 0.3s; 
+}
+.delete-button:hover {
+  background-color: #ff7875; /* 滑鼠懸停時改變背景顏色 */
 }
 </style>

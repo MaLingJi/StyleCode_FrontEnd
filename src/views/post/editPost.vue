@@ -25,8 +25,13 @@
                         <div style="margin-top: 8px">上傳</div>
                     </div>
                 </a-upload>
-                <a-modal :open="previewVisible" :title="previewTitle" :footer="null" @cancel="handleCancel">
-                    <img alt="example" style="width: 100%" :src="previewImage" />
+                <a-modal 
+                :open="previewVisible" 
+                :title="previewTitle" 
+                :footer="null" 
+                @cancel="handleCancel"
+                >
+                <img alt="example" style="width: 100%" :src="previewImage" />
                 </a-modal>
             </div>
             <div class="button-container">
@@ -37,144 +42,143 @@
     </div>
 </template>
 
-<script>
-import { PlusOutlined } from '@ant-design/icons-vue';
+<script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
+import { PlusOutlined } from '@ant-design/icons-vue';
 
-export default {
-    components: {
-        PlusOutlined
-    },
-    setup() {
-        const route = useRoute();
-        const router = useRouter();
-        const postId = route.params.id; // 獲取 postId
-        
-        const post = ref({
-            postId: postId,
-            postTitle: '',
-            contentText: '',
-            images: []
-        });
+const route = useRoute();
+const router = useRouter();
+const postId = route.params.id; // 獲取 postId
+const path = import.meta.env.VITE_POST_IMAGE_URL;
+const post = ref({
+    postId: postId,
+    postTitle: '',
+    contentText: '',
+    images: []
+});
 
-        const fileList = ref([]);
-        const uploadUrl = `http://localhost:8080/images`;
-        const previewVisible = ref(false);
-        const previewImage = ref('');
-        const previewTitle = ref('');
+const fileList = ref([]);
+const previewVisible = ref(false);
+const previewImage = ref('');
+const previewTitle = ref('');
 
-        onMounted(async () => {
-        try {
+onMounted(async () => {
+    try {
         const response = await axiosapi.get(`/post/${postId}`);
-        const data = JSON.parse(JSON.stringify(response.data));
-        if (data) {
-            post.value = data;
-            if (post.value.images) {
-                post.value.images.forEach(image => {
-                    fileList.value.push({
-                        uid: image.imageId,
-                        name: image.imgUrl,
-                        status: 'done',
-                        url: `${path}/${image.imageId}`,
-                    });
+        post.value = response.data;
+        if (post.value.images) {
+            post.value.images.forEach(image => {
+                fileList.value.push({
+                    uid: image.imageId,
+                    name: image.imgUrl,
+                    status: 'done',
+                    url: `${path}/${image.imgUrl}`,
                 });
-            }
-        }
-        } catch (error) {
-            console.error('獲取文章數據失敗:', error);
-        }
-    });
-
-        const handleCancel = () => {
-            previewVisible.value = false;
-            previewTitle.value = '';
-        };
-
-        const handlePreview = async (file) => {
-            if (!file.url && !file.preview) {
-                file.preview = await getBase64(file.originFileObj);
-            }
-            previewImage.value = file.url || file.preview;
-            previewVisible.value = true;
-            previewTitle.value = file.name || file.url.substring(file.url.lastIndexOf('/') + 1);
-        };
-
-        const handleRemove = async (file) => {
-            try {
-                console.log(`正在刪除影像: /images/${file.uid}`);
-                const response = await axiosapi.delete(`/images/${file.uid}`); 
-                console.log(`圖片已刪除: ${response.data}`);
-            } catch (error) {
-                console.error('刪除影像時發生錯誤:', error.response ? error.response.data : error.message);
-            }
-        };
-        // 更新 fileList上傳的文件狀態
-        const handleChange = (info) => {
-            fileList.value = info.fileList;
-        };
-
-        const updatePost = async () => {
-            try {
-                const formData = new FormData();
-                if (fileList.value.some(file => file.status === 'done')) { // 如果有新上傳的圖片
-            fileList.value.forEach(file => {
-                if (file.status === 'done') {
-                    formData.append('file', file.originFileObj); // 添加 file 參數
-                }
             });
         }
-        formData.append('postId', postId); // 添加 postId
+    } catch (error) {
+        console.error('獲取文章數據失敗:', error.response ? error.response.data : error);
+    }
+});
 
-        // 更新文章
-        const response = await axiosapi.put(`${path}/${post.value.postId}`, post.value);
-        console.log('文章已更新:', response.data);
-        router.push(`/post/${post.value.postId}`); // 更新後重定向
+const handleCancel = () => {
+    previewVisible.value = false;
+    previewTitle.value = '';
+};
+
+const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+    }
+    previewImage.value = file.url || file.preview;
+    previewVisible.value = true;
+    previewTitle.value = file.name || file.url.substring(file.url.lastIndexOf('/') + 1);
+
+    // setTimeout(() => {
+    //     document.querySelector('.ant-modal').focus();
+    // }, 300);
+    };
+
+    const handleRemove = async (file) => {
+    try {
+        console.log(`正在刪除影像: /images/${file.uid}`);
+        const response = await axiosapi.delete(`/images/${file.uid}`);
+        console.log(`圖片已刪除: ${response.data}`);
+        // 從 fileList 中移除已刪除的圖片
+        fileList.value = fileList.value.filter(item => item.uid !== file.uid);
+    } catch (error) {
+        console.error('刪除影像時發生錯誤:', error.response ? error.response.data : error.message);
+    }
+};
+
+        const handleChange = async (info) => {
+            fileList.value = info.fileList;
+
+    // if (info.file.status === 'done') {
+    //     const formData = new FormData();
+    //     formData.append('file', info.file.originFileObj);
+    //     formData.append('postId', postId);
+
+    //     try {
+    //         const response = await axiosapi.post(`/images`, formData);
+    //         console.log('圖片已上傳:', response.data);
+    //     } catch (error) {
+    //         console.error('上傳圖片時發生錯誤:', error.response ? error.response.data : error);
+    //     }
+    //     }
+    };
+
+    const updatePost = async () => {
+    try {
+        // 更新內容的請求
+        const contentResponse = await axiosapi.put(`/post/${post.value.postId}`, {
+            contentText: post.value.contentText
+        });
+        console.log('文章內容已更新:', contentResponse.data);
+
+        for (const file of fileList.value) {
+            if (file.originFileObj) {
+                const formData = new FormData();
+                formData.append('file', file.originFileObj);
+                formData.append('postId', postId);
+                
+                const imageResponse = await axiosapi.post(`/images`, formData);
+                console.log('圖片已上傳:', imageResponse.data);
+                // 更新 fileList 中對應項目的 uid 和 url
+                file.uid = imageResponse.data.imageId;
+                file.url = `${path}/${imageResponse.data.imgUrl}`;
+            }
+        }
+        router.push(`/post/${post.value.postId}`);
     } catch (error) {
         console.error('更新文章時發生錯誤:', error.response ? error.response.data : error);
     }
 };
 
-        const deletePost = async () => {
-            try {
-                const imageIds = post.value.images.map(image => image.imageId);
-                
-                await axiosapi.delete(`/post/${post.value.postId}`);
-                for (const imageId of imageIds) {
-                    await axiosapi.delete(`/images/${imageId}`);
-                }
-                router.push('/posts');
-            } catch (error) {
-                console.error('刪除貼文和圖片時出錯:', error);
-            }
-        };
-
-        // function getBase64(file) {
-        //     return new Promise((resolve, reject) => {
-        //         const reader = new FileReader();
-        //         reader.readAsDataURL(file);
-        //         reader.onload = () => resolve(reader.result);
-        //         reader.onerror = error => reject(error);
-        //     });
-        // }
-
-        return {
-            post,
-            fileList,
-            uploadUrl,
-            previewVisible,
-            previewImage,
-            previewTitle,
-            handleCancel,
-            handlePreview,
-            handleRemove,
-            updatePost,
-            deletePost,
-            handleChange
-        };
+const deletePost = async () => {
+    try {
+        const imageIds = post.value.images.map(image => image.imageId);
+        
+        await axiosapi.delete(`/post/${post.value.postId}`);
+        for (const imageId of imageIds) {
+            await axiosapi.delete(`/images/${imageId}`);
+        }
+        router.push('/posts');
+    } catch (error) {
+        console.error('刪除貼文和圖片時出錯:', error);
     }
 };
+
+function getBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
 </script>
 
 <style scoped>
@@ -190,18 +194,6 @@ export default {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     max-width: 800px; 
     width: 100%; 
-}
-.input-large {
-    width: 100%; 
-    border-color: #e8e8e8;
-    transition: border-color 0.3s ease;
-}
-.input-large:hover {
-    border-color: #1890ff; 
-}
-.input-large:focus {
-    border-color: #1890ff;
-    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2); 
 }
 .textarea {
     width: 100%; 
