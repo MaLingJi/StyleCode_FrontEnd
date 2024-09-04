@@ -35,8 +35,10 @@
           </div>
         </div>
         <div class="column is-16-wide">
-          <div class="ts-textarea">
-            <textarea v-model="product.productDescription" placeholder="商品描述" rows="4" required></textarea>
+          <div class="ts-textarea product-description-container">
+            <textarea v-model="product.productDescription" placeholder="商品描述" rows="5" 
+        required
+        class="product-description-textarea"></textarea>
           </div>
         </div>
       </div>
@@ -50,7 +52,7 @@
             </div>
             <div class="column is-4-wide">
               <div class="ts-input is-fluid">
-                <input type="text" v-model="detail.size" placeholder="尺寸 S-M-L" required>
+                <input type="text" v-model="detail.size" placeholder="尺寸" required>
               </div>
             </div>
             <div class="column is-4-wide">
@@ -107,7 +109,9 @@ import { ref, reactive, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2'
+import useUserStore from "@/stores/user.js";
 
+const userStore = useUserStore();
 const router = useRouter();
 const categories = ref([]);
 const subcategories = ref([]);
@@ -194,7 +198,11 @@ const submitProduct = async () => {
       ...product,
       subcategoryId: { subcategoryId: product.subcategoryId }
     };
-    const response = await axiosapi.post('/admin/products/create', productData);
+    const response = await axiosapi.post('/admin/products/create', productData,{
+      headers: { Authorization: `Bearer ${userStore.userToken}` }
+    }
+    );
+    
     console.log("Response:", response);
     const createdProductId = response.data.productId;
 
@@ -205,7 +213,7 @@ const submitProduct = async () => {
         formData.append('file', files.value[i]);
       }
       await axiosapi.post(`/admin/products/images/${createdProductId}/multiple`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data'}
       });
     }
 
@@ -213,25 +221,15 @@ const submitProduct = async () => {
       title: '成功！',
       text: '商品新增成功！',
       icon: 'success',
-      confirmButtonText: '確認'
+      confirmButtonText: '確認',
+      confirmButtonColor: 'rgb(35 40 44)',
     }).then((result) => {
       if (result.isConfirmed) {
         router.push('/shop');
       }
     });
   } catch (error) {
-    console.error('Error creating product:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
-    }
-    Swal.fire({
-      title: '錯誤',
-      text: '商品新增失敗，請重試。',
-      icon: 'error',
-      confirmButtonText: '確認'
-    });
+   handleApiError(error, '新增失敗，請重試。');
   }
 };
 const resetForm = () => {
@@ -247,6 +245,28 @@ const resetForm = () => {
   files.value = [];
   previewImages.value = [];
 };
+
+function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = "操作失敗";
+    }
+  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
 </script>
 
 <style scoped>
@@ -278,6 +298,33 @@ const resetForm = () => {
 
 .preview-image:hover .delete-overlay {
   opacity: 1;
+}
+.ts-textarea{
+  border-width: 30px;
+}
+
+.product-description-container {
+  width: 100%;
+  max-width: 1000px; /* 調整這個值以匹配您表單的寬度 */
+  margin: 0 auto;
+}
+
+.product-description-textarea {
+  width: 100%;
+  min-height: 100px; /* 調整高度以匹配約 4-5 行文字 */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical; /* 允許用戶垂直調整大小 */
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .product-description-container {
+    max-width: 100%;
+  }
 }
 
 </style>

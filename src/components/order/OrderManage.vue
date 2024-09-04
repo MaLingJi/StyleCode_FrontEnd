@@ -1,31 +1,39 @@
 <template>
-    <div class="dashboard">
-        <div class="date-picker">
-            <DatePicker v-model="range" is-range @input="fetchOrders" />
-        </div>
-        <div class="orderAnalysis">
-            <div>
-                <h1>累積訂單數:{{ orders.length }}</h1>
-                <h1>累積訂單金額:{{ formatCurrency(totalAmount) }}</h1>
+    <div class="dashboard ts-container is-padded">
+        <div class="ts-grid">
+            <div class="stats column is-8-wide ts-box   ">
+                <OrderManageStats :orders="orders"></OrderManageStats>
+                <div claa="pieChart">
+                <OrderManagePieChart :orders="orders"></OrderManagePieChart>
+                  </div>
             </div>
-            <OrderManageLineChart></OrderManageLineChart>
+            <div class="headers column is-8-wide ts-box is-horizontal">
+                <div class="header datePicker">
+                    <DatePicker expanded v-model="range" mode="dateTime" is-range @input="fetchOrders" />
+                </div>
+            </div>
         </div>
-
-        <div class="productAnalysis">
-            <OrderManageProChart></OrderManageProChart>
+        <div class="charts ts-grid">
+            <div class="chart lineChart column is-8-wide ts-container ts-box is-horizontal">
+                <OrderManageLineChart :orders="orders"></OrderManageLineChart>
+            </div>
+            <div class="chart orderTable column is-8-wide ts-container ts-box is-horizontal">
+                <!-- <OrderManageProChart :orders="orders"></OrderManageProChart> -->
+                <OrderManageTable :orders="orders"></OrderManageTable>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref, toRaw, watch } from 'vue';
 import { DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import axiosapi from '@/plugins/axios.js';
 import OrderManageLineChart from './OrderManageLineChart.vue';
-import OrderManageProChart from './OrderManageProChart.vue';
-
-
+import OrderManageTable from './OrderManageTable.vue';
+import OrderManageStats from './OrderManageStats.vue';
+import OrderManagePieChart from './OrderManagePieChart.vue';
 
 const range = ref({
     start: new Date(),
@@ -35,59 +43,88 @@ const range = ref({
 const orders = ref([]);
 
 
+//取得範圍內商品
 const fetchOrders = async () => {
     if (!range.value.start || !range.value.end) return;
-
     try {
+        console.log(formatDate(range.value.start))
+        console.log(formatDate(range.value.end))
         const response = await axiosapi.get(`/order/findByDate`, {
+
             params: {
                 startDate: formatDate(range.value.start),
                 endDate: formatDate(range.value.end)
             }
         });
-        console.log(response.data);
+        console.log(response)
         orders.value = response.data;
     } catch (error) {
         console.error('fetchOrderByDateFail', error);
     }
 };
 
-
+//加工資料庫資料成後端API可接受
 const formatDate = (date) => {
     if (date instanceof Date) {
-        return date.toISOString().slice(0, 19);  // 返回格式为 "YYYY-MM-DDTHH:mm:ss"
+        const offset = date.getTimezoneOffset();
+        const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
+        return adjustedDate.toISOString().slice(0, 19);  // 返回格式为 "YYYY-MM-DDTHH:mm:ss"
     }
-    // if (typeof date === 'string') {
-    //     // 如果日期已经是字符串，确保格式正确
-    //     return date.replace(' ', 'T').slice(0, 19);
-    // }
     console.error('Invalid date format');
     return '';
 };
 
 
-// 监听日期变化
+//偵測日期選取變化
 watch(range, () => {
     fetchOrders();
 }, { deep: true });
 
 
 
-const totalAmount = computed(() => {
-    let total = 0;
-    for (const order of orders.value) {
-        total += order.totalAmounts
-        console.log(total)
-    }
-    console.log('totalamount:' + total)
-    return total;
-})
 
-const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
-};
 </script>
 
 <style scoped>
-/* 您的样式 */
+
+.dashboard {
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.ts-box {
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.ts-grid {
+    gap: 1rem;
+}
+
+/* 对于特定的元素，如果需要更多空间 */
+.datePicker {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+/* 确保图表有足够的空间 */
+.charts {
+    min-height: 500px;
+}
+
+.chart.orderTable {
+    min-height: 500px;
+    max-height: 600px;
+    /* 设置最大高度 */
+    overflow-y: auto;
+    /* 添加垂直滚动条 */
+}
+
+/* 确保表格内容正确显示 */
+.chart.orderTable :deep(table) {
+    width: 100%;
+}
+
 </style>

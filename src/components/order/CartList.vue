@@ -3,6 +3,7 @@
         <table class="ts-table ">
             <thead>
                 <tr>
+                    <th>照片</th>
                     <th>商品資料</th>
                     <th>單件價格</th>
                     <th>數量</th>
@@ -11,10 +12,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems">
+                <tr v-for="item in cartItems" style="vertical-align: middle;">
+                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" style="width: 100px; height: 100px;" /></td>
                     <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
-
                     <td>
                         <div>
                             <div>
@@ -26,7 +27,8 @@
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>
-                                <span v-show="stockStatus.get(item.productDetailsId)">已達庫存上限</span>
+                                <span v-show="stockStatus.get(item.productDetailsId)"
+                                    class="ts-text is-negative">已達庫存上限</span>
                             </div>
                         </div>
                     </td>
@@ -36,7 +38,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="5">購物車：{{ cartItems.length }} 件</th>
+                    <th colspan="6">購物車：{{ cartItems.length }} 件</th>
                 </tr>
             </tfoot>
         </table>
@@ -44,15 +46,19 @@
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits } from 'vue';
+import { computed, defineProps, defineEmits, isReactive } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+import useUserStore from "@/stores/user.js"
+import { watch } from 'vue';
 
 
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
+const user = useUserStore().userId
+const pdPhotos = ref([])
 
 const cauculate = (item) => {
     return computed(() => item.productPrice * item.quantity).value;
@@ -67,7 +73,7 @@ const increaseQuantity = (item) => {
     // increase api
     axiosapi.post('/cart/addOneVol', {
 
-        userId: 1,
+        userId: user,
         productDetailsId: item.productDetailsId
 
     })
@@ -92,7 +98,7 @@ const increaseQuantity = (item) => {
 const decreaseQuantity = (item) => {
     if (item.quantity > 1) {
         axiosapi.post('/cart/minusOneVol', {
-            userId: 1,
+            userId: user,
             productDetailsId: item.productDetailsId
         }).then(response => {
             if (response.data != '') {
@@ -118,11 +124,12 @@ const updateQuantity = (item) => {
         removeItem(item);
     } else {
         axiosapi.put('/cart/update', {
-            userId: 1,
+            userId: user,
             productDetailsId: item.productDetailsId,
             quantity: item.quantity
 
         }).then(response => {
+            console.log('update response' + response.data)
             if (response.data != '') {
                 updateParent();
                 stockStatus.value.set(item.productDetailsId, false)
@@ -141,7 +148,7 @@ const removeItem = (item) => {
 
     axiosapi.delete('/cart/delete', {
         data: {
-            userId: 1,
+            userId: user,
             productDetailsId: item.productDetailsId
         }
     }).then(response => {
@@ -161,15 +168,57 @@ const removeItem = (item) => {
 
 }
 
-onMounted(() => {
+onMounted(async () => {
     props.cartItems.forEach(item => {
         stockStatus.value.set(item.productDetailsId, false);
     });
-});
+}
+);
 
+//加載順序 一開始props還沒傳進來 用watch確定有東西進來再把東西塞進pdPhotos
+watch(() => props.cartItems, (newItems) => {
+    if (newItems.length > 0) {
+        console.log('cartItems updated:', newItems);
+        loadPhotos(newItems);
+    }
+}, { immediate: true });
+
+
+const loadPhotos = async (items) => {
+    for (const item of items) {
+        try {
+            const response = await axiosapi.get(`/${item.productId}/cover`);
+            pdPhotos.value.push({
+                id: item.productId,
+                url: response.data.imgUrl,
+                detailsId: item.productDetailsId
+            });
+
+        } catch (error) {
+            console.error('Error fetching photo:', error);
+        }
+    }
+};
+
+//貨幣加工
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
+
+//當cartlist用 cartitem迴圈時 拿pdPhotos內的id跟cartItem的id 若有相同就回傳
+const findImgUrl = (productDetailsId) => {
+    const photo = pdPhotos.value.find(photo => photo.detailsId === productDetailsId)
+    return photo ? photo.url : null;
+}
+// 把找到的商品名稱路徑加上全域路徑
+const getImageUrl = (imageName) => {
+    const path = import.meta.env.VITE_PRODUCT_IMAGE_URL;
+    if (imageName) {
+        return `${path}${imageName}`;
+    }
+    return "../../../public/No_image.png";
+};
+
 
 </script>
 

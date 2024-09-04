@@ -9,22 +9,22 @@ import Forum from "@/views/pages/forum.vue";
 import backstage from "@/views/pages/backstage.vue";
 import share from "@/views/pages/share/share.vue";
 import Register from "@/views/secure/register.vue";
-import comment from "@/views/pages/comment.vue";
 import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
 import newShare from "@/views/pages/share/newShare.vue";
 import editShare from "@/views/pages/share/editShare.vue";
 import post from "@/views/pages/post.vue";
-
-
-import addProduct from '@/components/product/addProduct.vue'
+import comment from "@/views/post/comment.vue";
+import postContent from "@/views/post/postContent.vue"
+import editPost from "@/views/post/editPost.vue"
+import addProduct from '@/components/product/AddProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
 import shareDetails from "@/views/pages/share/shareDetails.vue";
-
-
+import refund from "@/views/pages/refund.vue";
+import refundReview from "@/views/pages/refundReview.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -44,14 +44,18 @@ const routes = [
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "profile-ling", path: "/secure/profile", component: profile},
+  { name: "editPost-link", path: "/editPost/:id", component: editPost},
   { name: "comment-link", path: "/comment/:id", component: comment },
-  { name: "productDetails-link", path: '/product/:id', component: productDetails},
+  { name: "postContent-link", path: "/post/:id", component: postContent },
+  { name: "post-link", path: "/post", component: post },
   { name: 'addProduct', path: '/addproduct',component: addProduct},
+  { name: "productDetails-link", path: '/product/:id', component: productDetails},
   { name: "cart-link", path: "/cart", component: cart },
   { name: "order-link", path: "/order", component: order },
-  { name: "post-link", path: "/post", component: post },
   { name: "paymentPage-link", path: "/payment", component: paymentPage },
   { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
+  { name: "refund-link", path: "/refund/:orderId", component: refund},
+  { name: "refundReview-link", path: "/refundReview", component: refundReview},
 ];
 
 

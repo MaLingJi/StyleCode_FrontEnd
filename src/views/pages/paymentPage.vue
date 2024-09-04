@@ -4,7 +4,7 @@
 
     <div class="ts-container">
         <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
-            <ProgressIndicator :current-step="2" />
+            <Circle :current-step="2" />
         </div>
     </div>
 
@@ -39,16 +39,17 @@
 import axiosapi from '@/plugins/axios.js';
 import { computed, onMounted, ref } from 'vue';
 import PaymentPageList from '@/components/order/PaymentPageList.vue';
-import ProgressIndicator from '@/components/order/Circle.vue';
-
-
+import Circle from '@/components/order/Circle.vue';
+import useUserStore from "@/stores/user.js"
+import Swal from 'sweetalert2';
 
 const cartItems = ref([]);
 const showOrderDetails = ref(true);
+const user = useUserStore().userId;
 
 const loadCartItems = async () => {
     try {
-        const response = await axiosapi.get('/cart/find/1');
+        const response = await axiosapi.get(`/cart/find/${user}`);
         cartItems.value = response.data;
         console.log("Cart items loaded:", cartItems.value);
     } catch (error) {
@@ -62,7 +63,7 @@ const lpPayment = async () => {
     try {
         const paymentData = {
             totalAmounts: totalAmount.value,
-            userId: 1,
+            userId: user,
             items: cartItems.value.map(item => ({
                 productDetailsId: item.productDetailsId,
                 quantity: item.quantity,
@@ -77,7 +78,21 @@ const lpPayment = async () => {
 
         if (response.data) {
             // 重定向到 LINE Pay 支付頁面
-            window.location.href = response.data
+            Swal.fire({
+                title: '前往中!',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            }).then((result) => {
+                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    window.location.href = response.data
+                }
+            })
         } else {
             console.error('Failed to get payment URL');
         }
@@ -112,28 +127,26 @@ const formatCurrency = (amount) => {
 </script>
 
 <style>
-
-
 .ts-box2 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
 }
 
 .order-summary {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
 }
 
 .summary-item.total {
-  font-size: 24px;
-  font-weight: bold;
+    font-size: 24px;
+    font-weight: bold;
 }
 </style>

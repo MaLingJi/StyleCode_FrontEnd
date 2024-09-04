@@ -12,9 +12,8 @@
             </option>
           </select>
         </div>
-        <br>
-        <br>
-        <div class="ts-input is-fluid">
+        
+        <div class="ts-input is-fluid" style="margin: 10px 0px 0px 0px ;">
             <input v-model="newSubcategory.subcategoryName" placeholder="輸入新子分類名稱" required>
           <button type="submit" class="ts-button is-positive">新增子分類</button>
         </div>
@@ -78,14 +77,18 @@
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
   import Swal from 'sweetalert2'
-  
+  import useUserStore from "@/stores/user.js";
+import { useRouter } from 'vue-router';
+
+  const userStore = useUserStore();
+  const router = useRouter();
   const subcategories = ref([]);
   const categories = ref([]);
   const newSubcategory = ref({ categoryId: '', subcategoryName: '' });
   const editingId = ref(null);
   const editingName = ref('');
   const currentPage = ref(1);
-const itemsPerPage = 8;
+  const itemsPerPage = 8;
   
   onMounted(async () => {
     await fetchCategories();
@@ -129,7 +132,8 @@ function handlePageChange(page) {
     console.log('Sending data:', newSubcategory.value); // 記錄發送的數據
     const response = await axiosapi.post('/admin/subcategories/create', {
       subcategoryName: newSubcategory.value.subcategoryName,
-      category: { categoryId: newSubcategory.value.categoryId }
+      category: { categoryId: newSubcategory.value.categoryId },
+      headers: { Authorization: `Bearer ${userStore.userToken}` }
     });
     console.log('Response:', response.data); // 記錄響應
     newSubcategory.value = { categoryId: '', subcategoryName: '' };
@@ -147,22 +151,8 @@ function handlePageChange(page) {
     });
 
   } catch (error) {
-    console.error('Error creating product:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
-    }
-
-    // 使用 SweetAlert2 顯示錯誤信息
-    Swal.fire({
-      title: '錯誤',
-      text: '新增失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
-  }
+    handleApiError(error, '新增失敗，請重試。');
+}
 };
   function startEditing(subcategory) {
     editingId.value = subcategory.subcategoryId;
@@ -185,7 +175,8 @@ function handlePageChange(page) {
     try {
       const updateData = { subcategoryName: editingName.value };
       await axiosapi.put(`/admin/subcategories/${id}`, updateData, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' ,
+        'Authorization': `Bearer ${userStore.userToken}`}
       });
       editingId.value = null;
       await fetchSubcategories();
@@ -202,21 +193,7 @@ function handlePageChange(page) {
       });
       
     } catch (error) {
-      console.error('Error creating product:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-      }
-      
-      // 使用 SweetAlert2 顯示錯誤信息
-      Swal.fire({
-        title: '錯誤',
-        text: '修改失敗，請重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認'
-      });
+      handleApiError(error, '修改失敗，請重試。');
     }
   }else{
     cancelEdit();
@@ -242,7 +219,9 @@ function cancelEdit() {
 
     if (result.isConfirmed) {
       try {
-        await axiosapi.delete(`/admin/subcategories/${id}`);
+        await axiosapi.delete(`/admin/subcategories/${id}`, {
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
         await fetchSubcategories();
         Swal.fire({
       title: '成功！',
@@ -257,24 +236,32 @@ function cancelEdit() {
     });
 
   } catch (error) {
-    console.error('Error creating product:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
-    }
-
-    // 使用 SweetAlert2 顯示錯誤信息
-    Swal.fire({
-      title: '錯誤',
-      text: '刪除失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
-  }
+    handleApiError(error, '刪除失敗，請重試。');
 };
   }
+}
+
+  function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = "操作失敗";
+    }
+  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
   </script>
 
 <style>

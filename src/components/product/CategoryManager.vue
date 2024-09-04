@@ -11,7 +11,7 @@
       </form>
   
       <!-- 分類列表 -->
-      <table class="ts-table">
+      <table class="ts-table" style="margin: 15px 0px 0px 0px ;">
         <thead>
           <tr>
             <th >分類名稱</th>
@@ -38,7 +38,7 @@
     <!-- 分頁元件 -->
     <div class="ts-pagination is-secondary">
       <Paginate 
-        v-model="currentPage" 
+        v-model="currentPage"  
         :page-count="getPageCount()" 
         :page-range="3" 
         :margin-pages="1"
@@ -67,44 +67,58 @@
   import axiosapi from '@/plugins/axios.js';
   import Paginate from 'vuejs-paginate-next';
   import Swal from 'sweetalert2'
+  import useUserStore from "@/stores/user.js"
+  import { useRouter } from 'vue-router';
+
+  const userStore = useUserStore() // Pinia用戶存儲
+  const router = useRouter(); // 跳轉頁面
+
+  const categories = ref([]); // 存儲所有分類
+  const newCategory = ref(''); // 新分類的名稱
+  const editingId = ref(null); // 用於編輯功能
+  const editingName = ref(''); // 用於編輯功能
+  const currentPage = ref(1); //  當前頁碼
+  const itemsPerPage = 8; // 每頁顯示的項目數
   
-  const categories = ref([]);
-  const newCategory = ref('');
-  const editingId = ref(null);
-  const editingName = ref('');
-  const currentPage = ref(1);
-  const itemsPerPage = 8;
-  
+  // 鉤子: 組件掛載時獲取分類數據
   onMounted(async () => {
     await fetchCategories();
   });
   
+  // 計算當前頁的分類
   const paginatedCategories = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   return categories.value.slice(start, end);
 });
 
+// 計算總頁數
 function getPageCount() {
   return Math.ceil(categories.value.length / itemsPerPage);
 }
 
+// 處理頁碼變化
 function handlePageChange(page) {
   currentPage.value = page;
 }
 
+//  獲取所有分類
   async function fetchCategories() {
     try {
       const response = await axiosapi.get('/categories');
       categories.value = response.data;
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      handleApiError(error, '獲取分類失敗');
     }
   }
   
+  // 添加新分類
   async function addCategory() {
     try {
-      await axiosapi.post('/admin/categories/create', { categoryName: newCategory.value });
+      await axiosapi.post('/admin/categories/create', { categoryName: newCategory.value },{
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      })
+
       newCategory.value = '';
       await fetchCategories();
       Swal.fire({
@@ -119,22 +133,17 @@ function handlePageChange(page) {
       }
     });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-      title: '錯誤',
-      text: '新增失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+      handleApiError(error, '新增失敗，請重試。');
   }
 };
 
+ //  開始編輯分類
   function startEditing(category) {
     editingId.value = category.categoryId;
     editingName.value = category.categoryName;
 }
 
+// 更新分類
 async function updateCategory(id) {
 
   const result = await Swal.fire({
@@ -157,7 +166,8 @@ async function updateCategory(id) {
       await axiosapi.put(`/admin/categories/${id}`, updateData, {
         
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userStore.userToken}`
         }
       });
       
@@ -175,14 +185,7 @@ async function updateCategory(id) {
         }
       });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-        title: '錯誤',
-        text: '修改失敗，請重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認'
-      });
+      handleApiError(error, '修改失敗，請重試。');
     }
   }else{
     cancelEdit();
@@ -193,6 +196,7 @@ async function updateCategory(id) {
   editingName.value = '';
 }
   
+ //  刪除分類
   async function deleteCategory(id) {
 
     const result = await Swal.fire({
@@ -206,41 +210,52 @@ async function updateCategory(id) {
     cancelButtonText: '取消'
   });
 
-    if (result.isConfirmed) {
-      try {
-        await axiosapi.delete(`/admin/categories/${id}`);
-        await fetchCategories();
-        Swal.fire({
-      title: '成功！',
-      text: '刪除成功！',
-      icon: 'success',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    }).then((result) => {
+  if (result.isConfirmed) {
+    try {
+      await axiosapi.delete(`/admin/categories/${id}`, {
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
+      await fetchCategories();
+      Swal.fire({
+        title: '成功！',
+        text: '刪除成功！',
+        icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
+        confirmButtonText: '確認'
+      }).then((result) => {
       if (result.isConfirmed) {
         router.push('/backstage');
       }
     });
-
-  } catch (error) {
-    console.error('Error creating product:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
+    } catch (error) {
+      handleApiError(error, '刪除分類失敗');
     }
+  }
+}
 
-    // 使用 SweetAlert2 顯示錯誤信息
-    Swal.fire({
-      title: '錯誤',
-      text: '刪除失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+//  統一處理API錯誤,包括權限錯誤的處理  
+function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      // 可能需要登出用戶或重定向到登錄頁面
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = "操作失敗";
+    }
   }
-};
-  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
   </script>
   <style>
     .ts-pagination {

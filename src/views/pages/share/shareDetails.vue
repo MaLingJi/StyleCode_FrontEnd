@@ -1,31 +1,29 @@
 <template>
     <div class="ts-container has-vertically-spaced-large">
-        <div class="ts-grid is-center-aligned">
-            <div class="column is-7-wide">
-                <div class="ts-box">
+        <div class="ts-grid">
+            <div class="column is-fluid">
+                <div class="carousel-container">
+                    <!-- 照片輪播 -->
+                    <transition name="fade" mode="out-in">
+                        <div class="ts-image main-image" :key="currentImageIndex">
+                            <img :src="getImageUrl(currentImage)" />
+                        </div>
+                    </transition>
                     <!-- 往前一張or下一張 -->
                     <button class="carousel-button prev" @click="prevImage">&lt;</button>
                     <button class="carousel-button next" @click="nextImage">&gt;</button>
-                    <div class="carousel-container">
-                        <!-- 照片輪播 -->
-                        <transition name="fade" mode="out-in">
-                            <div class="ts-image main-image" :key="currentImageIndex">
-                                <img :src="getImageUrl(currentImage)" />
-                            </div>
-                        </transition>
-                    </div>
-                    <div class="ts-grid thumbnail-grid">
-                        <div class="column is-2-wide" v-for="(image, index) in images.value" :key="index">
-                            <div class="ts-image thumbnail" @click="setCurrentImage(index)"
-                                :class="{ active: currentImageIndex === index }">
-                                <img :src="getImageUrl(image.imgUrl)" />
-                            </div>
+                </div>
+
+                <div class="ts-grid thumbnail-grid">
+                    <div class="column is-2-wide" v-for="(image, index) in post.images" :key="index">
+                        <div class="ts-image is-middle-aligned thumbnail" @click="setCurrentImage(index)"
+                            :class="{ active: currentImageIndex === index }">
+                            <img :src="getImageUrl(image.imgUrl)" />
                         </div>
                     </div>
                 </div>
-                <!-- <div><span>{{ getImageUrl(currentImage) }}</span></div> -->
-                <div class="ts-card">
-                    <div class="ts-content is-horizontally-padded">
+                <div class="ts-content is-vertically-padded">
+                    <div class="ts-wrap is-center-aligned">
                         <button class="ts-button">收藏夾</button>
                         <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
                         <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button>
@@ -38,7 +36,7 @@
                 <div class="ts-box">
                     <div class="ts-content">
                         <h4 class="ts-header">{{ post.postTitle }}</h4>
-                        <p>Model資訊：174cm / MEN / 34歲 / 短髮</p>
+                        <!-- <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p> -->
                         <p><i class="ts-icon is-clock-icon"></i> {{ formatDate(post.createdAt) }}</p>
 
                         <div class="ts-divider"></div>
@@ -54,21 +52,17 @@
 
                         <div class="ts-divider"></div>
 
+                        <!-- <div class="ts-chip">
+                            <span v-for="(tag, index) in tags" :key="index" class="ts-label">
+                                {{ tag }}
+                            </span>
+                        </div> -->
+
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
-                            <span class="ts-label" v-for="tag in tags" :key="tag">{{ tag }}</span>
+                            <span class="ts-chip" v-for="tag in tags" :key="tag">{{ tag.tagName }}</span>
                         </div>
 
-                        <h5 class="ts-header">從品牌檢索搭配</h5>
-                        <div class="ts-labels" v-if="brands.length">
-                            <span class="ts-label" v-for="brand in brands" :key="brand">{{ brand }}</span>
-                        </div>
-
-                        <h5 class="ts-header">Ming穿搭常用品牌</h5>
-                        <div class="ts-labels" v-if="commonBrands.length">
-                            <span class="ts-label" v-for="commonBrand in commonBrands" :key="commonBrand">{{ commonBrand
-                                }}</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -83,7 +77,6 @@ import axiosapi from '@/plugins/axios.js';
 
 const route = useRoute();
 const post = ref({});
-const images = ref({});
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 const currentImageIndex = ref(0);
 
@@ -100,20 +93,20 @@ const getImageUrl = (imageName) => {
 };
 
 const currentImage = computed(() => {
-    return images.value?.[currentImageIndex.value]?.imgUrl;
+    return post.value.images?.[currentImageIndex.value]?.imgUrl;
 });
 
 // 照片輪播 下一張照片
 const nextImage = () => {
     currentImageIndex.value =
-        (currentImageIndex.value + 1) % images.value.length;
+        (currentImageIndex.value + 1) % post.value.images.length;
 };
 
 // 照片輪播 上一張照片
 const prevImage = () => {
     currentImageIndex.value =
-        (currentImageIndex.value - 1 + images.value.length) %
-        images.value.length;
+        (currentImageIndex.value - 1 + post.value.images.length) %
+        post.value.images.length;
 };
 
 const setCurrentImage = (index) => {
@@ -128,25 +121,26 @@ onMounted(() => {
             console.log("post.value: ", post.value);
             // images.value = post.value.images || [];
             clothingItems.value = post.value.clothingItems || [];
-            tags.value = post.value.tags || ["Taiwan", "Taichung"];
+            tags.value = post.value.postTags || ["Taiwan", "Taichung"];
             brands.value = post.value.brands || ["Maison MIHARA YASUHIRO", "BEAMS"];
+            console.log("tag: ", tags.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);
         });
 
-    axiosapi.get(`/images/post/${postId}`)
-        .then(response => {
-            images.value = response.data;
-            console.log("images.value: ", images.value);
+    // axiosapi.get(`/images/post/${postId}`)
+    //     .then(response => {
+    //         images.value = response.data;
+    //         console.log("images.value: ", images.value);
 
-            images.value.forEach(image => {
-                console.log(image.imgUrl);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading post:', error);
-        });
+    //         images.value.forEach(image => {
+    //             console.log(image.imgUrl);
+    //         });
+    //     })
+    //     .catch(error => {
+    //         console.error('Error loading post:', error);
+    //     });
 });
 
 function formatDate(date) {
@@ -156,29 +150,30 @@ function formatDate(date) {
 </script>
 
 <style scoped>
-/* 添加必要的樣式來調整版面 */
-.ts-placeholder img {
-    width: 100%;
-    height: auto;
-}
-
-.product-details {
-    padding: 2rem 0;
-}
-
 .carousel-container {
+    position: relative;
     width: 100%;
-    height: 100%;
+    max-width: 500px;
+    /* Match the max-width of product card */
+    margin: 0 auto;
+}
+
+.main-image {
+    width: 100%;
+    padding-bottom: 100%;
     position: relative;
     overflow: hidden;
 }
 
 .main-image img {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
-
+    height: 100%;
+    object-fit: cover;
 }
+
 
 .carousel-button {
     position: absolute;
@@ -193,15 +188,17 @@ function formatDate(date) {
 }
 
 .carousel-button.prev {
-    left: 5px;
+    left: 10px;
 }
 
 .carousel-button.next {
-    right: 5px;
+    right: 10px;
 }
 
 .thumbnail-grid {
     margin-top: 1rem;
+    display: flex;
+    justify-content: center;
 }
 
 .thumbnail {
@@ -211,6 +208,7 @@ function formatDate(date) {
     width: 60px;
     height: 60px;
     overflow: hidden;
+    margin: 0 5px;
 }
 
 
@@ -219,6 +217,7 @@ function formatDate(date) {
     opacity: 1;
     border: 2px solid var(--ts-gray-400);
 }
+
 
 .thumbnail img {
     width: 100%;
@@ -236,51 +235,85 @@ function formatDate(date) {
     opacity: 0;
 }
 
-.ts-content.is-horizontally-padded {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    /* 按钮之间的间距 */
+.ts-box.is-segment {
+    margin-top: 2rem;
 }
 
-.ts-box {
-    position: relative;
+.ts-table {
     width: 100%;
-    /* 确保 .ts-box 使用父级元素的宽度 */
-    height: 100%;
-    /* 确保 .ts-box 使用父级元素的高度 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    /* 裁切溢出的内容 */
-    margin: 0 auto;
-}
-
-.ts-image {
-    width: 100%;
-    /* 确保图片容器占满 ts-box 的宽度 */
-    height: 100%;
-    /* 确保图片容器占满 ts-box 的高度 */
-    position: relative;
-    overflow: hidden;
-    /* 裁切溢出的内容 */
+    margin-top: 1rem;
 }
 
 .ts-image img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 1rem;
     object-fit: cover;
-    /* 裁切图片，使图片覆盖整个容器 */
-    width: 100%;
-    height: 100%;
-    object-position: center;
-    /* 图片居中显示 */
 }
 
-.ts-card {
+/* Lightbox 樣式 */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    /* 根据需要调整 .ts-card 的顶部间距 */
+    z-index: 1000;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+}
+
+.lightbox-close,
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.lightbox-close {
+    top: 10px;
+    right: 10px;
+}
+
+.lightbox-prev {
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+.lightbox-next {
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+/* 使主圖片可點擊 */
+.main-image {
+    cursor: pointer;
+}
+
+.ts-chip .ts-label {
+    background-color: #9d7e7e;
+    padding: 5px 5px;
+    border-radius: 10px;
 }
 </style>

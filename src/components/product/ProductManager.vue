@@ -1,33 +1,65 @@
 <template>
-    <div class="ts-box">
-      <h3 class="ts-header">商品管理</h3>
-  
-      <!-- 商品列表 -->
-      <table class="ts-table">
-        <thead>
-          <tr>
-            <th>商品名稱</th>
-            <th>價格</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="product in paginatedProducts" :key="product.productId">
-            <td>{{ product.productName }}</td>
-            <td>{{ product.price }}</td>
-            <td>
-              <button @click="editProduct(product)" class="ts-button is-small"><span class="ts-icon is-pen-to-square-icon file content-main field-component-icon group-single icon-icon"></span></button>
-              <button @click="deleteProduct(product.productId)" class="ts-button is-wide is-outlined"><span class="ts-icon is-trash-can-icon"></span></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-  
-     <!-- 分頁元件 -->
-     <div class="ts-pagination is-secondary">
+  <div class="ts-box">
+    <h3 class="ts-header">商品管理</h3>
+
+    <!-- 分類和子分類過濾 -->
+    <div class="ts-grid">
+      <div class="column is-8-wide">
+        <div class="ts-select is-fluid">
+          <select v-model="selectedCategoryId" @change="loadSubcategories">
+            <option value="">所有分類</option>
+            <option v-for="category in categories" :key="category.categoryId" :value="category.categoryId">
+              {{ category.categoryName }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="column is-8-wide">
+        <div class="ts-select is-fluid">
+          <select v-model="selectedSubcategoryId" @change="filterProducts">
+            <option value="">所有子分類</option>
+            <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId" :value="subcategory.subcategoryId">
+              {{ subcategory.subcategoryName }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品列表 -->
+    <table class="ts-table" style="margin: 15px 0px 0px 0px ;">
+      <thead>
+        <tr>
+          <th>商品名稱</th>
+          <th>價格</th>
+          <th>分類</th>
+          <th>子分類</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="product in paginatedProducts" :key="product.productId">
+          <td>{{ product.productName }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.categoryName }}</td>
+          <td>{{ product.subcategoryName }}</td>
+          <td>
+            <button @click="editProduct(product)" class="ts-button is-small">
+              <span class="ts-icon is-pen-to-square-icon"></span>
+            </button>
+            <button @click="deleteProduct(product.productId)" class="ts-button is-wide is-outlined">
+              <span class="ts-icon is-trash-can-icon"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 分頁元件 -->
+    <div class="ts-pagination is-secondary">
       <Paginate 
         v-model="currentPage" 
-        :page-count="getPageCount()" 
+        :page-count="getPageCount" 
         :page-range="3" 
         :margin-pages="1"
         :click-handler="handlePageChange" 
@@ -59,9 +91,12 @@
             <div class="ts-input is-fluid">
               <input type="number" v-model="editingProduct.price" placeholder="價格" required>
             </div>
-            <div class="ts-textarea">
-              <textarea v-model="editingProduct.productDescription" placeholder="商品描述" rows="4" required></textarea>
-            </div>
+            <div class="ts-textarea product-description-container">
+          <textarea v-model="editingProduct.productDescription" placeholder="商品描述" rows="5" 
+            required
+            class="product-description-textarea">
+          </textarea>
+        </div>
   
             <!-- 商品照片管理 -->
             <h5>商品照片</h5>
@@ -87,44 +122,99 @@
   </template>
   
   <script setup>
-  import { ref, onMounted , computed } from 'vue';
-  import axiosapi from '@/plugins/axios.js';
-  import Paginate from 'vuejs-paginate-next';
-  import Swal from 'sweetalert2'
+  import { ref, onMounted, computed } from 'vue';
+import axiosapi from '@/plugins/axios.js';
+import Paginate from 'vuejs-paginate-next';
+import Swal from 'sweetalert2'
+import useUserStore from "@/stores/user.js";
+import { useRouter } from 'vue-router';
 
-  const products = ref([]);
-  const editingProduct = ref(null);
-  const productImages = ref([]);
-  const currentPage = ref(1);
-  const itemsPerPage = 9;
-  
-  onMounted(async () => {
-    await fetchProducts();
-  });
-  
-  async function fetchProducts() {
-    try {
-      const response = await axiosapi.get('/allproducts');
-      products.value = response.data;
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
+const userStore = useUserStore();
+const router = useRouter();
+
+const products = ref([]);
+const filteredProducts = ref([]);
+const editingProduct = ref(null);
+const productImages = ref([]);
+const currentPage = ref(1);
+const itemsPerPage = 9;
+
+const categories = ref([]);
+const subcategories = ref([]);
+const selectedCategoryId = ref('');
+const selectedSubcategoryId = ref('');
+
+onMounted(async () => {
+  await fetchCategories();
+  await fetchProducts();
+});
+
+async function fetchCategories() {
+  try {
+    const response = await axiosapi.get('/categories');
+    categories.value = response.data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
   }
+}
+
+async function loadSubcategories() {
+  selectedSubcategoryId.value = '';
+  if (selectedCategoryId.value) {
+    try {
+      const response = await axiosapi.get(`/subcategories/categories/${selectedCategoryId.value}`);
+      subcategories.value = response.data;
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+    }
+  } else {
+    subcategories.value = [];
+  }
+  await filterProducts();
+}
+  
+async function fetchProducts() {
+  try {
+    const response = await axiosapi.get('/allproducts');
+    products.value = response.data;
+    filteredProducts.value = products.value;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+}
+
+async function filterProducts() {
+  try {
+    let url = '/products/filter?';
+    if (selectedCategoryId.value) {
+      url += `categoryId=${selectedCategoryId.value}`;
+    }
+    if (selectedSubcategoryId.value) {
+      url += `&subcategoryId=${selectedSubcategoryId.value}`;
+    }
+    const response = await axiosapi.get(url);
+    filteredProducts.value = response.data;
+  } catch (error) {
+    console.error('Error filtering products:', error);
+  }
+  currentPage.value = 1;
+}
   
 //   分頁功能
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return products.value.slice(start, end);
+  return filteredProducts.value.slice(start, end);
 });
 
-function getPageCount() {
-  return Math.ceil(products.value.length / itemsPerPage);
-}
+const getPageCount = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage);
+});
 
 function handlePageChange(page) {
   currentPage.value = page;
 }
+
 
 
   async function editProduct(product) {
@@ -157,7 +247,9 @@ function handlePageChange(page) {
         // 如果需要，可以添加其他字段
       };
       
-      await axiosapi.put(`/admin/products/${editingProduct.value.productId}`, updateData);
+      await axiosapi.put(`/admin/products/${editingProduct.value.productId}`, updateData,{
+        headers: { Authorization: `Bearer ${userStore.userToken}` }
+      });
       await fetchProducts();
       closeEditModal();
       Swal.fire({
@@ -168,18 +260,11 @@ function handlePageChange(page) {
         confirmButtonText: '確認'
       }).then((result) => {
         if (result.isConfirmed) {
-          router.push('/backstage');
+          router.push('backstage');
         }
       });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-        title: '錯誤',
-        text: '修改失敗，請重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認'
-      });
+      handleApiError(error, '修改失敗，請重試。');
     }
   }else{
     cancelEdit();
@@ -208,7 +293,9 @@ function handlePageChange(page) {
   });
     if (result.isConfirmed) {
       try {
-        await axiosapi.delete(`/admin/products/${productId}`);
+        await axiosapi.delete(`/admin/products/${productId}`,{
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
+        });
         await fetchProducts();
         Swal.fire({
       title: '成功！',
@@ -218,18 +305,11 @@ function handlePageChange(page) {
       confirmButtonText: '確認'
     }).then((result) => {
       if (result.isConfirmed) {
-        router.push('/backstage');
+        router.push('backstage');
       }
     });
     } catch (error) {
-      console.error('Error adding category:', error);
-      Swal.fire({
-      title: '錯誤',
-      text: '刪除失敗，請重試。',
-      icon: 'error',
-      confirmButtonColor: 'rgb(35 40 44)',
-      confirmButtonText: '確認'
-    });
+      handleApiError(error, '刪除失敗，請重試。');
   }
 }
 };
@@ -249,10 +329,12 @@ function handlePageChange(page) {
   
   async function deleteImage(imageId) {
       try {
-        await axiosapi.delete(`/admin/products/images/${editingProduct.value.productId}/${imageId}`);
+        await axiosapi.delete(`/admin/products/images/${editingProduct.value.productId}/${imageId}`,{
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
+        });
         await fetchProductImages(editingProduct.value.productId);
       } catch (error) {
-        console.error('Error deleting image:', error);
+        handleApiError(error, '失敗，請重試。');
       }
   }
   
@@ -265,14 +347,39 @@ function handlePageChange(page) {
       }
       try {
         await axiosapi.post(`/admin/products/images/${editingProduct.value.productId}/multiple`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${userStore.userToken}`}
         });
+
         await fetchProductImages(editingProduct.value.productId);
       } catch (error) {
-        console.error('Error adding images:', error);
+        handleApiError(error, '失敗，請重試。');
       }
     }
   }
+
+
+  function handleApiError(error, defaultMessage) {
+  console.error('API Error:', error);
+  let errorMessage = defaultMessage;
+
+  if (error.response) {
+    if (error.response.status === 403) {
+      errorMessage = '您沒有權限執行此操作';
+      router.push('/secure/login');
+    } else if (error.response.data && error.response.data.message) {
+      errorMessage = "操作失敗";
+    }
+  }
+
+  Swal.fire({
+    title: '錯誤',
+    text: errorMessage,
+    icon: 'error',
+    confirmButtonColor: 'rgb(35 40 44)',
+    confirmButtonText: '確認'
+  });
+}
   </script>
   
   <style scoped>
@@ -318,4 +425,39 @@ function handlePageChange(page) {
   justify-content: center;
   color: #000;
 }
+
+.product-description-container {
+  width: 100%;
+  max-width: 1000px; /* 調整這個值以匹配您表單的寬度 */
+  margin: 0 auto;
+}
+
+.product-description-textarea {
+  width: 100%;
+  min-height: 100px; /* 調整高度以匹配約 4-5 行文字 */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical; /* 允許用戶垂直調整大小 */
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .product-description-container {
+    max-width: 100%;
+  }
+}
+
+.ts-modal-content {
+  max-width: 800px; /* 調整模態框的最大寬度 */
+  width: 90%; /* 使模態框在小屏幕上也能保持合適的寬度 */
+  margin: 0 auto;
+}
+
+.ts-input, .ts-textarea {
+  margin-bottom: 15px;
+}
+
 </style>
