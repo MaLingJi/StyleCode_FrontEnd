@@ -43,7 +43,7 @@
           </div>
         </div>
         
-        <div class="ts-pagination is-secondary">
+        <div class="ts-pagination is-secondary" style="margin: 0px 0px 10px 0px ;">
           <Paginate 
             v-model="productStore.currentPage"
             :page-count="productStore.getPageCount" 
