@@ -78,6 +78,7 @@ import Paginate from 'vuejs-paginate-next';
 import CategoryMenu from "@/components/product/CategoryMenu.vue";
 import ProductCard from "@/components/product/ProductCard.vue";
 import { useProductStore } from '@/stores/product';
+import Swal from "sweetalert2";
 
 // 使用 Pinia 來存儲和管理產品相關的狀態
 const productStore = useProductStore();
@@ -85,7 +86,21 @@ const productStore = useProductStore();
 const categories = ref([]);
 
 // 在組件掛載時，執行異步操作來獲取分類和商品數據
+
+
+
+
+
 onMounted(async () => {
+
+  Swal.fire({
+    title: '讀取中...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
   try {
     // 從 API 獲取所有分類數據
     const categoriesResponse = await axiosapi.get("/categories");
@@ -96,8 +111,15 @@ onMounted(async () => {
 
     // 從 API 獲取所有產品數據
     await productStore.fetchAllProducts();
+    Swal.close();
   } catch (error) {
     console.error("Error fetching data:", error);
+    // 如果出現錯誤，也關閉讀取提示並顯示錯誤訊息
+    Swal.fire({
+      icon: 'error',
+      title: '載入失敗',
+      text: '無法載入數據，請稍後再試。'
+    });
   }
 });
 
