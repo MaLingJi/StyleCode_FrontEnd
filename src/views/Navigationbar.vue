@@ -68,6 +68,13 @@
                 <div class="">通知</div>
               </div>
               <div class="ts-divider"></div>
+              <!-- 如果沒有通知，顯示 "暫無通知" -->
+              <div
+                v-if="notifications.length === 0"
+                class="ts-content is-dense"
+              >
+                <div class="ts-text is-secondary">暫無通知</div>
+              </div>
               <template
                 v-for="(notification, index) in notifications.slice(0, 5)"
                 :key="index"
@@ -165,6 +172,7 @@ function logout() {
   userStore.setPermissions("");
   userStore.setLogedin(false);
   unreadCount.value = 0;
+  notifications.value = [];
 }
 
 ///////////////////////////// 通知 /////////////////////////////
