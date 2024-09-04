@@ -28,7 +28,7 @@ const imgUrl = ref('');
 const router = useRouter();
 
 onMounted(() => {
-    axiosapi.get(`/api/images/post/${props.post.postId}`)
+    axiosapi.get(`/images/post/${props.post.postId}`)
         .then(response => {
             const data = response.data;
             console.log("data", data);

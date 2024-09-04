@@ -108,7 +108,7 @@ function submitPost() {
     };
 
     // 1. 先發送發文請求
-    axiosapi.post("/api/post", postData)
+    axiosapi.post("/post", postData)
         .then(postResponse => {
             const postId = postResponse.data.postId;
 
@@ -120,7 +120,7 @@ function submitPost() {
                     formData.append('file', file);
                 });
 
-                return axiosapi.post("/api/images", formData, {
+                return axiosapi.post("/images", formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }

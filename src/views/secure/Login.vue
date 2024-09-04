@@ -101,7 +101,7 @@ function login() {
         userPwd: password.value
     }
 
-    axiosapi.post("/api/login", request)
+    axiosapi.post("/login", request)
         .then(function (response) {
             console.log("response", response);
             if (response.data.success) {

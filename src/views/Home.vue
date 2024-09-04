@@ -59,7 +59,7 @@ function callFind() {
         showConfirmButton: false,
         allowOutsideClick: false,
     });
-    axiosapi.get("/api/post").then(function (response) {
+    axiosapi.get("/post").then(function (response) {
         console.log("response: ", response);
 
         posts.value = response.data;

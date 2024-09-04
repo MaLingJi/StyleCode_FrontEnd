@@ -103,7 +103,7 @@ function checkEmail() {
         userEmail: userEmail.value
     }
 
-    axiosapi.post("/api/checkEmail", request)
+    axiosapi.post("/checkEmail", request)
         .then(function (response) {
             // console.log("response", response);
             if (response.data == "Y") {
@@ -121,7 +121,7 @@ function register() {
         userPwd: password.value
     }
 
-    axiosapi.post("/api/register", request)
+    axiosapi.post("/register", request)
         .then(function (response) {
             Swal.fire({
                 text: response.data,

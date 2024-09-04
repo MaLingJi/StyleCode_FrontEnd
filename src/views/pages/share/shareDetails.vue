@@ -122,7 +122,7 @@ const setCurrentImage = (index) => {
 
 onMounted(() => {
     const postId = route.params.postId;
-    axiosapi.get(`/api/post/${postId}`)
+    axiosapi.get(`/post/${postId}`)
         .then(response => {
             post.value = response.data;
             console.log("post.value: ", post.value);
@@ -135,7 +135,7 @@ onMounted(() => {
             console.error('Error loading post:', error);
         });
 
-    axiosapi.get(`/api/images/post/${postId}`)
+    axiosapi.get(`/images/post/${postId}`)
         .then(response => {
             images.value = response.data;
             console.log("images.value: ", images.value);
