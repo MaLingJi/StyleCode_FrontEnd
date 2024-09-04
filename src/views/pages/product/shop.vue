@@ -79,6 +79,8 @@ import CategoryMenu from "@/components/product/CategoryMenu.vue";
 import ProductCard from "@/components/product/ProductCard.vue";
 import { useProductStore } from '@/stores/product';
 import Swal from "sweetalert2";
+import { setup } from "naive-ui/es/radio/src/use-radio";
+import { useRoute } from "vue-router";
 
 // 使用 Pinia 來存儲和管理產品相關的狀態
 const productStore = useProductStore();
@@ -142,7 +144,10 @@ const handlePageChange = (pageNum) => {
 // 根據選擇的排序選項來排序產品
 const sortProducts = () => {
   productStore.sortProducts();
+  
 };
+
+
 
 </script>
 
