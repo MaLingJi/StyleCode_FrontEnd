@@ -67,4 +67,19 @@ function callFind() {
 }
 </script>
 
-<style></style>
+<style scoped>
+
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .share-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+</style>

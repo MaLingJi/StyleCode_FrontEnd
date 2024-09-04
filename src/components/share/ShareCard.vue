@@ -1,21 +1,19 @@
 <template>
-    <div class="ts-box" @click="navigateToShareDetails(props.post.postId)">
-        <div class="ts-image">
-            <img :src="imgUrl" />
-        </div>
-        <div class="ts-divider"></div>
-        <div class="share-info">
+  <div class="share-card" @click="navigateToShareDetails(post.postId)">
+    <div class="share-image">
+      <img :src="imgUrl" :alt="post.postTitle" />
+    </div>
+    <div class="share-info">
       <h3>{{ post.userName || 'Unknown User' }}</h3>
       <p>{{ post.postTitle }}</p>
     </div>
-        
-    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-// import Swal from 'sweetalert2';
+
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 const props = defineProps({
   post: {
@@ -27,11 +25,12 @@ const imgUrl = ref('');
 const router = useRouter();
 
 onMounted(() => {
-    console.log("Received post:", props.post);
-    // 确保post存在
-    if (props.post && props.post.images && props.post.images.length > 0) {
-        imgUrl.value = `${path}${props.post.images[0].imgUrl}`;
-    }
+  console.log("Received post:", props.post);
+  if (props.post && props.post.images && props.post.images.length > 0) {
+    imgUrl.value = `${path}${props.post.images[0].imgUrl}`;
+  } else {
+    imgUrl.value = '/path/to/default/image.jpg';
+  }
 });
 
 function navigateToShareDetails(postId) {
@@ -41,43 +40,48 @@ function navigateToShareDetails(postId) {
 
 <style scoped>
 .share-card {
-  width: 210.83px; /* 設定固定寬度 */
+  width: 250px; /* 設置固定寬度 */
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .share-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .share-image {
-  height: 316.25px; /* 設定固定高度 */
+  width: 100%;
+  height: 300px; /* 設置固定高度 */
   overflow: hidden;
 }
 
 .share-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
 }
 
 .share-info {
-  padding: 10px;
+  padding: 12px;
+  background-color: #f8f8f8;
 }
 
 .share-info h3 {
   margin: 0;
   font-size: 1em;
+  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #333;
 }
 
 .share-info p {
-  margin: 5px 0 0;
+  margin: 8px 0 0;
   font-size: 0.9em;
   color: #666;
   white-space: nowrap;

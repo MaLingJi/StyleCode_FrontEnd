@@ -1,4 +1,5 @@
 <template>
+  <div class="home-page">
     <div class="full-width-carousel">
       <div class="carousel-container" :style="{ transform: `translateX(-${currentPage * 100}%)` }">
         <div v-for="(page, pageIndex) in carouselPages" :key="pageIndex" class="carousel-page">
@@ -22,21 +23,20 @@
         ></span>
       </div>
     </div>
-    <!-- 新增的分享文章網格 -->
+
     <div class="shared-posts-section">
       <h2>最新分享</h2>
-      <div class="shared-posts-grid" style="cursor: pointer">
+      <div class="shared-posts-grid">
         <ShareCard v-for="post in limitedSharedPosts" :key="post.postId" :post="post" />
       </div>
     </div>
 
-     <!-- 添加網站理念部分 -->
-     <div class="site-philosophy">
+    <div class="site-philosophy">
       <h2>我們的理念</h2>
       <p>在這裡分享您的穿搭靈感，讓時尚激發無限可能！</p>
-      <!-- 可以根據需要添加更多內容 -->
     </div>
-  </template>
+  </div>
+</template>
   
   <script setup>
   import { ref, onMounted, computed ,onUnmounted} from 'vue';
@@ -134,95 +134,92 @@ onMounted(async () => {
   </script>
   
   <style scoped>
-  .full-width-carousel {
-    width: 100vw;
-    height: calc(100vh - 90px); /* 減去導覽列的高度 */
-    position: relative;
-    overflow: hidden;
-    margin-top: 10px; /* 添加頂部邊距，等於導覽列的高度 */
-  }
-  
-  .carousel-container {
-    display: flex;
-    transition: transform 0.5s ease;
-    height: 100%;
-  }
-  
-  .carousel-page {
-    display: flex;
-    flex: 0 0 100%;
-    width: 100%;
-  }
-  
-  .carousel-item {
-    flex: 1;
-    position: relative;
-    cursor: pointer;
-  }
-  
-  .carousel-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .carousel-caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 10px;
-  }
-  
-  .carousel-control {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.09);
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  
-  .carousel-control.prev {
-    left: 10px;
-  }
-  
-  .carousel-control.next {
-    right: 10px;
-  }
-  
-  .carousel-indicators {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-  }
-  
-  .carousel-indicators span {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-  }
-  
-  .carousel-indicators span.active {
-    background: white;
-  }
+.home-page {
+  width: 100%;
+  overflow-x: hidden;
+}
 
-  .shared-posts-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5列 */
-  gap: 20px;
-  max-width: 1200px; /* 或者其他適合您設計的最大寬度 */
-  margin: 0 auto;
+.full-width-carousel {
+  width: 100vw;
+  height: calc(100vh - 90px);
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.carousel-container {
+  display: flex;
+  transition: transform 0.5s ease;
+  height: 100%;
+}
+
+.carousel-page {
+  display: flex;
+  flex: 0 0 100%;
+  width: 100%;
+}
+
+.carousel-item {
+  flex: 1;
+  position: relative;
+  cursor: pointer;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.09);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.carousel-control.prev {
+  left: 10px;
+}
+
+.carousel-control.next {
+  right: 10px;
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.carousel-indicators span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.carousel-indicators span.active {
+  background: white;
 }
 
 .shared-posts-section {
@@ -233,6 +230,14 @@ onMounted(async () => {
 .shared-posts-section h2 {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.shared-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .site-philosophy {
@@ -251,4 +256,51 @@ onMounted(async () => {
   line-height: 1.6;
 }
 
-  </style>
+/* 響應式設計 */
+@media (max-width: 1024px) {
+  .shared-posts-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .full-width-carousel {
+    height: 50vh;
+  }
+
+  .shared-posts-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .carousel-caption h3 {
+    font-size: 1em;
+  }
+
+  .carousel-caption p {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .full-width-carousel {
+    height: 40vh;
+  }
+
+  .shared-posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .carousel-control {
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+
+  .site-philosophy h2 {
+    font-size: 1.5em;
+  }
+
+  .site-philosophy p {
+    font-size: 0.9em;
+  }
+}
+</style>
