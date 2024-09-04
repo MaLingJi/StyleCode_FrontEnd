@@ -12,6 +12,8 @@ import Register from "@/views/secure/register.vue";
 import comment from "@/views/pages/comment.vue";
 import cart from "@/views/pages/cart.vue";
 import profile from "@/views/secure/profile.vue";
+import notificationsList from "@/components/profile/notificationsList.vue";
+import card from "@/components/profile/card.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -26,9 +28,9 @@ const routes = [
 
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
-  { name: "profile-ling", path: "/secure/profile", component: profile},
   { name: "comment-link", path: "/comment/:id", component: comment },
   { name: "cart-link", path: "/cart", component: cart },
+  { name: "profile-ling", path: "/secure/profile/", component: profile},
 ];
 
 const router = createRouter({

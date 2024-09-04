@@ -184,6 +184,7 @@
 <script setup>
 import userProfile from "@/components/profile/userProfile.vue";
 import card from "@/components/profile/card.vue";
+import notificationsList from "@/components/profile/notificationsList.vue";
 
 import {
   shallowRef,
@@ -193,6 +194,7 @@ import {
   reactive,
   computed,
 } from "vue";
+import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 import Swal from "sweetalert2";
@@ -386,12 +388,11 @@ async function updatePwd() {
 ///////////////////////////// 其他 /////////////////////////////
 
 onMounted(function () {
-  axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
   console.log("Current auth header:", axiosapi.defaults.headers.authorization);
   showData(userStore.userId);
 });
 onUnmounted(() => {
-  if (photoUrl.value) {
+  if (photoPreview.value) {
     URL.revokeObjectURL(photoPreview.value); // 釋放臨時 URL
   }
 });
