@@ -21,11 +21,11 @@
               <div class="ts-content">
                 <h3>排列方式</h3>
                 <div class="filter-container">
-                  <div class="sort-select">
+                  <div class="sort-select" style="width: 20%;">
                     <select v-model="productStore.sortOption" @change="sortProducts">
                       <option value="">預設</option>
-                      <option value="priceAsc">價格由低到高</option>
-                      <option value="priceDesc">價格由高到低</option>
+                      <option value="priceAsc">價格由低至高</option>
+                      <option value="priceDesc">價格由高至低</option>
                     </select>
                   </div>
                   <div class="search-input">
