@@ -25,6 +25,8 @@ import profile from "@/views/secure/profile.vue";
 import shareDetails from "@/views/pages/share/shareDetails.vue";
 import refund from "@/views/pages/refund.vue";
 import refundReview from "@/views/pages/refundReview.vue";
+import notificationsList from "@/components/profile/notificationsList.vue";
+import card from "@/components/profile/card.vue";
 
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -50,6 +52,7 @@ const routes = [
   { name: "refund-link", path: "/refund/:orderId", component: refund},
   { name: "refundReview-link", path: "/refundReview", component: refundReview},
   { name: "cart-link", path: "/cart", component: cart },
+  { name: "profile-ling", path: "/secure/profile/", component: profile},
   { name: "order-link", path: "/order", component: order },
   { name: "paymentPage-link", path: "/payment", component: paymentPage },
   { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
