@@ -19,7 +19,7 @@
               </button>
             </div>
           </div>
-          <div class="column search-column">
+          <!-- <div class="column search-column">
             <div class="ts-wrap">
               <div class="ts-input is-start-icon">
                 <span class="ts-icon is-search-icon"></span>
@@ -31,7 +31,7 @@
                 >
               </div>
             </div>
-          </div>
+          </div> -->
           <div class="column user-actions">
             <div class="ts-wrap">
               <RouterLink to="/cart" class="ts-text is-undecorated action-icon">
@@ -70,21 +70,13 @@
 import { ref } from 'vue';
 import axiosapi from "@/plugins/axios.js"
 import useUserStore from "@/stores/user.js"
-import { useProductStore } from '@/stores/product'; 
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const productStore = useProductStore();
 const searchQuery = ref('');
 const userStore = useUserStore();
 const isMobileMenuOpen = ref(false);
 
-const handleSearch = async () => {
-  if (searchQuery.value.trim()) {
-    await productStore.searchProducts(searchQuery.value);
-    router.push('/shop');
-  }
-};
 
 function logout() {
   axiosapi.defaults.headers.authorization = "";
