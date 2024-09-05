@@ -8,7 +8,7 @@
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <div class="te-text">{{ productTags }}</div>
+                        <!-- <div class="te-text">{{ productTags }}</div> -->
                     </div>
                     <div class="ts-divider"></div>
                     <div class="ts-text is-heavy is-big">標題</div>
