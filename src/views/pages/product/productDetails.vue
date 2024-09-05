@@ -396,6 +396,7 @@ const currentLightboxImage = computed(() => {
   padding: 10px;
   cursor: pointer;
   z-index: 10;
+  text-decoration: none;
 }
 
 .carousel-button.prev {
@@ -486,6 +487,7 @@ const currentLightboxImage = computed(() => {
   position: relative;
   max-width: 90%;
   max-height: 90%;
+  
 }
 
 .lightbox-content img {
@@ -505,7 +507,16 @@ const currentLightboxImage = computed(() => {
   padding: 10px;
   cursor: pointer;
   font-size: 24px;
+  text-decoration: none;
 }
+
+.lightbox-close:hover,
+.lightbox-prev:hover,
+.lightbox-next:hover {
+  text-decoration: none; /* Ensure no underline on hover */
+  background: rgba(0, 0, 0, 0.7); /* Darken background slightly on hover for better UX */
+}
+
 
 .lightbox-close {
   top: 10px;

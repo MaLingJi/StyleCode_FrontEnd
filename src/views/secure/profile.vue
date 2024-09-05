@@ -184,7 +184,9 @@
 <script setup>
 import userProfile from "@/components/profile/userProfile.vue";
 import card from "@/components/profile/card.vue";
-    import order from '../pages/order.vue';
+import order from "../pages/order.vue";
+import notificationsList from "@/components/profile/notificationsList.vue";
+
 import {
   shallowRef,
   ref,
@@ -192,10 +194,15 @@ import {
   onUnmounted,
   reactive,
   computed,
+  watch
 } from "vue";
+import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 import Swal from "sweetalert2";
+
+const route = useRoute();
+const props = defineProps(['initialView']);
 
 const userStore = useUserStore();
 const currentComp = shallowRef(userProfile);
@@ -210,8 +217,29 @@ const pwdMessage = ref("");
 const pwdFomatMsg = ref("");
 
 //切換components
+// function switchComps(comp) {
+//   currentComp.value = comp;
+// }
+
 function switchComps(comp) {
-  currentComp.value = comp;
+  console.log("Switching to component:", comp);  // 添加日志
+  if (typeof comp === 'string') {
+    switch(comp) {
+      case 'userProfile':
+        currentComp.value = userProfile;
+        break;
+      case 'card':
+        currentComp.value = card;
+        break;
+      case 'order':
+        currentComp.value = order;
+        break;
+      default:
+        currentComp.value = userProfile;
+    }
+  } else {
+    currentComp.value = comp;
+  }
 }
 
 ///////////////////////////// 顯示使用者資料 /////////////////////////////
@@ -386,15 +414,41 @@ async function updatePwd() {
 ///////////////////////////// 其他 /////////////////////////////
 
 onMounted(function () {
-  axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
   console.log("Current auth header:", axiosapi.defaults.headers.authorization);
   showData(userStore.userId);
+
+  ////////跳轉回到購買清單
+  handleInitialView();
+  if (route.params.initialView) {
+    switchComps(route.params.initialView);
+  }
+
 });
+
 onUnmounted(() => {
   if (photoPreview.value) {
     URL.revokeObjectURL(photoPreview.value); // 釋放臨時 URL
   }
 });
+
+
+//////跳轉回到購買清單
+
+function handleInitialView() {
+  console.log("Handling initial view:", props.initialView);
+  if (props.initialView) {
+    switchComps(props.initialView);
+  }
+}
+
+// 监听路由参数变化
+watch(() => props.initialView, (newView) => {
+  console.log("initialView changed:", newView);
+  if (newView) {
+    switchComps(newView);
+  }
+});
+
 </script>
 
 <style scoped>

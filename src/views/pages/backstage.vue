@@ -18,7 +18,7 @@
           <div class="ts-content is-dense">
             <div class="ts-grid">
               <div class="column is-fluid">
-                <div class="ts-header">商品貨物</div>
+                <div class="ts-header">訂單</div>
               </div>
               <div class="column">
                 <span class="ts-icon is-boxes-stacked-icon"></span>
@@ -26,17 +26,16 @@
             </div>
           </div>
           <div class="ts-menu is-dense is-small">
-            <a class="item" @click="handleEditCategories" >分類管理</a>
-            <a class="item" @click="handleEditSubcategories">子分類管理</a>
-            <a class="item" @click="addNewProduct">新增商品</a>
-            <a class="item" @click="handleEditProduct">商品管理</a>
-            <a class="item" @click="handleEditProductDetail">商品庫存管理</ a>
+           
+              <a class="item" @click=switchComp(OrderManagement)>訂單分析</a>
+            <a href="#!" class="item">訂單列表</a>
+            <a class="item" @click=switchComp(refundReview)>退款申請</a>
           </div>
           <div class="ts-divider has-top-spaced-small"></div>
           <div class="ts-content is-dense">
             <div class="ts-grid">
               <div class="column is-fluid">
-                <div class="ts-header">訂單</div>
+                <div class="ts-header">商品貨物</div>
               </div>
               <div class="column">
                 <span class="ts-icon is-clipboard-icon"></span>
@@ -44,9 +43,11 @@
             </div>
           </div>
           <div class="ts-menu is-dense is-small">
-            <a class="item" @click=switchComp(OrderManagement)>訂單分析</a>
-            <a href="#!" class="item">訂單列表</a>
-            <a class="item" @click=switchComp(refundReview)>退款申請</a>
+            <a class="item" @click="handleEditCategories" >分類管理</a> 
+            <a class="item" @click="handleEditSubcategories">子分類管理</a>
+            <a class="item" @click="addNewProduct">新增商品</a>
+            <a class="item" @click="handleEditProduct">商品管理</a>
+            <a class="item" @click="handleEditProductDetail">商品庫存管理</ a>
           </div>
           <div class="ts-divider has-top-spaced-small"></div>
           <div class="ts-content is-dense">
@@ -107,7 +108,7 @@ import useUserStore from "@/stores/user.js"
     console.log(userStore.userId);
 
 
-const currentComp = shallowRef(null);
+const currentComp = shallowRef(OrderManagement);
 function switchComp(comp) {
     currentComp.value = comp;
 }

@@ -15,7 +15,7 @@
                 :key="post.postId"
                 class="column"
             >
-                <ShareCard  :post="post" />
+                <ShareCard  :post="post" style="cursor: pointer"/>
             </div>
         </div>
     </div>

@@ -20,21 +20,28 @@
             <div class="ts-box">
               <div class="ts-content">
                 <h3>排列方式</h3>
-                <div class="ts-select is-fluid">
-                   <!-- 排列方式的下拉選單 -->
-                  <select v-model="productStore.sortOption" @change="sortProducts">
-                       <!-- 雙向綁定選擇的排列方式，當選擇變更時調用 sortProducts 方法 -->
-                    <option value="">預設</option>
-                    <option value="priceAsc">價格由低到高</option>
-                    <option value="priceDesc">價格由高到低</option>
-                  </select>
+                <div class="filter-container">
+                  <div class="sort-select">
+                    <select v-model="productStore.sortOption" @change="sortProducts">
+                      <option value="">預設</option>
+                      <option value="priceAsc">價格由低到高</option>
+                      <option value="priceDesc">價格由高到低</option>
+                    </select>
+                  </div>
+                  <div class="search-input">
+                    <input 
+                      type="text" 
+                      v-model="searchQuery" 
+                      @input="handleSearch" 
+                      placeholder="搜索商品..."
+                    >
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <div class="column is-13-wide">
         <div class="ts-grid is-3-columns is-relaxed is-stretched">
           <div class="column" v-for="product in productStore.getPaginatedProducts" :key="product.productId">
@@ -43,7 +50,7 @@
           </div>
         </div>
         
-        <div class="ts-pagination is-secondary">
+        <div class="ts-pagination is-secondary" style="margin: 0px 0px 10px 0px ;">
           <Paginate 
             v-model="productStore.currentPage"
             :page-count="productStore.getPageCount" 
@@ -78,6 +85,9 @@ import Paginate from 'vuejs-paginate-next';
 import CategoryMenu from "@/components/product/CategoryMenu.vue";
 import ProductCard from "@/components/product/ProductCard.vue";
 import { useProductStore } from '@/stores/product';
+import Swal from "sweetalert2";
+import { setup } from "naive-ui/es/radio/src/use-radio";
+import { useRoute } from "vue-router";
 
 // 使用 Pinia 來存儲和管理產品相關的狀態
 const productStore = useProductStore();
@@ -85,7 +95,27 @@ const productStore = useProductStore();
 const categories = ref([]);
 
 // 在組件掛載時，執行異步操作來獲取分類和商品數據
+
+const searchQuery = ref('');
+
+const handleSearch = async () => {
+  if (searchQuery.value.trim()) {
+    await productStore.searchProducts(searchQuery.value);
+    router.push('/shop');
+  }
+};
+
+
 onMounted(async () => {
+
+  Swal.fire({
+    title: '讀取中...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
   try {
     // 從 API 獲取所有分類數據
     const categoriesResponse = await axiosapi.get("/categories");
@@ -96,8 +126,15 @@ onMounted(async () => {
 
     // 從 API 獲取所有產品數據
     await productStore.fetchAllProducts();
+    Swal.close();
   } catch (error) {
     console.error("Error fetching data:", error);
+    // 如果出現錯誤，也關閉讀取提示並顯示錯誤訊息
+    Swal.fire({
+      icon: 'error',
+      title: '載入失敗',
+      text: '無法載入數據，請稍後再試。'
+    });
   }
 });
 
@@ -120,7 +157,10 @@ const handlePageChange = (pageNum) => {
 // 根據選擇的排序選項來排序產品
 const sortProducts = () => {
   productStore.sortProducts();
+  
 };
+
+
 
 </script>
 
@@ -158,6 +198,40 @@ const sortProducts = () => {
 }
 
 
+.search-input input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-input {
+  flex: 1; /* Allows the search input to grow and fill available space */
+}
+
+.filter-container {
+  display: flex;
+  align-items: stretch;
+  gap: 10px; /* Adds space between select and input */
+  width: 100%; /* Ensures the container takes full width */
+}
+
+.sort-select select {
+  width: 100%;
+  height: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  appearance: none; /* Removes default styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M0 2l4 4 4-4z' fill='%23000000'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 8px 8px;
+}
+
 
 /* 為手機端設置響應式布局 */
 @media (max-width: 768px) {
@@ -169,8 +243,10 @@ const sortProducts = () => {
     width: 100%;/* 調整寬度為 100% */
   }
 
-  .sidebar {
-    margin-bottom: 20px;/* 為側邊欄添加下邊距 */
+  .sort-select,
+  .search-input {
+    width: 100%;
   }
 }
+
 </style>
