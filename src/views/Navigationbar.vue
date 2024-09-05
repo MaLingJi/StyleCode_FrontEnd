@@ -12,12 +12,8 @@
                 <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
                 <RouterLink to="/forum" class="nav-link">論壇</RouterLink>
                 <RouterLink to="/shop" class="nav-link">商城</RouterLink>
-                <RouterLink
-                  v-if="userStore.permissions == 'Admin'"
-                  to="/backstage"
-                  class="nav-link"
-                  >後台</RouterLink
-                >
+                <RouterLink to="/backstage" class="nav-link">後台</RouterLink>
+                <!-- v-if="userStore.permissions == 'Admin'" -->
               </nav>
               <button class="mobile-menu-toggle" @click="toggleMobileMenu">
                 <span class="ts-icon is-bars-icon"></span>
@@ -107,13 +103,11 @@
                   </div>
                   <div class="ts-divider"></div>
                 </template>
-                <!-- <div
-                class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
-              >
-                <RouterLink to="/secure/profile/notifications" class=""
-                  >前往通知列表</RouterLink
+                <div
+                  class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
                 >
-              </div> -->
+                  <div @click="toNotificationList">前往通知列表</div>
+                </div>
               </div>
               <a
                 class="ts-text is-undecorated action-icon"
@@ -232,7 +226,7 @@ function readNotification(noid) {
     .put(`/member/notifications/${noid}`)
     .then(function (response) {
       if (response.data.success) {
-        // 找到該通知並將狀態設為已讀（假設已讀為 1）
+        // 找到該通知並將狀態設為已讀（已讀為 1）
         const notification = notifications.value.find(
           (notif) => notif.Nid === noid
         );
@@ -251,6 +245,13 @@ function readNotification(noid) {
 //打開鈴鐺通知歸0
 function clearNotifications() {
   unreadCount.value = 0;
+}
+
+function toNotificationList() {
+  router.push({
+    name: "profile-ling",
+    params: { initialView: "notificationList" },
+  });
 }
 
 onMounted(function () {

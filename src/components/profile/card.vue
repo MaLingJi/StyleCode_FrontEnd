@@ -194,6 +194,8 @@ const formatExpirationDate = (event: Event) => {
   const cursorPosition = input.selectionStart || 0;
   input.setSelectionRange(cursorPosition, cursorPosition);
 };
+
+///////////// 新增信用卡
 function callCreate() {
   console.log(userInput);
   axiosapi
@@ -233,6 +235,9 @@ function callCreate() {
       });
     });
 }
+
+///////////// 顯示信用卡
+
 function callFindcard() {
   axiosapi
     .get(`/member/creditCard/${userStore.userId}`)
@@ -260,6 +265,8 @@ function callFindcard() {
       console.error("取得卡片資料時發生錯誤:", error);
     });
 }
+
+///////////// 刪除信用卡
 
 function deleteCard(cardId) {
   console.log("刪除?");
@@ -299,6 +306,7 @@ function deleteCard(cardId) {
     }
   });
 }
+///////////// 信用卡種類
 function getCardType(cardNumber) {
   const visaRegex = /^4/;
   const masterCardRegex = /^5[1-5]/;

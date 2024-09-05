@@ -17,7 +17,7 @@ import post from "@/views/pages/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
-import addProduct from '@/components/product/AddProduct.vue'
+import addProduct from '@/components/product/addProduct.vue'
 import productDetails from '@/views/pages/product/productDetails.vue';
 import paymentPage from "@/views/pages/paymentPage.vue";
 import checkPaying from "@/views/pages/checkPaying.vue";
@@ -57,7 +57,6 @@ const routes = [
   { name: "shop-link", path: "/shop", component: Shop },
   { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
   { name: 'addProduct', path: '/addproduct',component: addProduct},
-  { name: "profile-ling", path: "/secure/profile/", component: profile},
 ];
 
 
