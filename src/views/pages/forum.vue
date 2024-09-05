@@ -1,54 +1,50 @@
 <template>
   <div class="container">
-
-      <div class="content">
-        <div class="rule-box">
-          <a-typography>
-            <a-typography-title>論壇區規範</a-typography-title>
-            <a-typography-paragraph>
-              本論壇為討論服飾為主，請不要發跟本版沒有關係的文章以及主題，所有違反規則的文章將有可能被自動刪除或停權帳號而不作任何通知，請各位遵守論壇規章及守則
-            </a-typography-paragraph>
-            <a-typography-paragraph>
-              請勿連續回文，請勿複製其他的回文內容當成是自已的回文內容。近期
-              <a-typography-text strong style="color: red;">詐騙</a-typography-text>
-              猖狂甚多請勿發連結相關到文章，系統將自動偵查<a-typography-text strong style="color: red;">刪除</a-typography-text>。
-            </a-typography-paragraph>
-            <a-typography-title :level="2">發文和照片 規範及限制</a-typography-title>
-            <a-typography-paragraph>
-              麻煩各位遵守論壇規章
-              (<a-typography-text strong style="color: red;">圖片</a-typography-text>
-              最多上傳3張共
-              <a-typography-text strong style="color: red;">10MB</a-typography-text>
-              ), 嚴禁濫發品優低劣的主題或相同的主題，請勿使用廣東話，注音文憀慁愬慇，火星文..等非正式或共通性的語言，嚴禁發表任何人身攻擊, 侮辱他人或引起國際紛争的內容，若受到不公平、不公正的對待, 歡迎向我們反映和投訴, 我們將會秉公處理。
-            </a-typography-paragraph>
-          </a-typography>
-          
-          <!-- 發文按鈕 -->
-          <div class="buttons">
-            <router-link :to="{ name: 'post-link' }">
-              <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 47px; font-size: 23px;" size="large">
-                <span class="icon">
-                  <i class="fas fa-edit"></i>
-                </span>
-                <span>發文</span>
-              </a-button>
-            </router-link>
-          </div>
+    <div class="content">
+      <div class="rule-box">
+        <a-typography>
+          <a-typography-title>論壇區規範</a-typography-title>
+          <a-typography-paragraph>
+            本論壇為討論服飾為主，請不要發跟本版沒有關係的文章以及主題，所有違反規則的文章將有可能被自動刪除或停權帳號而不作任何通知，請各位遵守論壇規章及守則
+          </a-typography-paragraph>
+          <a-typography-paragraph>
+            請勿連續回文，請勿複製其他的回文內容當成是自已的回文內容。近期
+            <a-typography-text strong style="color: red;">詐騙</a-typography-text>
+            猖狂甚多請勿發連結相關到文章，系統將自動偵查<a-typography-text strong style="color: red;">刪除</a-typography-text>。
+          </a-typography-paragraph>
+          <a-typography-title :level="2">發文和照片 規範及限制</a-typography-title>
+          <a-typography-paragraph>
+            麻煩各位遵守論壇規章
+            (<a-typography-text strong style="color: red;">圖片</a-typography-text>
+            最多上傳3張共
+            <a-typography-text strong style="color: red;">10MB</a-typography-text>
+            ), 嚴禁濫發品優低劣的主題或相同的主題，請勿使用廣東話，注音文憀慁愬慇，火星文..等非正式或共通性的語言，嚴禁發表任何人身攻擊, 侮辱他人或引起國際紛争的內容，若受到不公平、不公正的對待, 歡迎向我們反映和投訴, 我們將會秉公處理。
+          </a-typography-paragraph>
+        </a-typography>
+        <!-- 發文按鈕 -->
+        <div class="buttons">
+          <router-link :to="{ name: 'post-link' }">
+            <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 47px; font-size: 23px;" size="large">
+              <span class="icon">
+                <i class="fas fa-edit"></i>
+              </span>
+              <span>發文</span>
+            </a-button>
+          </router-link>
         </div>
-        
-        <!-- 浮動式至頂效果 -->
-        <div :style="{ height: '1vh', padding: '10px' }">
-          <a-back-top />
-        </div>
-        
-        <!-- 發文地方 -->
-        <section>
-          <a-list
+      </div>
+      <!-- 浮動式至頂效果 -->
+      <div :style="{ height: '1vh', padding: '10px' }">
+        <a-back-top />
+      </div>
+      <!-- 發文地方 -->
+      <section>
+        <a-list
           item-layout="vertical"
           size="large"
           :pagination="pagination"
           :data-source="listData"
-          >
+        >
           <template #footer>
             <div class="ts-checklist">
               <div class="item is-warning">發言前請三思而後行。</div>
@@ -80,7 +76,6 @@
               <a-list-item-meta :description="item.contentText">
                 <template #title>
                   <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
-                  <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
                 </template>
                 <template #avatar><a-avatar :src="item.avatar" /></template>
               </a-list-item-meta>
@@ -92,7 +87,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, ref, onMounted } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
@@ -112,7 +107,7 @@ export default defineComponent({
     const path = import.meta.env.VITE_POST_IMAGE_URL; 
 
     const pagination = ref({
-      onChange: (page: number) => {
+      onChange: (page) => {
         console.log(page);
       },
       pageSize: 10,
@@ -120,23 +115,24 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      callFind(); // 組件加載時獲取所有文章
+      callFind(); // 加載獲取所有文章
     });
 
     function callFind() {
       axiosapi.get("/post").then(function (response) {
-        console.log("回復:", response.data);
-        // 過濾掉已刪除的帖子名字要一樣
-        listData.value = response.data.filter(post => !post.deletedAt);
-        pagination.value.total = listData.value.length; 
-        // 確保獲取的數據中包含 postId、postTitle 和 images
+        console.log("回覆:", response.data);
+        // 過濾不屬於論壇和刪除過後的帖子
+        const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt);
+        // 按創建時間排序文章，最新的在最上面
+        filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        listData.value = filteredPosts;
         pagination.value.total = listData.value.length; 
       }).catch(function (error) {
         console.error("發現錯誤", error.response ? error.response.data : error.message);
       });
     }
 
-    const likePost = (id: string) => {
+    const likePost = (id) => {
       const post = listData.value.find(item => item.postId === id);
       if (post) {
         if (!post.liked) {
@@ -146,7 +142,7 @@ export default defineComponent({
       }
     };
 
-    const collectPost = (id: string) => {
+    const collectPost = (id) => {
       const post = listData.value.find(item => item.postId === id);
       if (post) {
         if (!post.collected) {
@@ -156,8 +152,22 @@ export default defineComponent({
       }
     };
 
-    const commentPost = (id: string) => {
+    const commentPost = (id) => {
       const post = listData.value.find(item => item.postId === id);
+    };
+
+    const handleSubmit = async () => {
+      const postData = {
+        title: "新貼文標題",
+        content: "這是貼文內容",
+        // 其他必要的字段
+      };
+      try {
+        await axiosapi.post('/post', postData); // 假設這是發文的請求
+        callFind(); // 發文後重新獲取貼文
+      } catch (error) {
+        console.error("發文失敗:", error.response ? error.response.data : error.message);
+      }
     };
 
     return {
@@ -166,13 +176,12 @@ export default defineComponent({
       likePost,
       collectPost,
       commentPost,
+      handleSubmit,
       path,
       userStore,
     };
   },
 });
-
-
 </script>
 
 <style scoped>

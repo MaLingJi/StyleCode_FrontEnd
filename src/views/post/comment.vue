@@ -1,145 +1,180 @@
 <template>
   <div>
-    <h1>{{ post.postTitle }}</h1>
-    <p>{{ post.contentText }}</p>
-    <img v-if="post.images.length > 0" :src="post.images[0].imgUrl" alt="Post Image" />
+    <!-- 顯示評論列表 -->
+    <a-list
+      v-if="comments.length"
+      :data-source="comments"
+      item-layout="horizontal"
+      :header="`${comments.length} 則評論`"
+    >
+      <template #renderItem="{ item }">
+        <a-list-item>
+          <a-comment
+            :author="item.author"
+            :avatar="item.avatar"
+            :content="item.comment"
+            :datetime="item.datetime"
+          >
+            <!-- 編輯刪除僅使用者可見 -->
+            <template #actions>
+              <template v-if="item.userId === userId">
+                <a-button type="link" @click="editComment(item)">編輯</a-button>
+                <a-button type="link" @click="deleteComment(item.commentId)">刪除</a-button>
+              </template>
+            </template>
+          </a-comment>
+        </a-list-item>
+      </template>
+    </a-list>
 
-    <h2>新增留言</h2>
-    <a-textarea v-model:value="newComment" placeholder="輸入留言" />
-    <a-button @click="handleSubmit">送出</a-button>
-
-    <h2>留言列表</h2>
-    <ul>
-      <li v-for="(comment, index) in comments" :key="index">
-        <span v-if="!comment.isEditing">{{ comment.content }}</span>
-        <a-textarea v-if="comment.isEditing" v-model:value="comment.editContent" />
-        
-        <a-button v-if="comment.userId === currentUserId" @click="toggleEdit(comment)">
-          {{ comment.isEditing ? '保存' : '編輯' }}
-        </a-button>
-        <a-button v-if="comment.userId === currentUserId" @click="deleteComment(comment.id)">刪除</a-button>
-      </li>
-    </ul>
+    <!-- 新增評論表單 -->
+    <a-comment>
+      <template #avatar>
+        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="使用者" />
+      </template>
+      <template #content>
+        <a-form-item>
+          <a-textarea v-model:value="newComment" :rows="4" placeholder="發表您的評論..." />
+        </a-form-item>
+        <a-form-item>
+          <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">
+            新增評論
+          </a-button>
+        </a-form-item>
+      </template>
+    </a-comment>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import dayjs from 'dayjs';
 import axiosapi from "@/plugins/axios.js";
-import useUserStore from "@/stores/user.js"; 
+import useUserStore from "@/stores/user.js";
+import { useRoute } from 'vue-router';
 
-interface Post {
-  postId: number;
-  postTitle: string;
-  contentText: string;
-  images: Array<{ imgUrl: string }>;
-}
-
-interface Comment {
-  id: number;
-  content: string;
-  userId: number;
-  isEditing?: boolean;
-  editContent?: string;
-}
+const comments = ref([]);
+const newComment = ref('');
+const submitting = ref(false);
 
 const route = useRoute();
-const postId = Number(route.params.id);
-const post = ref<Post>({} as Post);
-const newComment = ref('');
-const comments = ref<Comment[]>([]);
 const userStore = useUserStore();
-const currentUserId = Number(userStore.userId);
+const userId = Number(userStore.userId);
+const postId = ref(route.params.id);
+console.log('postId:', postId.value); // 確認 postId 是否正確
+console.log('userId:', userId); // 確認 userId 是否正確
 
-// 獲取文章數據
-const fetchPostData = async () => {
-  try {
-    const response = await axiosapi.get(`/post/${postId}`);
-    post.value = response.data;
-    await fetchComments(); 
-  } catch (error) {
-    console.error("獲取文章數據失敗:", error);
-  }
-};
-
-// 獲取評論數據
+// 獲取評論列表
 const fetchComments = async () => {
   try {
-    const response = await axiosapi.get(`/comment`);
-    comments.value = response.data.filter(comment => comment.post.postId === postId).map(comment => ({
-      ...comment,
-      isEditing: false,
-      editContent: ""
-    }));
+    const response = await axiosapi.get(`/comment/post/${postId.value}`);
+    console.log('API 請求 URL:', `/comment/post/${postId.value}`);
+    console.log('API 返回的數據結構:', response.data);
+
+    if (response.data && response.data.post && Array.isArray(response.data.post.comment)) {
+      comments.value = response.data.post.comment.map(comment => ({
+        ...comment,
+        datetime: dayjs(comment.createdAt).format('YYYY-MM-DD HH:mm')
+      }));
+    } else {
+      comments.value = []; // 如果沒有評論，設置為空數組
+    }
   } catch (error) {
-    console.error("獲取評論數據失敗:", error);
+    console.error("獲取評論失敗:", error);
   }
 };
 
-// 提交評論
+// 發表新評論
 const handleSubmit = async () => {
-  if (!newComment.value) return;
-
+  if (!newComment.value.trim()) return;
+  submitting.value = true;
   try {
-    const response = await axiosapi.post(`/comment`, { 
-      post: { postId: postId },
-      userDetail: { id: currentUserId },
-      comment: newComment.value
+    const response = await axiosapi.post(`/comment`, {
+      post: { postId: Number(postId.value) }, // postId
+      userDetail: { id: userId }, // userId
+      comment: newComment.value.trim() // 評論內容
     });
-
-    const newCommentData = { 
-      ...response.data,
-      isEditing: false,
-      editContent: '',
-    };
-    comments.value.push(newCommentData);
+    console.log('處理提交回應:', response.data);
+    comments.value.unshift({
+      commentId: response.data.commentId,
+      userId,
+      author: userStore.userName,
+      avatar: 'https://joeschmoe.io/api/v1/random',
+      comment: response.data.comment, //返回的內容是comment
+      datetime: dayjs().format('YYYY-MM-DD HH:mm')
+    });
     newComment.value = '';
   } catch (error) {
-    console.error("新增評論失敗:", error);
+    console.error("發表評論失敗:", error.response?.data || error.message);
+  } finally {
+    submitting.value = false;
   }
 };
 
 // 編輯評論
-const editComment = async (commentId: number, newContent: string) => {
+const editComment = async (comment) => {
+  if (!comment.commentId) {
+    console.error("編輯評論失敗: commentId 未定義");
+    return;
+  }
   try {
-    await axiosapi.put(`/comment/${commentId}`, { content: newContent });
-    const index = comments.value.findIndex(comment => comment.id === commentId);
-    if (index !== -1) {
-      comments.value[index].content = newContent;
-    }
+    const updatedContent = prompt("編輯評論內容", comment.comment);
+    if (!updatedContent) return;
+
+    await axiosapi.put(`/comment/${comment.commentId}`, {
+      comment: updatedContent
+    });
+    comments.value = comments.value.map(c => 
+      c.commentId === comment.commentId 
+        ? { ...c, comment: updatedContent } 
+        : c
+    );
+    console.log(`編輯評論 ${comment.commentId}`);
   } catch (error) {
     console.error("編輯評論失敗:", error);
   }
 };
 
-// 切換編輯狀態
-const toggleEdit = (comment: Comment) => {
-  if (comment.isEditing) {
-    editComment(comment.id, comment.editContent!);
-    comment.isEditing = false;
-  } else {
-    comment.editContent = comment.content;
-    comment.isEditing = true;
-  }
-};
 
 // 刪除評論
-const deleteComment = async (commentId: number) => {
+const deleteComment = async (commentId) => {
   try {
     await axiosapi.delete(`/comment/${commentId}`);
-    comments.value = comments.value.filter(comment => comment.id !== commentId);
+    comments.value = comments.value.filter(comment => comment.commentId !== commentId);
   } catch (error) {
     console.error("刪除評論失敗:", error);
   }
 };
 
-// 初始載入
-onMounted(async () => {
-  await fetchPostData();
+// 初始化時獲取評論
+onMounted(() => {
+  fetchComments();
 });
 </script>
 
 <style scoped>
-
+.edit-button {
+  background-color: #1890ff; /* 藍色背景 */
+  color: #fff; 
+  border: none; 
+  padding: 6px 12px; 
+  border-radius: 4px; 
+  cursor: pointer; /* 滑鼠指標樣式 */
+  transition: background-color 0.3s; 
+}
+.edit-button:hover {
+  background-color: #40a9ff; /* 滑鼠懸停時改變背景顏色 */
+}
+.delete-button {
+  background-color: #ff4d4f; 
+  color: #fff; 
+  border: none; 
+  padding: 6px 12px; 
+  border-radius: 4px; 
+  cursor: pointer; /* 滑鼠指標樣式 */
+  transition: background-color 0.3s; 
+}
+.delete-button:hover {
+  background-color: #ff7875; /* 滑鼠懸停時改變背景顏色 */
+}
 </style>
