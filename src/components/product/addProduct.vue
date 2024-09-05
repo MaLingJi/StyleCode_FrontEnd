@@ -1,5 +1,4 @@
 <template>
-  <div class="ts-box">
   <div class="ts-content">
     <h3 class="ts-header">新增商品</h3>
     <form @submit.prevent="submitProduct">
@@ -101,7 +100,6 @@
           </div>
         </form>
       </div>
-    </div>
 </template>
 
 <script setup>
