@@ -26,17 +26,17 @@
               ></span
             ></RouterLink>
             <button
-              class="ts-text is-undecorated action-icon"
-              popovertarget="noti-popup"
-              @click="clearNotifications"
-            >
-              <span class="ts-icon is-spinning is-bell-icon is-big"></span
-              ><span
-                class="ts-icon is-spinning is-bell-icon is-big"
-                v-if="unreadCount > 0"
-                >{{ unreadCount }}</span
+                class="ts-text is-undecorated action-icon width-30"
+                popovertarget="noti-popup"
+                @click="clearNotifications"
               >
-            </button>
+                <span class="ts-icon is-spinning is-bell-icon is-big"></span
+                ><span
+                  class="ts-badge is-negative is-small notification-badge"
+                  v-if="unreadCount > 0"
+                  >{{ unreadCount }}</span
+                >
+              </button>
             <div
               class="ts-popover ts-menu noti-popver"
               id="noti-popup"
@@ -367,6 +367,7 @@ onUnmounted(function () {
   display: inline-block;
   width: 30px;
 }
+
 .notification-badge {
   position: absolute;
   top: 0;
