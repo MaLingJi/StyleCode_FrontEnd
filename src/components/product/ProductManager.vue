@@ -1,6 +1,5 @@
 <template>
-  <div class="ts-box">
-    <h3 class="ts-header">商品管理</h3>
+    <h3 class="ts-header" style="margin: 10px;">商品管理</h3>
 
     <!-- 分類和子分類過濾 -->
     <div class="ts-grid">
@@ -117,7 +116,6 @@
           <button @click="closeEditModal" class="ts-button is-outlined">取消</button>
         </form>
       </div>
-    </div>
   </div>
   </template>
   

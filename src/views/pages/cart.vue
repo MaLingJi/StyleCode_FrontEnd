@@ -31,9 +31,13 @@
 
                 <CartList :cart-items="cartItems" @update:car-items="updateCartItems"></CartList>
                 <div>
-                        <h3>訂單總金額:{{ formatCurrency(totalAmount) }}</h3>
+                        <h3 style="text-align: right; margin-top: 10px;" >訂單總金額:{{ formatCurrency(totalAmount) }}</h3>
+                </div>
+                <div style="text-align: right; margin-top: 10px;">
+                        <RouterLink to="/shop"><button class="ts-button" style="margin-right: 10px;">繼續選購</button></RouterLink>
                         <!-- <button class="ts-button" @click="proceedPayment">Submit</button> -->
-                        <button class="ts-button" @click="checkInventoryAndProceed">前往付款</button>
+                        <button class="ts-button" @click="checkInventoryAndProceed"
+                                >前往付款</button>
                 </div>
 
         </div>
@@ -107,16 +111,26 @@ const checkInventoryAndProceed = async () => {
                                 quantity: item.quantity,
                         }))
                 })
-                console.log('response data :' + JSON.stringify(response.data));
+                console.log('cartItem:' + cartItems.value)
+                if (cartItems.value == '') {
+                        Swal.fire({
+                                icon: 'error',
+                                title: '提交失敗',
+                                text: '購物車不得為空',
+                                confirmButtonText: '確認',
+                                confirmButtonColor: 'rgb(35 40 44)',
+                                showConfirmButton: true
+                        })
+                        return
+                }
                 if (response.data === 'ok') {
                         Swal.fire({
-                                title: '前往中!',
-                                icon: 'info',
-                                showConfirmButton: false,
+                                title: '讀取中...',
+                                allowOutsideClick: false,
                                 timer: 1000,
-                                timerProgressBar: true,
+                                showConfirmButton: false,
                                 didOpen: () => {
-                                        Swal.showLoading()
+                                        Swal.showLoading();
                                 }
                         }).then((result) => {
                                 // 確保 SweetAlert 的計時器結束後才執行路由跳轉

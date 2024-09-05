@@ -109,6 +109,7 @@ function login() {
                     text: response.data.message,
                     icon: "success",
                     confirmButtonText: '確認',
+                    confirmButtonColor: 'rgb(35 40 44)',
                     allowOutsideClick: false
                 }).then(function (result) {
 

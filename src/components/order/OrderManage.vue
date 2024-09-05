@@ -4,8 +4,8 @@
             <div class="stats column is-8-wide ts-box   ">
                 <OrderManageStats :orders="orders"></OrderManageStats>
                 <div claa="pieChart">
-                <OrderManagePieChart :orders="orders"></OrderManagePieChart>
-                  </div>
+                    <OrderManagePieChart :orders="orders"></OrderManagePieChart>
+                </div>
             </div>
             <div class="headers column is-8-wide ts-box is-horizontal">
                 <div class="header datePicker">
@@ -49,7 +49,7 @@ const fetchOrders = async () => {
     try {
         console.log(formatDate(range.value.start))
         console.log(formatDate(range.value.end))
-        const response = await axiosapi.get(`/order/findByDate`, {
+        const response = await axiosapi.get(`/admin/findByDate`, {
 
             params: {
                 startDate: formatDate(range.value.start),
@@ -115,16 +115,10 @@ watch(range, () => {
 }
 
 .chart.orderTable {
-    min-height: 500px;
-    max-height: 600px;
-    /* 设置最大高度 */
-    overflow-y: auto;
-    /* 添加垂直滚动条 */
+    display: flex;
+    justify-content:center
+    /* 調整這個值來控制表格向右移動的距離 */
 }
 
-/* 确保表格内容正确显示 */
-.chart.orderTable :deep(table) {
-    width: 100%;
-}
 
 </style>

@@ -27,7 +27,7 @@
                 @preview="handlePreview"
             >
                 <div v-if="fileList.length < 3">
-                <plus-outlined />
+                <PlusOutlined />
                 <div style="margin-top: 8px">上傳</div>
                 </div>
             </a-upload>
@@ -48,17 +48,16 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import type { UploadProps } from 'ant-design-vue';
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 
 const title = ref('');
 const description = ref('');
-const fileList = ref<UploadProps['fileList']>([]);
+const fileList = ref([]);
 const router = useRouter();
 
 const previewVisible = ref(false);
@@ -70,9 +69,9 @@ const handleCancel = () => {
     previewTitle.value = '';
 };
 
-const handlePreview = async (file: UploadProps['fileList'][number]) => {
+const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
-        file.preview = (await getBase64(file.originFileObj)) as string;
+        file.preview = await getBase64(file.originFileObj);
     }
     previewImage.value = file.url || file.preview;
     previewVisible.value = true;
@@ -85,58 +84,49 @@ const handleSubmit = async () => {
         return;
     }
 
-    console.log('驗證透過');
+    const userStore = useUserStore();
+    
+    const postData = {
+        userDetail: { id: userStore.userId }, 
+        postTitle: title.value,
+        contentType: "forum",
+        contentText: description.value,
+    };
 
     try {
-        const userStore = useUserStore();
-        console.log('User Store:', userStore);//
-        console.log('User ID:', userStore.userId);//
-        
-            const postData = {
-            userDetail: { id: userStore.userId }, 
-            postTitle: title.value,
-            contentType: "論壇",
-            contentText: description.value,
-        };
-
-        // 發送 POST 請求到後端 API
+          // 發送 POST 請求到後端 API
         const response = await axiosapi.post('/post', postData);
-        console.log('貼文已創立:', response.data);
         const postId = response.data.postId;
 
-        //如果有上傳的圖片，則處理圖片上傳
+          // 如果有上傳的圖片，則處理圖片上傳
         if (fileList.value.length > 0) {
-        const formData = new FormData();
-        fileList.value.forEach(file => {
-            if (file.originFileObj) {
-                formData.append('file', file.originFileObj); 
-            }
-        });
-        formData.append('postId', postId); 
+            const formData = new FormData();
+            fileList.value.forEach(file => {
+                if (file.originFileObj) {
+                    formData.append('file', file.originFileObj); 
+                }
+            });
+            formData.append('postId', postId); 
 
-          // 將圖片上傳請求發送到後端
-        const imageResponse = await axiosapi.post('/images', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+              // 將圖片上傳請求發送到後端
+            const imageResponse = await axiosapi.post('/images', formData);
+            console.log('圖片已上傳:', imageResponse.data);
+        }
 
-        console.log('圖片已上傳:', imageResponse.data);
-    }
-        // 提交後清空表單
+          // 提交後清空表單
         title.value = '';
         description.value = '';
         fileList.value = []; 
 
-        // 跳轉到論壇頁面
+          // 跳轉到論壇頁面
         router.push({ name: 'forum-link' });
-    } catch (error) {
+        } catch (error) {
         console.error('建立貼文時出錯:', error);
         alert('提交時字數或格式錯誤');
-    }
-};
+        }
+    };
 
-function getBase64(file: File) {
+function getBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -152,7 +142,6 @@ function getBase64(file: File) {
     display: flex;
       justify-content: center; /* 將內容置中 */
 }
-
 .post-form-wrapper {
       background-color: #f0f0f0; /* 設定背景顏色為淺灰色 */
       padding: 30px; /* 設定內邊距 */
@@ -161,38 +150,31 @@ function getBase64(file: File) {
       max-width: 700px; /* 設定最大寬度 */
       width: 100%; /* 使容器在小於最大寬度時填滿 */
 }
-
 .input-large {
       width: 100%; /* 使輸入框填滿表單寬度 */
       border-color: #e8e8e8; /* 設置預設邊框顏色 */
       transition: border-color 0.3s ease; /* 添加過渡效果 */
-}
-
+}  
 .input-large:hover {
       border-color: #1890ff; /* 滑鼠移入時變藍色 */
 }
-
 .input-large:focus {
       border-color: #1890ff; /* 按下去時變藍色 */
       box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2); /* 添加聚焦陰影 */
-}
-
+}  
 .textarea {
       width: 100%; /* 使文本區域填滿表單寬度 */
       border-color: #e8e8e8; /* 設置預設邊框顏色 */
       transition: border-color 0.3s ease; /* 添加過渡效果 */
       font-size: 20px; /* 設置字體大小 */
-}
-
+}  
 .textarea:hover {
       border-color: #ffa500; /* 滑鼠移入時變橘色 */
-}
-
+}  
 .textarea:focus {
       border-color: #ffa500; /* 按下去時變橘色 */
       box-shadow: 0 0 0 2px rgba(255, 166, 0, 0.2); /* 添加聚焦陰影 */
-}
-
+}  
 .button-container {
       display: flex; /* 使用 flexbox 來排列按鈕 */
       justify-content: flex-end; /* 使按鈕靠右對齊 */
