@@ -200,7 +200,6 @@ import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 import Swal from "sweetalert2";
-import { useRoute } from 'vue-router';  
 
 const route = useRoute();
 const props = defineProps(['initialView']);

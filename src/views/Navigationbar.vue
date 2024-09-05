@@ -12,32 +12,12 @@
                 <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
                 <RouterLink to="/forum" class="nav-link">論壇</RouterLink>
                 <RouterLink to="/shop" class="nav-link">商城</RouterLink>
-                <RouterLink
-              to="/backstage"
-              v-if="userStore.permissions == 'Admin'"
-              class="ts-text is-undecorated is-big"
-              >後台</RouterLink
-            >
               </nav>
               <button class="mobile-menu-toggle" @click="toggleMobileMenu">
                 <span class="ts-icon is-bars-icon"></span>
               </button>
             </div>
           </div>
-          <!-- <div class="column search-column">
-            <div class="ts-wrap">
-              <div class="ts-input is-start-icon">
-                <span class="ts-icon is-search-icon"></span>
-                <input 
-                  type="text" 
-                  v-model="searchQuery" 
-                  @input="handleSearch" 
-                  placeholder="搜索商品..."
-                >
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="column user-actions">
           <div class="ts-wrap">
             <RouterLink class="ts-text is-undecorated action-icon" to="/cart"
@@ -145,6 +125,8 @@
           </div>
         </div>
       </div>
+
+      </div>
     </div>
   </header>
   <div class="nav-placeholder"></div>
@@ -157,7 +139,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import axiosapi from "@/plugins/axios.js"
 import useUserStore from "@/stores/user.js"
 import { useRouter } from 'vue-router';
