@@ -15,7 +15,6 @@
             alt="Post Image" 
             class="post-image"
           />
-          <!-- @error="handleImageError"   -->
         </div>
 
         <div class="actions">
@@ -48,64 +47,12 @@
             <span style="padding-left: 8px; cursor: auto">{{ shares }}</span>
           </span>
         </div>
+        
         <!-- 編輯按鈕 -->
         <a-button type="primary" @click="() => goToEditPage(post.postId)">編輯</a-button>
-        
-        <a-list
-          class="comment-list"
-          :header="`${comments.length} 則回覆`"
-          item-layout="horizontal"
-          :data-source="comments"
-        >
-        <template #renderItem="{ item }">
-            <a-list-item>
-              <a-comment :author="`用戶 ${item.userDetail.id}`" :avatar="item.avatar">
-                <template #content>
-                  <p v-if="!item.isEditing">{{ item.comment }}</p>
-                  <a-textarea 
-                    v-if="item.isEditing" 
-                    v-model:value="item.editContent" 
-                    rows="2" 
-                    placeholder="編輯評論..."
-                  />
-                  <span class="comment-time">{{ dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</span>
-                </template>
-                <template #actions>
-                  <a-button 
-                    type="primary" 
-                    v-if="!item.isEditing" 
-                    @click="startEditing(item)">編輯</a-button>
-                  <a-button 
-                    type="primary" 
-                    v-if="item.isEditing" 
-                    @click="() => saveComment(item.commentId, item.editContent)">保存</a-button>
-                  <a-button class="delete-button" @click="() => deleteComment(item.commentId)">刪除</a-button>
-                </template>
-              </a-comment>
-            </a-list-item>
-          </template>
-        </a-list>
 
-        <a-comment class="new-comment">
-          <template #avatar>
-            <a-avatar src="https://joeschmoe.io/api/v1/random" alt="用戶" />
-          </template>
-          <template #content>
-            <a-form-item>
-              <a-textarea 
-                v-model:value="newComment" 
-                :rows="4" 
-                placeholder="新增評論..." 
-                class="comment-textarea"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">
-                新增評論
-              </a-button>
-            </a-form-item>
-          </template>
-        </a-comment>
+        <!-- 嵌入評論組件 -->
+        <comment :post-id="postId" />
       </div>
     </section>
   </div>
@@ -113,16 +60,13 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute,useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
-import dayjs from 'dayjs';
 import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
+import comment from './comment.vue';
 
 const post = ref({});
-const comments = ref([]);
-const newComment = ref('');
-const submitting = ref(false);
 const likes = ref(0);
 const collects = ref(0);
 const shares = ref(0);
@@ -139,7 +83,6 @@ const postId = Number(route.params.id);
 const fetchPostData = async () => {
   try {
     const response = await axiosapi.get(`/post/${postId}`);
-    console.log(response.data); // 查看返回的post數據格式
     post.value = response.data;
     likes.value = post.value.likesCount || 0; 
     collects.value = post.value.collectionsCount || 0;
@@ -148,29 +91,13 @@ const fetchPostData = async () => {
       .filter(image => !image.deletedAt)  // 過濾已刪除的圖片
       .map(image => ({
         ...image,
-        imgUrl: `${path}${image.imgUrl}` //用 path 變數構建完整的URL
+        imgUrl: `${path}${image.imgUrl}` //用 path 變數構建URL
       }));
     } else {
-      post.value.images = []; // 如果不是數組,初始化為空數組
+      post.value.images = []; //不是數組,初始化為空數組
     }
   } catch (error) {
     console.error("獲取文章數據失敗:", error);
-  }
-};
-  // 獲取評論數據
-  const fetchComments = async () => {
-  const storedComments = localStorage.getItem(`comments_${postId}`);
-  
-  if (storedComments) {
-    comments.value = JSON.parse(storedComments); // 從本地存儲恢復評論
-  } else {
-    try {
-      const response = await axiosapi.get(`/comment`);
-      // comments.value = response.data.filter(comment => comment.post.postId === postId); // 根據 postId 過濾評論
-      console.log("獲取的評論數據:", comments.value); // 調試
-    } catch (error) {
-      console.error("獲取評論數據失敗:", error);
-    }
   }
 };
 
@@ -197,76 +124,11 @@ const goToEditPage = (postId) => {
 //   loading.value = false; // 完成載入
 // });
 
-// 提交評論
-const handleSubmit = async () => {
-  if (!newComment.value) return;
-
-  try {
-    await axiosapi.post(`/comment`, { post: { postId: postId }, userDetail: { id: userStore.userId }, comment: newComment.value });
-    const newCommentData = { 
-      userDetail: { id: userStore.userId },
-      comment: newComment.value,
-      createdAt: new Date().toISOString()
-    };
-    comments.value.push(newCommentData); // 添加新評論到列表
-    saveCommentsToLocalStorage();
-    newComment.value = '';
-  } catch (error) {
-    console.error("新增評論失敗:", error.response ? error.response.data : error);
-  }
-};
-
-  // 將評論保存到本地存儲
-  const saveCommentsToLocalStorage = () => {
-  localStorage.setItem(`comments_${postId}`, JSON.stringify(comments.value));
-};
 // // 處理圖片載入錯誤
 // const handleImageError = (event: Event) => {
 //   const target = event.target as HTMLImageElement;
 //   target.src = 'https://via.placeholder.com/500'; // 替換為佔位符圖片 URL
 // };
-
-  // 刪除評論
-  const deleteComment = async (commentId) => {
-  try {
-    console.log("刪除評論ID:", commentId); // 調試輸出
-    await axiosapi.delete(`/comment/${commentId}`);
-    comments.value = comments.value.filter(comment => comment.commentId !== commentId);
-    saveCommentsToLocalStorage();
-  } catch (error) {
-    console.error("刪除評論失敗:", error);
-  }
-};
-
-  // 編輯評論
-  const editComment = async (commentId , newContent) => {
-  try {
-    console.log("編輯評論ID:", commentId); // 調試輸出
-    await axiosapi.put(`/comment/${commentId}`, { comment: newContent });
-    const index = comments.value.findIndex(comment => comment.commentId === commentId);
-    if (index !== -1) {
-      comments.value[index].comment = newContent;
-      saveCommentsToLocalStorage();
-    }
-  } catch (error) {
-    console.error("編輯評論失敗:", error);
-  }
-};
-
-// 開始編輯評論
-const startEditing = (comment) => {
-  comment.isEditing = true;
-  comment.editContent = comment.comment; // 將原始評論內容設置為編輯內容
-};
-
-// 保存已編輯的評論
-const saveComment = async (commentId, newContent) => {
-  await editComment(commentId, newContent);
-  const index = comments.value.findIndex(comment => comment.commentId === commentId);
-  if (index !== -1) {
-    comments.value[index].isEditing = false; // 編輯完成後關閉編輯狀態
-  }
-};
 
 // 點擊喜歡
 const toggleLike = async () => {
@@ -298,22 +160,18 @@ const toggleCollect = async () => {
 
   if (post.value.isCollected) {
     try {
-      await axiosapi.delete(`/collections/${postId}/${userId}`);
-      post.value.isCollected = false;
-      collects.value -= 1;
-    } catch (error) {
-      console.error("取消收藏失敗:", error);
-    }
-  } else {
-    try {
       await axiosapi.post(`/collections`, {
         post: { postId: postId },
         userDetail: { id: userStore.userId },
       });
-      post.value.isCollected = true;
-      collects.value += 1;
     } catch (error) {
       console.error("添加收藏失敗:", error);
+    }
+  } else {
+    try {
+      await axiosapi.delete(`/collections/${postId}/${userId}`);
+    } catch (error) {
+      console.error("取消收藏失敗:", error);
     }
   }
 };
@@ -333,7 +191,6 @@ watch(() => route.params.id, async (newId) => {
   if (newId) {
     loading.value = true; // 開始載入
     await fetchPostData();
-    await fetchComments();
     loading.value = false; // 完成載入
   }
 });
@@ -342,7 +199,6 @@ watch(() => route.params.id, async (newId) => {
 onMounted(async () => {
   loading.value = true; // 開始載入
   await fetchPostData();
-  await fetchComments();
   loading.value = false; // 完成載入
 });
 </script>
@@ -372,29 +228,5 @@ onMounted(async () => {
   object-fit: cover; /* 确保图片在容器中覆盖并保持比例 */
   border-radius: 8px; 
   width: calc(33.333% - 10px); 
-}
-.edit-button {
-  background-color: #1890ff; /* 藍色背景 */
-  color: #fff; 
-  border: none; 
-  padding: 6px 12px; 
-  border-radius: 4px; 
-  cursor: pointer; /* 滑鼠指標樣式 */
-  transition: background-color 0.3s; 
-}
-.edit-button:hover {
-  background-color: #40a9ff; /* 滑鼠懸停時改變背景顏色 */
-}
-.delete-button {
-  background-color: #ff4d4f; 
-  color: #fff; 
-  border: none; 
-  padding: 6px 12px; 
-  border-radius: 4px; 
-  cursor: pointer; /* 滑鼠指標樣式 */
-  transition: background-color 0.3s; 
-}
-.delete-button:hover {
-  background-color: #ff7875; /* 滑鼠懸停時改變背景顏色 */
 }
 </style>
