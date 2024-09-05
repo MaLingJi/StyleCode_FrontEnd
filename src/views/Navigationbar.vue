@@ -175,7 +175,7 @@ function callFindNotification() {
     .get(`/member/notifications/${userStore.userId}`)
     .then(function (response) {
       if (response.data.success) {
-        console.log(response.data.notificationList);
+        // console.log(response.data.notificationList);
         notifications.value = response.data.notificationList;
         unreadCount.value = response.data.unreadCount;
       }

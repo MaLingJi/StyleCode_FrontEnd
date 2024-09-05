@@ -89,6 +89,8 @@ import Swal from "sweetalert2";
 import { setup } from "naive-ui/es/radio/src/use-radio";
 import { useRoute } from "vue-router";
 
+const route = useRoute();
+
 // 使用 Pinia 來存儲和管理產品相關的狀態
 const productStore = useProductStore();
 // 使用 ref 來存儲分類數據

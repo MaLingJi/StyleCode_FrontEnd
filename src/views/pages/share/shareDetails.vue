@@ -54,7 +54,11 @@
                             <div class="product-card" v-for="productTag in productTags" :key="productTag.id">
                                 <div class="product-card-content">
                                     <div class="product-name">{{ productTag.productName }}</div>
-                                    <div class="product-subcategory">{{ productTag.subcategoryName }}</div>
+                                    <!-- <div class="product-subcategory">{{ productTag.subcategoryName }}</div> -->
+                                    <RouterLink :to="{ name: 'shop', params: { subcategoryId: product.subcategoryId } }"
+                                        @click="navigateToSubcategory(product.subcategoryId)">
+                                        {{ product.subcategoryName }}
+                                    </RouterLink>
                                 </div>
                             </div>
                         </div>

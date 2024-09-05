@@ -8,7 +8,7 @@
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <!-- <div class="te-text">{{ productTags }}</div> -->
+                        <div class="te-text">{{ productTags }}</div>
                     </div>
                     <div class="ts-divider"></div>
                     <div class="ts-text is-heavy is-big">標題</div>
@@ -38,6 +38,7 @@
                     <br>
                     <button class="ts-button" @click="submitPost">送出文章</button>
                 </div>
+                <!-- <div>{{ categories }}</div> -->
             </div>
             <div class="column is-3-wide">
                 <div class="cell is-vertical">
@@ -48,9 +49,30 @@
                         <div class="ts-input is-underlined">
                             <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
                         </div>
-                        <div class="ts-input is-underlined">
-                            <input type="text" v-model="newProduct.subcategoryName" placeholder="單品分類" />
+
+                        <!-- 分類選擇 -->
+                        <div class="ts-select is-underlined">
+                            <select v-model="selectedCategoryId" @change="updateSubcategories">
+                                <option value="">請選擇分類</option>
+                                <option v-for="category in categories" :key="category.categoryId"
+                                    :value="category.categoryId">
+                                    {{ category.categoryName }}
+                                </option>
+                            </select>
+
                         </div>
+
+                        <!-- 子分類選擇 -->
+                        <div class="ts-select is-underlined" v-if="subcategories.length > 0">
+                            <select v-model="newProduct.subcategoryId">
+                                <option value="">請選擇子分類</option>
+                                <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId"
+                                    :value="subcategory.subcategoryId">
+                                    {{ subcategory.subcategoryName }}
+                                </option>
+                            </select>
+                        </div>
+
                         <div class="ts-wrap is-center-aligned">
                             <button class="ts-button is-primary" @click="isEditing ? updateProduct() : addProduct()">
                                 {{ isEditing ? '更新' : '新增' }}
@@ -136,12 +158,22 @@ const showProductForm = ref(false);
 // 存儲單品資料
 const productTags = ref([]);
 
+const categories = ref([]);
+const subcategories = ref([]);
+const selectedCategoryId = ref(null);
+
 // 新增的單品資料
 const newProduct = ref({
     productName: '',
-    subcategoryId: 1,
+    subcategoryId: null,
     subcategoryName: ''
 });
+
+function updateSubcategories() {
+    const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
+    subcategories.value = selectedCategory ? selectedCategory.subcategories : [];
+}
+
 
 // 編輯單品
 function editProduct(index) {
@@ -187,12 +219,22 @@ function startAddProduct() {
     editingIndex.value = null;
 }
 
-// 添加單品到列表
 function addProduct() {
-    if (newProduct.value.productName && newProduct.value.subcategoryName) {
-        productTags.value.push({ ...newProduct.value });
+    // 檢查數據是否正確綁定
+    console.log('newProduct:', newProduct.value);
+
+    // 確保數據非空
+    if (newProduct.value.productName && newProduct.value.subcategoryId) {
+        productTags.value.push({ 
+            ...newProduct.value, 
+            subcategoryName: subcategories.value.find(sub => sub.subcategoryId === newProduct.value.subcategoryId)?.subcategoryName
+        });
         resetForm();
+    } else {
+        console.warn('Product name or subcategory is missing');
     }
+    console.log('Updated productTags:', productTags.value);
+
 }
 
 const request = {
@@ -217,10 +259,19 @@ onMounted(() => {
         .then(response => {
             userName.value = response.data.userDetail.userName;
             userPhoto.value = userPhotoPath + response.data.userDetail.userPhoto;
-            console.log("userId: ", userPhoto.value);
+            // console.log("userId: ", userPhoto.value);
         })
         .catch(error => {
             console.error('Error fetching URL:', error);
+        });
+
+    axiosapi.get('/categories')
+        .then(catagoryResponse => {
+            categories.value = catagoryResponse.data;
+            console.log("Categories:", categories.value);
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
         });
 });
 
