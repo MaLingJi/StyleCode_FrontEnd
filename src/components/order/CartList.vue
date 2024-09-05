@@ -3,8 +3,8 @@
         <table class="ts-table ">
             <thead>
                 <tr>
-                    <th>照片</th>
                     <th>商品資料</th>
+                    <th>照片</th>
                     <th>單件價格</th>
                     <th>數量</th>
                     <th>小計</th>
@@ -13,9 +13,9 @@
             </thead>
             <tbody>
                 <tr v-for="item in cartItems" style="vertical-align: middle;">
+                    <td>{{ item.productName }}</td>
                     <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))"
                             style="width: 100px; height: 100px;" /></td>
-                    <td>{{ item.productName }}</td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
                     <td>
                         <div>
@@ -39,7 +39,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="6">購物車：{{ cartItems.length }} 件</th>
+                    <th colspan="6" style="text-align: right;">購物車：{{ cartItems.length }} 件</th>
                 </tr>
             </tfoot>
         </table>

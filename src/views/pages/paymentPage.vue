@@ -24,7 +24,7 @@
         </div>
 
 
-        <div>
+        <div style="text-align: right; margin-top: 10PX;">
             <!-- <h3>合計:{{ formatCurrency(totalAmount) }}</h3> -->
             <!-- <button class="ts-button" @click="proceedPayment">Submit</button> -->
             <button class="ts-button" @click="lpPayment">LinePay</button>
