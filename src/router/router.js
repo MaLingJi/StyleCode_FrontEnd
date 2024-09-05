@@ -16,18 +16,18 @@ import post from "@/views/pages/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
+
+
 import checkPaying from "@/views/pages/checkPaying.vue";
+import profile from "@/views/secure/profile.vue";
 import shareDetails from "@/views/pages/share/shareDetails.vue";
 import refund from "@/views/pages/refund.vue";
 import refundReview from "@/views/pages/refundReview.vue";
-import notificationsList from "@/components/profile/notificationsList.vue";
-import card from "@/components/profile/card.vue";
-import profile from "@/views/secure/profile.vue";
 
 import paymentPage from "@/views/pages/paymentPage.vue";
 
 import productDetails from '@/views/pages/product/productDetails.vue';
-import addProduct from '@/components/product/AddProduct.vue'
+import addProduct from "@/components/product/addProduct.vue";
 import Shop from "@/views/pages/product/shop.vue";
 const routes = [
   { name: "home-link", path: "/", component: Home },

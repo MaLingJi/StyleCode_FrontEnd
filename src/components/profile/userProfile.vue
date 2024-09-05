@@ -113,7 +113,7 @@ const userInput = reactive({
   phone: "",
 });
 onMounted(function () {
-  axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
+  // axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
   Object.assign(userInput, props.userDetail);
 });
 

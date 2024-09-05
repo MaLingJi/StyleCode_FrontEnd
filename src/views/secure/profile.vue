@@ -22,6 +22,7 @@
       </div>
       <div class="ts-menu is-dense is-small" style="opacity: 0.8">
         <a class="item" @click="switchComps(userProfile)">個人資料</a>
+        <a class="item" @click="switchComps(notificationsList)">通知列表</a>
         <a class="item" @click="switchComps(card)">信用卡資訊</a>
         <a href="#!" class="item" data-dialog="updatePwdModal">修改密碼</a>
       </div>
@@ -40,7 +41,7 @@
         <a class="item" @click="switchComps(order)">購買清單</a>
       </div>
       <div class="ts-divider has-top-spaced-small"></div>
-      <a href="#!" class="ts-content is-interactive is-dense">
+      <a href="#!" class="ts-content is-dense">
         <div class="ts-grid">
           <div class="column is-fluid">
             <div class="ts-text is-bold">管理文章</div>
@@ -194,7 +195,7 @@ import {
   onUnmounted,
   reactive,
   computed,
-  watch
+  watch,
 } from "vue";
 import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
@@ -202,7 +203,7 @@ import useUserStore from "@/stores/user.js";
 import Swal from "sweetalert2";
 
 const route = useRoute();
-const props = defineProps(['initialView']);
+const props = defineProps(["initialView"]);
 
 const userStore = useUserStore();
 const currentComp = shallowRef(userProfile);
@@ -222,17 +223,20 @@ const pwdFomatMsg = ref("");
 // }
 
 function switchComps(comp) {
-  console.log("Switching to component:", comp);  // 添加日志
-  if (typeof comp === 'string') {
-    switch(comp) {
-      case 'userProfile':
+  console.log("Switching to component:", comp);
+  if (typeof comp === "string") {
+    switch (comp) {
+      case "userProfile":
         currentComp.value = userProfile;
         break;
-      case 'card':
+      case "card":
         currentComp.value = card;
         break;
-      case 'order':
+      case "order":
         currentComp.value = order;
+        break;
+      case "notificationList":
+        currentComp.value = notificationsList;
         break;
       default:
         currentComp.value = userProfile;
@@ -304,6 +308,7 @@ async function uploadPhoto() {
         text: response.data.message,
         icon: "success",
         confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
       });
     } else {
@@ -312,10 +317,8 @@ async function uploadPhoto() {
         text: response.data.message,
         icon: "warning",
         confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
-        customClass: {
-          container: "my-swal",
-        },
       });
     }
   } catch (error) {
@@ -324,6 +327,7 @@ async function uploadPhoto() {
       text: "更新失敗，請稍後再試。" + error.message,
       icon: "error",
       confirmButtonText: "確認",
+      confirmButtonColor: "rgb(35 40 44)",
       allowOutsideClick: false,
     });
   }
@@ -374,40 +378,55 @@ const isLoginDisabled = computed(function () {
 });
 
 async function updatePwd() {
-  try {
-    const response = await axiosapi.put(
-      `changePassword/${userStore.userId}`,
-      uPwdInput
-    );
+  const result = await Swal.fire({
+    title: "確認更新密碼",
+    text: `您確定要更改密碼嗎？`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+    confirmButtonColor: "rgb(35 40 44)",
+    cancelButtonColor: "#9e9e9e",
+  });
+  if (result.isConfirmed) {
+    try {
+      const response = await axiosapi.put(
+        `changePassword/${userStore.userId}`,
+        uPwdInput
+      );
 
-    if (response.data.success) {
+      if (response.data.success) {
+        document.querySelector("#updatePwdModal").close();
+        Swal.fire({
+          text: response.data.message,
+          icon: "success",
+          confirmButtonText: "確認",
+          confirmButtonColor: "rgb(35 40 44)",
+          allowOutsideClick: false,
+        });
+        uPwdInput.oldPwd = "";
+        uPwdInput.newPwd = "";
+        uPwdInput.checkPwd = "";
+      } else {
+        document.querySelector("#updatePwdModal").close();
+        Swal.fire({
+          text: response.data.message,
+          icon: "warning",
+          confirmButtonText: "確認",
+          confirmButtonColor: "rgb(35 40 44)",
+          allowOutsideClick: false,
+        });
+      }
+    } catch {
       document.querySelector("#updatePwdModal").close();
       Swal.fire({
-        text: response.data.message,
-        icon: "success",
+        text: "更新失敗，請稍後再試。" + error.message,
+        icon: "error",
         confirmButtonText: "確認",
-        allowOutsideClick: false,
-      });
-      uPwdInput.oldPwd = "";
-      uPwdInput.newPwd = "";
-      uPwdInput.checkPwd = "";
-    } else {
-      document.querySelector("#updatePwdModal").close();
-      Swal.fire({
-        text: response.data.message,
-        icon: "warning",
-        confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
       });
     }
-  } catch {
-    document.querySelector("#updatePwdModal").close();
-    Swal.fire({
-      text: "更新失敗，請稍後再試。" + error.message,
-      icon: "error",
-      confirmButtonText: "確認",
-      allowOutsideClick: false,
-    });
   }
 }
 
@@ -422,7 +441,6 @@ onMounted(function () {
   if (route.params.initialView) {
     switchComps(route.params.initialView);
   }
-
 });
 
 onUnmounted(() => {
@@ -430,7 +448,6 @@ onUnmounted(() => {
     URL.revokeObjectURL(photoPreview.value); // 釋放臨時 URL
   }
 });
-
 
 //////跳轉回到購買清單
 
@@ -441,14 +458,16 @@ function handleInitialView() {
   }
 }
 
-// 监听路由参数变化
-watch(() => props.initialView, (newView) => {
-  console.log("initialView changed:", newView);
-  if (newView) {
-    switchComps(newView);
+// 監聽路由參數變化
+watch(
+  () => props.initialView,
+  (newView) => {
+    console.log("initialView changed:", newView);
+    if (newView) {
+      switchComps(newView);
+    }
   }
-});
-
+);
 </script>
 
 <style scoped>

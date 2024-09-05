@@ -6,7 +6,7 @@
           <div class="column is-fluid">
             <div class="ts-wrap is-middle-aligned main-nav">
               <RouterLink to="/" class="ts-text is-undecorated logo-link">
-                <img src="/MDFK-removebg-preview.png" width="45" alt="Logo">
+                <img src="/MDFK-removebg-preview.png" width="45" alt="Logo" />
               </RouterLink>
               <nav class="desktop-nav">
                 <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
@@ -37,104 +37,106 @@
                   >{{ unreadCount }}</span
                 >
               </button>
-            <div
-              class="ts-popover ts-menu noti-popver"
-              id="noti-popup"
-              v-if="userStore.isLogedin"
-              popover
-            >
-              <div class="ts-content has-dark is-dense">
-                <div class="">通知</div>
-              </div>
-              <div class="ts-divider"></div>
-              <!-- 如果沒有通知，顯示 "暫無通知" -->
               <div
-                v-if="notifications.length === 0"
-                class="ts-content is-dense"
+                class="ts-popover ts-menu noti-popver"
+                id="noti-popup"
+                v-if="userStore.isLogedin"
+                popover
               >
-                <div class="ts-text is-secondary">暫無通知</div>
-              </div>
-              <template
-                v-for="(notification, index) in notifications.slice(0, 5)"
-                :key="index"
-              >
-                <div class="item" @click="readNotification(notification.Nid)">
-                  <div class="ts-iconset is-outlined ts-wrap is-middle-aligned">
-                    <span
-                      :class="{
-                        'ts-icon': true,
-                        'is-shop-icon': notification.type === 'shop',
-                        'is-heart-icon': notification.type === 'post',
-                      }"
-                    ></span>
-                    <div>
-                      <div
-                        class="ts-text"
+                <div class="ts-content has-dark is-dense">
+                  <div class="">通知</div>
+                </div>
+                <div class="ts-divider"></div>
+                <!-- 如果沒有通知，顯示 "暫無通知" -->
+                <div
+                  v-if="notifications.length === 0"
+                  class="ts-content is-dense"
+                >
+                  <div class="ts-text is-secondary">暫無通知</div>
+                </div>
+                <template
+                  v-for="(notification, index) in notifications.slice(0, 5)"
+                  :key="index"
+                >
+                  <div class="item" @click="readNotification(notification.Nid)">
+                    <div
+                      class="ts-iconset is-outlined ts-wrap is-middle-aligned"
+                    >
+                      <span
                         :class="{
-                          'is-heavy': notification.status === 0,
-                          'unread-notification': notification.status === 0,
+                          'ts-icon': true,
+                          'is-shop-icon': notification.type === 'shop',
+                          'is-heart-icon': notification.type === 'post',
                         }"
-                      >
-                        {{ notification.message }}
-                      </div>
-                      <div class="ts-text is-tiny is-secondary">
-                        {{ getRelativeTime(notification.createdTime) }}
+                      ></span>
+                      <div>
+                        <div
+                          class="ts-text"
+                          :class="{
+                            'is-heavy': notification.status === 0,
+                            'unread-notification': notification.status === 0,
+                          }"
+                        >
+                          {{ notification.message }}
+                        </div>
+                        <div class="ts-text is-tiny is-secondary">
+                          {{ getRelativeTime(notification.createdTime) }}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="ts-divider"></div>
-              </template>
-              <!-- <div
-                class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
-              >
-                <RouterLink to="/secure/profile/notifications" class=""
-                  >前往通知列表</RouterLink
+                  <div class="ts-divider"></div>
+                </template>
+                <div
+                  class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
                 >
-              </div> -->
-            </div>
-            <a
-              class="ts-text is-undecorated action-icon"
-              data-dropdown="user-dropdown"
-              href="#!"
-              v-if="userStore.isLogedin"
-              ><span class="ts-icon is-spinning is-user-icon is-big"></span
-            ></a>
-            <div
-              class="ts-dropdown"
-              id="user-dropdown"
-              v-if="userStore.isLogedin"
-            >
-              <RouterLink to="/secure/profile" class="item"
-                >個人頁面</RouterLink
+                  <div @click="toNotificationList">前往通知列表</div>
+                </div>
+              </div>
+              <a
+                class="ts-text is-undecorated action-icon"
+                data-dropdown="user-dropdown"
+                href="#!"
+                v-if="userStore.isLogedin"
+                ><span class="ts-icon is-spinning is-user-icon is-big"></span
+              ></a>
+              <div
+                class="ts-dropdown"
+                id="user-dropdown"
+                v-if="userStore.isLogedin"
               >
+                <RouterLink to="/secure/profile" class="item"
+                  >個人頁面</RouterLink
+                >
+                <RouterLink
+                  to="/backstage"
+                  class="item"
+                  v-if="userStore.permissions == 'Admin'"
+                  >後台</RouterLink
+                >
+                <button class="item" @click="logout">登出</button>
+              </div>
               <RouterLink
-                to="/backstage"
-                class="item"
-                v-if="userStore.permissions == 'Admin'"
-                >後台</RouterLink
-              >
-              <button class="item" @click="logout">登出</button>
+                to="/secure/login"
+                v-if="!userStore.isLogedin"
+                class="width-30"
+                ><span class="ts-icon is-user-icon is-big"></span
+              ></RouterLink>
             </div>
-            <RouterLink
-              to="/secure/login"
-              v-if="!userStore.isLogedin"
-              class="action-icon"
-              ><span class="ts-icon is-user-icon is-big"></span
-            ></RouterLink>
           </div>
         </div>
       </div>
 
       </div>
-    </div>
   </header>
   <div class="nav-placeholder"></div>
   <nav class="mobile-nav" :class="{ 'is-active': isMobileMenuOpen }">
     <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
     <RouterLink to="/forum" class="nav-link">論壇</RouterLink>
     <RouterLink to="/shop" class="nav-link">商城</RouterLink>
-    <RouterLink v-if="userStore.isAdmin" to="/backstage" class="nav-link">後台</RouterLink>
+    <RouterLink v-if="userStore.isAdmin" to="/backstage" class="nav-link"
+      >後台</RouterLink
+    >
   </nav>
 </template>
 
@@ -143,18 +145,18 @@ import axiosapi from "@/plugins/axios.js"
 import useUserStore from "@/stores/user.js"
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
-const searchQuery = ref('');
 import { onMounted, onUnmounted, ref, watch } from "vue";
+
+const router = useRouter();
 
 const userStore = useUserStore();
 const notifications = ref([]);
 const unreadCount = ref(0); //未讀通知數
-const intervalTime = 10000 * 1000; //每隔10秒
+const intervalTime = 10000; //每隔10秒
 let intervalId; //儲存 setInterval 的 ID
 
-///////////////////////////// 登出 /////////////////////////////
 
+///////////////////////////// 登出 /////////////////////////////
 function logout() {
   axiosapi.defaults.headers.authorization = "";
   userStore.setUserId("");
@@ -163,6 +165,7 @@ function logout() {
   userStore.setLogedin(false);
   unreadCount.value = 0;
   notifications.value = [];
+  router.push("/");
 }
 
 ///////////////////////////// 通知 /////////////////////////////
@@ -198,7 +201,7 @@ function readNotification(noid) {
     .put(`/member/notifications/${noid}`)
     .then(function (response) {
       if (response.data.success) {
-        // 找到該通知並將狀態設為已讀（假設已讀為 1）
+        // 找到該通知並將狀態設為已讀（已讀為 1）
         const notification = notifications.value.find(
           (notif) => notif.Nid === noid
         );
@@ -219,6 +222,13 @@ function clearNotifications() {
   unreadCount.value = 0;
 }
 
+function toNotificationList() {
+  router.push({
+    name: "profile-ling",
+    params: { initialView: "notificationList" },
+  });
+}
+
 onMounted(function () {
   if (userStore.isLogedin) {
     //一開始載入時呼叫一次
@@ -235,6 +245,10 @@ onUnmounted(function () {
     clearInterval(intervalId);
   }
 });
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
 </script>
 
 <style scoped>
@@ -245,7 +259,7 @@ onUnmounted(function () {
   right: 0;
   z-index: 1000;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-placeholder {
@@ -301,7 +315,7 @@ onUnmounted(function () {
   right: 0;
   background-color: #fff;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 999;
 }
 
@@ -323,14 +337,15 @@ onUnmounted(function () {
     padding: 10px 15px;
     margin: 0 5px;
   }
-  
+
   .logo-link {
     margin-right: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  .desktop-nav, .search-column {
+  .desktop-nav,
+  .search-column {
     display: none;
   }
 
@@ -341,7 +356,7 @@ onUnmounted(function () {
   .main-nav {
     justify-content: space-between;
   }
-  
+
   .user-actions {
     margin-left: auto;
   }
@@ -355,7 +370,7 @@ onUnmounted(function () {
   .fixed-top-nav {
     padding: 10px 0;
   }
-  
+
   .action-icon {
     margin: 0 5px;
   }
