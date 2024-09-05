@@ -54,6 +54,7 @@ import { useRouter } from 'vue-router';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
+import Swal from 'sweetalert2';
 
 const title = ref('');
 const description = ref('');
@@ -118,6 +119,12 @@ const handleSubmit = async () => {
         description.value = '';
         fileList.value = []; 
 
+        Swal.fire({
+        icon: 'success',
+        title: '創建文章成功!',
+        showConfirmButton: false,
+        timer: 1000
+        });
           // 跳轉到論壇頁面
         router.push({ name: 'forum-link' });
         } catch (error) {
