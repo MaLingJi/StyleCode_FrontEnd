@@ -1,18 +1,15 @@
 <template>
   <div class="shop-page-layout">
-     <!-- 頁面布局 -->
+    <!-- 頁面布局 -->
     <header class="fixed-top-nav">
-        <!-- 固定的頂部導航欄 -->
+      <!-- 固定的頂部導航欄 -->
       <div class="ts-container">
-          <!-- 傳遞分類數據到 CategoryMenu 元件 -->
-        <CategoryMenu 
-          :categories="categories"
-          @filterByCategory="filterProductsByCategory"
-          @filterBySubcategory="filterProductsBySubcategory"
-        />
+        <!-- 傳遞分類數據到 CategoryMenu 元件 -->
+        <CategoryMenu :categories="categories" @filterByCategory="filterProductsByCategory"
+          @filterBySubcategory="filterProductsBySubcategory" />
       </div>
     </header>
-  
+
     <main class="main-content">
       <div class="ts-container">
         <div class="ts-grid">
@@ -29,12 +26,7 @@
                     </select>
                   </div>
                   <div class="search-input">
-                    <input 
-                      type="text" 
-                      v-model="searchQuery" 
-                      @input="handleSearch" 
-                      placeholder="搜索商品..."
-                    >
+                    <input type="text" v-model="searchQuery" @input="handleSearch" placeholder="搜索商品...">
                   </div>
                 </div>
               </div>
@@ -45,33 +37,18 @@
       <div class="column is-13-wide">
         <div class="ts-grid is-3-columns is-relaxed is-stretched">
           <div class="column" v-for="product in productStore.getPaginatedProducts" :key="product.productId">
-             <!-- 使用 v-for 迴圈顯示每個商品，並使用 ProductCard 元件渲染每個商品 -->
-            <ProductCard :product="product"  style="cursor: pointer" />
+            <!-- 使用 v-for 迴圈顯示每個商品，並使用 ProductCard 元件渲染每個商品 -->
+            <ProductCard :product="product" style="cursor: pointer" />
           </div>
         </div>
-        
+
         <div class="ts-pagination is-secondary" style="margin: 0px 0px 10px 0px ;">
-          <Paginate 
-            v-model="productStore.currentPage"
-            :page-count="productStore.getPageCount" 
-            :page-range="3" 
-            :margin-pages="1"
-            :click-handler="handlePageChange" 
-            :prev-text="''" 
-            :next-text="''" 
-            :prev-class="'item'"
-            :next-class="'item'" 
-            :prev-link-class="'item is-back'"
-            :next-link-class="'item is-next'" 
-            :container-class="'ts-pagination'"
-            :page-class="'item'" 
-            :active-class="'is-active'" 
-            :first-last-button="true"
-            :first-button-text="'第一頁'"
-            :last-button-text="'最後一頁'"
-            :first-button-class="'item is-first'"
-            :last-button-class="'item is-last'"
-          />
+          <Paginate v-model="productStore.currentPage" :page-count="productStore.getPageCount" :page-range="3"
+            :margin-pages="1" :click-handler="handlePageChange" :prev-text="''" :next-text="''" :prev-class="'item'"
+            :next-class="'item'" :prev-link-class="'item is-back'" :next-link-class="'item is-next'"
+            :container-class="'ts-pagination'" :page-class="'item'" :active-class="'is-active'"
+            :first-last-button="true" :first-button-text="'第一頁'" :last-button-text="'最後一頁'"
+            :first-button-class="'item is-first'" :last-button-class="'item is-last'" />
         </div>
       </div>
     </main>
@@ -127,7 +104,19 @@ onMounted(async () => {
     }));
 
     // 從 API 獲取所有產品數據
-    await productStore.fetchAllProducts();
+    // await productStore.fetchAllProducts();
+
+    // 如果 URL 中有 categoryId 和 subcategoryId，按照子分类筛选商品
+    const categoryId = route.params.categoryId;
+    const subcategoryId = route.params.subcategoryId;
+
+    if (categoryId && subcategoryId) {
+      await filterProductsBySubcategory(subcategoryId, categoryId);
+    } else {
+      // 否则获取所有产品数据
+      await productStore.fetchAllProducts();
+    }
+
     Swal.close();
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -159,7 +148,7 @@ const handlePageChange = (pageNum) => {
 // 根據選擇的排序選項來排序產品
 const sortProducts = () => {
   productStore.sortProducts();
-  
+
 };
 
 
@@ -176,7 +165,8 @@ const sortProducts = () => {
 
 /* 定義商店頁面的布局，包含頂部導航和主內容區域 */
 .shop-page-layout {
-  padding-top: 60px;/* 預留空間給固定的頂部導航 */
+  padding-top: 60px;
+  /* 預留空間給固定的頂部導航 */
 }
 
 /* 調整產品框的下邊距 */
@@ -208,14 +198,17 @@ const sortProducts = () => {
 }
 
 .search-input {
-  flex: 1; /* Allows the search input to grow and fill available space */
+  flex: 1;
+  /* Allows the search input to grow and fill available space */
 }
 
 .filter-container {
   display: flex;
   align-items: stretch;
-  gap: 10px; /* Adds space between select and input */
-  width: 100%; /* Ensures the container takes full width */
+  gap: 10px;
+  /* Adds space between select and input */
+  width: 100%;
+  /* Ensures the container takes full width */
 }
 
 .sort-select select {
@@ -225,7 +218,8 @@ const sortProducts = () => {
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: white;
-  appearance: none; /* Removes default styling */
+  appearance: none;
+  /* Removes default styling */
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M0 2l4 4 4-4z' fill='%23000000'/%3E%3C/svg%3E");
@@ -238,11 +232,14 @@ const sortProducts = () => {
 /* 為手機端設置響應式布局 */
 @media (max-width: 768px) {
   .ts-grid {
-    flex-direction: column; /* 將列改為垂直排列 */
+    flex-direction: column;
+    /* 將列改為垂直排列 */
   }
 
-  .sidebar, .product-list {
-    width: 100%;/* 調整寬度為 100% */
+  .sidebar,
+  .product-list {
+    width: 100%;
+    /* 調整寬度為 100% */
   }
 
   .sort-select,
@@ -250,5 +247,4 @@ const sortProducts = () => {
     width: 100%;
   }
 }
-
 </style>

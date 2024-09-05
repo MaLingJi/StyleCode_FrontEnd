@@ -8,7 +8,7 @@
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <div class="te-text">{{ productTags }}</div>
+                        <!-- <div class="te-text">{{ productTags }}</div> -->
                     </div>
                     <div class="ts-divider"></div>
                     <div class="ts-text is-heavy is-big">標題</div>
@@ -165,6 +165,8 @@ const selectedCategoryId = ref(null);
 // 新增的單品資料
 const newProduct = ref({
     productName: '',
+    categoryId: null,
+    categoryName: '',
     subcategoryId: null,
     subcategoryName: ''
 });
@@ -172,6 +174,15 @@ const newProduct = ref({
 function updateSubcategories() {
     const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
     subcategories.value = selectedCategory ? selectedCategory.subcategories : [];
+
+    // 更新 newProduct 中的 categoryId 和 categoryName
+    if (selectedCategory) {
+        newProduct.value.categoryId = selectedCategory.categoryId;
+        newProduct.value.categoryName = selectedCategory.categoryName;
+    } else {
+        newProduct.value.categoryId = null;
+        newProduct.value.categoryName = '';
+    }
 }
 
 
@@ -180,8 +191,7 @@ function editProduct(index) {
     isEditing.value = true;
     showProductForm.value = true;
     editingIndex.value = index;
-    newProduct.value.productName = productTags.value[index].productName;
-    newProduct.value.subcategoryName = productTags.value[index].subcategoryName;
+    newProduct.value = { ...productTags.value[index] };
 }
 
 // 更新單品
@@ -203,8 +213,13 @@ function resetForm() {
     isEditing.value = false;
     showProductForm.value = false;
     editingIndex.value = null;
-    newProduct.value.productName = '';
-    newProduct.value.subcategoryName = '';
+    newProduct.value = {
+        productName: '',
+        categoryId: null,
+        categoryName: '',
+        subcategoryId: null,
+        subcategoryName: ''
+    };
 }
 
 // 刪除單品
@@ -220,21 +235,15 @@ function startAddProduct() {
 }
 
 function addProduct() {
-    // 檢查數據是否正確綁定
-    console.log('newProduct:', newProduct.value);
-
-    // 確保數據非空
     if (newProduct.value.productName && newProduct.value.subcategoryId) {
-        productTags.value.push({ 
-            ...newProduct.value, 
+        productTags.value.push({
+            ...newProduct.value,
             subcategoryName: subcategories.value.find(sub => sub.subcategoryId === newProduct.value.subcategoryId)?.subcategoryName
         });
         resetForm();
     } else {
         console.warn('Product name or subcategory is missing');
     }
-    console.log('Updated productTags:', productTags.value);
-
 }
 
 const request = {

@@ -24,9 +24,9 @@
                 </div>
                 <div class="ts-content is-vertically-padded">
                     <div class="ts-wrap is-center-aligned">
-                        <button class="ts-button">收藏夾</button>
+                        <button class="ts-button">收藏</button>
                         <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
-                        <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button>
+                        <!-- <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button> -->
                     </div>
                 </div>
             </div>
@@ -49,16 +49,24 @@
                             </div>
                         </div> -->
 
-                        <h5 class="ts-header">穿著服飾 ({{ productTags.length }})</h5>
+                        <h5 class="ts-header">分享單品 ({{ productTags.length }})</h5>
                         <div v-if="productTags.length" class="product-tags-container">
                             <div class="product-card" v-for="productTag in productTags" :key="productTag.id">
                                 <div class="product-card-content">
                                     <div class="product-name">{{ productTag.productName }}</div>
                                     <!-- <div class="product-subcategory">{{ productTag.subcategoryName }}</div> -->
-                                    <RouterLink :to="{ name: 'shop', params: { subcategoryId: product.subcategoryId } }"
-                                        @click="navigateToSubcategory(product.subcategoryId)">
-                                        {{ product.subcategoryName }}
-                                    </RouterLink>
+                                    <div v-if="productTag.categoryId && productTag.subcategoryId">
+                                        <RouterLink :to="{
+                                            name: 'shop-link',
+                                            params: { categoryId: productTag.categoryId, subcategoryId: productTag.subcategoryId }
+                                        }"
+                                            @click.native="filterProductsBySubcategory(productTag.subcategoryId, productTag.categoryId)">
+                                            {{ productTag.categoryName }} - {{ productTag.subcategoryName }}
+                                        </RouterLink>
+                                    </div>
+                                    <div v-else>
+                                        {{ productTag.categoryName }} - {{ productTag.subcategoryName }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -80,8 +88,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
 
+const productStore = useProductStore();
 const route = useRoute();
 const post = ref({});
 const path = import.meta.env.VITE_POST_IMAGE_URL;
@@ -89,8 +99,10 @@ const currentImageIndex = ref(0);
 
 const productTags = ref([]);
 const tags = ref([]);
-const brands = ref([]);
-// const commonBrands = ref(["Slightly Numb", "OVERKILL inc.", "STUSSY", "adidas"]);
+
+const filterProductsBySubcategory = (subcategoryId, categoryId) => {
+    productStore.fetchProductsBySubcategory(categoryId, subcategoryId);
+};
 
 const getImageUrl = (imageName) => {
     if (imageName) {
@@ -129,7 +141,6 @@ onMounted(() => {
             // images.value = post.value.images || [];
             productTags.value = post.value.productTags || [];
             tags.value = post.value.postTags || ["Taiwan", "Taichung"];
-            brands.value = post.value.brands || ["Maison MIHARA YASUHIRO", "BEAMS"];
             console.log("tag: ", tags.value);
             console.log("productTags: ", productTags.value);
         })
