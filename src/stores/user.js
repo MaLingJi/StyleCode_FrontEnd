@@ -44,10 +44,12 @@ export const user = defineStore('user', {
         userId: "",
         userToken: "",
         permissions: "",
-        isLogedin: false
+        isLogedin: false,
+        expirationTime: null,
     }),
     getters: {
-        isAdmin: (state) => state.permissions === "Admin"
+        isAdmin: (state) => state.permissions === "Admin",
+        isSessionExpired: (state) => state.expirationTime && new Date() > new Date(state.expirationTime)
     },
     actions: {
         setUserId(userId) {
@@ -56,16 +58,33 @@ export const user = defineStore('user', {
         setUserToken(userToken) {
             this.userToken = userToken
         },
-    setPermissions(permissions) {
-        this.permissions = permissions
-    },
-    setLogedin(isLogedin) {
-        this.isLogedin = isLogedin
-    }
+        setPermissions(permissions) {
+            this.permissions = permissions
+        },
+        setLogedin(isLogedin) {
+            this.isLogedin = isLogedin
+        },
+        setExpirationTime(expirationTime) {
+            this.expirationTime = expirationTime
+        },
+        checkSession() {
+            if (this.isSessionExpired) {
+                this.logout()
+            }
+        },
+        logout() {
+            
+            this.userId = ""
+            this.userToken = ""
+            this.permissions = ""
+            this.isLogedin = false
+            this.expirationTime = null
+            localStorage.clear()
+        }
 },
 persist: {
     storage: localStorage,
-    paths: ["userId", "isLogedin", "userToken", "permissions"]
+    paths: ["userId", "isLogedin", "userToken", "permissions", "expirationTime"]
 }
 })
 
