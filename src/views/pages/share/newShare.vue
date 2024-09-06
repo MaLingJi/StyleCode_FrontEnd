@@ -121,6 +121,7 @@
                             &times;
                         </button>
                     </div>
+                    {{ tags }}
                 </div>
 
             </div>
@@ -348,9 +349,14 @@ function submitPost() {
             contentText: contentText.value,
             contentType: 'share',
             userId: userStore.userId,
-            productTags: productTags.value
-        },
-        tagNames: tags.value
+            productTags: productTags.value,
+            postTags: tags.value.map(tag => ({
+                tagId: null, // 如果是新標籤，tagId 可以設為 null，後端會自動生成
+                postId: null, // 這裡 postId 也可以設為 null 或後端自行生成
+                tagName: tag
+            }))
+        }
+        
     };
 
     console.log("postData", postData);
@@ -358,6 +364,7 @@ function submitPost() {
     // 1. 先發送發文請求
     axiosapi.post("/post/postwithtags", postData)
         .then(postResponse => {
+            console.log("postResponse.data: ", postResponse.data)
             const postId = postResponse.data.postId;
             console.log('User ID: ', userStore.userId);
             console.log('Post ID: ', postId);

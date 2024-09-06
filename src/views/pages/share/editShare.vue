@@ -174,6 +174,8 @@ const newProduct = ref({
     subcategoryName: ''
 });
 
+
+
 function updateSubcategories() {
     const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
     subcategories.value = selectedCategory ? selectedCategory.subcategories : [];
@@ -270,13 +272,14 @@ const loadPostData = async (id) => {
     try {
         const response = await axiosapi.get(`/post/${id}`);
         post.value = response.data;
-        console.log("post: ", post.value);
+        console.log("loadPostData: ", post.value);
         postTitle.value = post.value.postTitle;
         contentText.value = post.value.contentText;
         imageFiles.value = post.value.images || [];
         tags.value = post.value.postTags;
         productTags.value = post.value.productTags;            ;
         console.log("tags: ", tags.value);
+        console.log("productTags: ", productTags.value);
     } catch (error) {
         console.error('加載文章數據時出錯：', error);
     }
@@ -366,25 +369,26 @@ function submitPost() {
         allowOutsideClick: false,
     });
 
+    const tagNames = tags.value.map(tag => tag.tagName);
+
     const putData = {
         postDTO: {
             postTitle: postTitle.value,
             contentText: contentText.value,
             contentType: 'share',
             userId: userStore.userId,
-            productTags: productTags.value
-        },
-        tagNames: tags.value
+            productTags: productTags.value,
+            postTags: tagNames
+        }
     };
 
     console.log("putData: ", putData);
-
-    // 1. 先發送發文請求
+    
     axiosapi.put(`/post/postwithtags/${route.params.postId}`, putData)
-        .then(postResponse => {
-            const postId = postResponse.data.postId;
-            console.log('User ID: ', userStore.userId);
-            console.log('Post ID: ', postId);
+    .then(postResponse => {
+        const postId = postResponse.data.postId;
+        console.log('User ID: ', userStore.userId);
+        console.log('Post ID: ', postId);
             // 2. 如果有圖片，發送圖片上傳請求
             if (imageFiles.value.length > 0) {
                 const formData = new FormData();
@@ -407,7 +411,7 @@ function submitPost() {
                 icon: 'success',
                 confirmButtonText: '確認',
             }).then(() => {
-                router.push(`/shareDetails/${postId}`); // 跳轉到文章列表頁面或其他頁面
+                router.push(`/shareDetails/${route.params.postId}`); // 跳轉到文章列表頁面或其他頁面
             });
         })
         .catch(error => {
