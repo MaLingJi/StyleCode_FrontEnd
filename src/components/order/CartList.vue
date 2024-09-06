@@ -24,7 +24,7 @@
                                 <button @click="decreaseQuantity(item)" :disabled="item.quantity < 1"
                                     class="ts-icon is-minus-icon"></button>
                                 <input v-model.number="item.quantity" type="number" min="1" class="custom-number-input"
-                                    @input="updateQuantity(item)">
+                                    @input="updateQuantity(item)" style="text-align: center;">
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>

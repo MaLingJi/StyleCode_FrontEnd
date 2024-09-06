@@ -78,9 +78,8 @@
                         </div>
                     </div>
                 </div>
-                <label class="label">說明欄</label>
                 <div class="field" style="margin-top: 1rem;">
-                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
+                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由..." rows="6"
                         required></textarea>
                     <button class="ts-button is-primary" type="submit">提交退款申請</button>
                 </div>
