@@ -8,12 +8,13 @@
 
         <!-- 顯示圖片 -->
         <div v-if="Array.isArray(post.images) && post.images.length > 0" class="post-images">
-          <img 
+          <a-image 
             v-for="image in post.images" 
             :key="image.imageId" 
             :src="image.imgUrl" 
             alt="Post Image" 
             class="post-image"
+            :width="200" 
           />
         </div>
 
@@ -49,10 +50,10 @@
         </div>
         
         <!-- 編輯按鈕 -->
-        <a-button type="primary" @click="() => goToEditPage(post.postId)">編輯</a-button>
-
-        <!-- 嵌入評論組件 -->
-        <comment :post-id="postId" />
+        <a-button v-if="post.userId === userId" type="primary" 
+          @click="() => goToEditPage(post.postId)">編輯</a-button>
+        <!-- 鑲入留言列表和新增留言區 -->
+        <comment :post-id="postId"></comment>
       </div>
     </section>
   </div>
@@ -91,7 +92,7 @@ const fetchPostData = async () => {
       .filter(image => !image.deletedAt)  // 過濾已刪除的圖片
       .map(image => ({
         ...image,
-        imgUrl: `${path}${image.imgUrl}` //用 path 變數構建URL
+        imgUrl: `${path}${image.imgUrl}` //用path變數構建完整的URL
       }));
     } else {
       post.value.images = []; //不是數組,初始化為空數組
@@ -105,24 +106,6 @@ const fetchPostData = async () => {
 const goToEditPage = (postId) => {
   router.push({ name: "editPost-link", params: { id: postId } });
 };
-
-// 監聽路由參數變化
-// watch(() => route.params.id, async (newId) => {
-//   if (newId) {
-//     loading.value = true; // 開始載入
-//     await fetchPostData();
-//     await fetchComments();
-//     loading.value = false; // 完成載入
-//   }
-// });
-
-// // 初始載入
-// onMounted(async () => {
-//   loading.value = true; // 開始載入
-//   await fetchPostData();
-//   await fetchComments();
-//   loading.value = false; // 完成載入
-// });
 
 // // 處理圖片載入錯誤
 // const handleImageError = (event: Event) => {
