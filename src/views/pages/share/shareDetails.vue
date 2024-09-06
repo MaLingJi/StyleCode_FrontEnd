@@ -24,9 +24,9 @@
                 </div>
                 <div class="ts-content is-vertically-padded">
                     <div class="ts-wrap is-center-aligned">
-                        <button class="ts-button">收藏</button>
-                        <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
-                        <!-- <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button> -->
+                        <button class="ts-button is-outlined is-start-icon"><span
+                                class="ts-icon is-star-icon"></span>1</button>
+                        <button class="ts-button is-start-icon"><span class="ts-icon is-heart-icon"></span>1</button>
                     </div>
                 </div>
             </div>
@@ -35,6 +35,12 @@
             <div class="ts-column is-9-wide">
                 <div class="ts-box">
                     <div class="ts-content">
+                        <RouterLink :to="{
+                            name: 'edit-share-link',
+                            params: { postId: route.params.postId }
+                        }">
+                            <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
+                        </RouterLink>
                         <h4 class="ts-header">{{ post.postTitle }}</h4>
                         <!-- <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p> -->
                         <p><i class="ts-icon is-clock-icon"></i> {{ formatDate(post.createdAt) }}</p>
@@ -90,7 +96,9 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
+import useUserStore from "@/stores/user.js"
 
+const userStore = useUserStore();
 const productStore = useProductStore();
 const route = useRoute();
 const post = ref({});
