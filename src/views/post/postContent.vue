@@ -68,9 +68,6 @@ import useUserStore from "@/stores/user.js";
 import comment from './comment.vue';
 
 const post = ref({});
-const comments = ref([]);
-const newComment = ref('');
-const submitting = ref(false);
 const likes = ref(0);
 const collects = ref(0);
 const shares = ref(0);
