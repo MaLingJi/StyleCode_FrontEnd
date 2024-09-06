@@ -1,5 +1,5 @@
 <template>
- <header class="fixed-top-nav">
+  <header class="fixed-top-nav">
     <div class="ts-content is-padded is-secondary">
       <div class="ts-container">
         <div class="ts-grid is-middle-aligned">
@@ -18,14 +18,14 @@
               </button>
             </div>
           </div>
-        <div class="column user-actions">
-          <div class="ts-wrap">
-            <RouterLink class="ts-text is-undecorated action-icon" to="/cart"
-              ><span
-                class="ts-icon is-spinning is-cart-shopping-icon is-big"
-              ></span
-            ></RouterLink>
-            <button
+          <div class="column user-actions">
+            <div class="ts-wrap">
+              <RouterLink class="ts-text is-undecorated action-icon" to="/cart"
+                ><span
+                  class="ts-icon is-spinning is-cart-shopping-icon is-big"
+                ></span
+              ></RouterLink>
+              <button
                 class="ts-text is-undecorated action-icon width-30"
                 popovertarget="noti-popup"
                 @click="clearNotifications"
@@ -96,7 +96,6 @@
               <a
                 class="ts-text is-undecorated action-icon"
                 data-dropdown="user-dropdown"
-                href="#!"
                 v-if="userStore.isLogedin"
                 ><span class="ts-icon is-spinning is-user-icon is-big"></span
               ></a>
@@ -119,15 +118,14 @@
               <RouterLink
                 to="/secure/login"
                 v-if="!userStore.isLogedin"
-                class="width-30"
-                ><span class="ts-icon is-user-icon is-big"></span
+                class="action-icon"
+                ><span class="ts-icon is-regular is-user-icon is-big"></span
               ></RouterLink>
             </div>
           </div>
         </div>
       </div>
-
-      </div>
+    </div>
   </header>
   <div class="nav-placeholder"></div>
   <nav class="mobile-nav" :class="{ 'is-active': isMobileMenuOpen }">
@@ -141,9 +139,9 @@
 </template>
 
 <script setup>
-import axiosapi from "@/plugins/axios.js"
-import useUserStore from "@/stores/user.js"
-import { useRouter } from 'vue-router';
+import axiosapi from "@/plugins/axios.js";
+import useUserStore from "@/stores/user.js";
+import { useRouter } from "vue-router";
 
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
@@ -155,16 +153,16 @@ const unreadCount = ref(0); //未讀通知數
 const intervalTime = 10000; //每隔10秒
 let intervalId; //儲存 setInterval 的 ID
 
-
 ///////////////////////////// 登出 /////////////////////////////
 function logout() {
   axiosapi.defaults.headers.authorization = "";
-  userStore.setUserId("");
-  userStore.setUserToken("");
-  userStore.setPermissions("");
-  userStore.setLogedin(false);
+  userStore.logout();
   unreadCount.value = 0;
   notifications.value = [];
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
   router.push("/");
 }
 
@@ -175,7 +173,7 @@ function callFindNotification() {
     .get(`/member/notifications/${userStore.userId}`)
     .then(function (response) {
       if (response.data.success) {
-        console.log(response.data.notificationList);
+        // console.log(response.data.notificationList);
         notifications.value = response.data.notificationList;
         unreadCount.value = response.data.unreadCount;
       }

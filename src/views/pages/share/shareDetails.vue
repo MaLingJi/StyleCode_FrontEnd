@@ -24,9 +24,9 @@
                 </div>
                 <div class="ts-content is-vertically-padded">
                     <div class="ts-wrap is-center-aligned">
-                        <button class="ts-button">收藏夾</button>
+                        <button class="ts-button">收藏</button>
                         <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
-                        <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button>
+                        <!-- <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button> -->
                     </div>
                 </div>
             </div>
@@ -41,22 +41,37 @@
 
                         <div class="ts-divider"></div>
 
-                        <h5 class="ts-header">穿著服飾 ({{ clothingItems.length }})</h5>
-                        <div class="ts-list" v-if="clothingItems.length">
-                            <div class="ts-item" v-for="item in clothingItems" :key="item.id">
-                                <div class="ts-content">{{ item.brandName }}</div>
-                                <div class="ts-meta">{{ item.itemType }}（{{ item.color }}系）</div>
-                                <button class="ts-button is-link">在ZOOZOTOWN中搜尋</button>
+                        <!-- <h5 class="ts-header">穿著服飾 ({{ productTags.length }})</h5>
+                        <div class="ts-list" v-if="productTags.length">
+                            <div class="ts-item" v-for="productTag in productTags" :key="productTag.id">
+                                <div class="ts-content">{{ productTag.productName }}</div>
+                                <div class="ts-meta">{{ productTag.subcategoryName }}</div>
+                            </div>
+                        </div> -->
+
+                        <h5 class="ts-header">分享單品 ({{ productTags.length }})</h5>
+                        <div v-if="productTags.length" class="product-tags-container">
+                            <div class="product-card" v-for="productTag in productTags" :key="productTag.id">
+                                <div class="product-card-content">
+                                    <div class="product-name">{{ productTag.productName }}</div>
+                                    <!-- <div class="product-subcategory">{{ productTag.subcategoryName }}</div> -->
+                                    <div v-if="productTag.categoryId && productTag.subcategoryId">
+                                        <RouterLink :to="{
+                                            name: 'shop-link',
+                                            params: { categoryId: productTag.categoryId, subcategoryId: productTag.subcategoryId }
+                                        }"
+                                            @click.native="filterProductsBySubcategory(productTag.subcategoryId, productTag.categoryId)">
+                                            {{ productTag.categoryName }} - {{ productTag.subcategoryName }}
+                                        </RouterLink>
+                                    </div>
+                                    <div v-else>
+                                        {{ productTag.categoryName }} - {{ productTag.subcategoryName }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="ts-divider"></div>
-
-                        <!-- <div class="ts-chip">
-                            <span v-for="(tag, index) in tags" :key="index" class="ts-label">
-                                {{ tag }}
-                            </span>
-                        </div> -->
 
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
@@ -73,17 +88,21 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
 
+const productStore = useProductStore();
 const route = useRoute();
 const post = ref({});
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 const currentImageIndex = ref(0);
 
-const clothingItems = ref([]);
+const productTags = ref([]);
 const tags = ref([]);
-const brands = ref([]);
-const commonBrands = ref(["Slightly Numb", "OVERKILL inc.", "STUSSY", "adidas"]);
+
+const filterProductsBySubcategory = (subcategoryId, categoryId) => {
+    productStore.fetchProductsBySubcategory(categoryId, subcategoryId);
+};
 
 const getImageUrl = (imageName) => {
     if (imageName) {
@@ -120,10 +139,10 @@ onMounted(() => {
             post.value = response.data;
             console.log("post.value: ", post.value);
             // images.value = post.value.images || [];
-            clothingItems.value = post.value.clothingItems || [];
+            productTags.value = post.value.productTags || [];
             tags.value = post.value.postTags || ["Taiwan", "Taichung"];
-            brands.value = post.value.brands || ["Maison MIHARA YASUHIRO", "BEAMS"];
             console.log("tag: ", tags.value);
+            console.log("productTags: ", productTags.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);
@@ -315,5 +334,49 @@ function formatDate(date) {
     background-color: #9d7e7e;
     padding: 5px 5px;
     border-radius: 10px;
+}
+
+.product-tags-container {
+    display: flex;
+    flex-direction: column;
+    /* 將卡片改為垂直排列 */
+    gap: 15px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    width: 100%;
+    /* 卡片寬度設為100%以適應容器 */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.product-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* 內容左對齊 */
+}
+
+.product-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.product-subcategory {
+    font-size: 0.9em;
+    color: #666;
 }
 </style>

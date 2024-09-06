@@ -15,9 +15,9 @@
           <a-typography-title :level="2">發文和照片 規範及限制</a-typography-title>
           <a-typography-paragraph>
             麻煩各位遵守論壇規章
-            (<a-typography-text strong style="color: red;">圖片</a-typography-text>
+            (<a-typography-text strong style="color: red;">照片</a-typography-text>
             最多上傳3張共
-            <a-typography-text strong style="color: red;">10MB</a-typography-text>
+            <a-typography-text strong style="color: red;">20MB</a-typography-text>
             ), 嚴禁濫發品優低劣的主題或相同的主題，請勿使用廣東話，注音文憀慁愬慇，火星文..等非正式或共通性的語言，嚴禁發表任何人身攻擊, 侮辱他人或引起國際紛争的內容，若受到不公平、不公正的對待, 歡迎向我們反映和投訴, 我們將會秉公處理。
           </a-typography-paragraph>
         </a-typography>
@@ -122,7 +122,15 @@ export default defineComponent({
       axiosapi.get("/post").then(function (response) {
         console.log("回覆:", response.data);
         // 過濾不屬於論壇和刪除過後的帖子
-        const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt);
+        const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt && post.images && post.images.length > 0);
+        
+        // 獲取留言的數量，過濾掉已刪除的留言
+      filteredPosts.forEach(post => {
+      post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0; 
+      post.collects = post.collects ? post.collects.length : 0; 
+      post.likes = post.likes ? post.likes.length : 0; 
+    });
+
         // 按創建時間排序文章，最新的在最上面
         filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         listData.value = filteredPosts;
@@ -133,27 +141,27 @@ export default defineComponent({
     }
 
     const likePost = (id) => {
-      const post = listData.value.find(item => item.postId === id);
-      if (post) {
-        if (!post.liked) {
-          post.likes += 1; 
-          post.liked = true; 
-        }
-      }
+      // const post = listData.value.find(item => item.postId === id);
+      // if (post) {
+      //   if (!post.liked) {
+      //     post.likes += 1; 
+      //     post.liked = true; 
+      //   }
+      // }
     };
 
     const collectPost = (id) => {
-      const post = listData.value.find(item => item.postId === id);
-      if (post) {
-        if (!post.collected) {
-          post.collects += 1; 
-          post.collected = true; 
-        }
-      }
+      // const post = listData.value.find(item => item.postId === id);
+      // if (post) {
+      //   if (!post.collected) {
+      //     post.collects += 1; 
+      //     post.collected = true; 
+      //   }
+      // }
     };
 
     const commentPost = (id) => {
-      const post = listData.value.find(item => item.postId === id);
+      // const post = listData.value.find(item => item.postId === id);
     };
 
     const handleSubmit = async () => {
@@ -163,7 +171,7 @@ export default defineComponent({
         // 其他必要的字段
       };
       try {
-        await axiosapi.post('/post', postData); // 假設這是發文的請求
+        await axiosapi.post('/post', postData);
         callFind(); // 發文後重新獲取貼文
       } catch (error) {
         console.error("發文失敗:", error.response ? error.response.data : error.message);
@@ -185,6 +193,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+img {
+  max-width: 100%; 
+  max-height: 250px; /* 最大高度限制 */
+  height: auto; 
+  width: auto; 
+  border-radius: 8px; 
+}
 .forum-page {
   display: flex;
   flex-direction: column;

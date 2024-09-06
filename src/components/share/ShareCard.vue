@@ -25,7 +25,7 @@ const imgUrl = ref("");
 const router = useRouter();
 
 onMounted(() => {
-  console.log("Received post:", props.post);
+  // console.log("Received post:", props.post);
   if (props.post && props.post.images && props.post.images.length > 0) {
     imgUrl.value = `${path}${props.post.images[0].imgUrl}`;
   } else {
@@ -40,7 +40,8 @@ function navigateToShareDetails(postId) {
 
 <style scoped>
 .share-card {
-  width: 250px; /* 設置固定寬度 */
+  width: 250px;
+  /* 設置固定寬度 */
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -55,14 +56,16 @@ function navigateToShareDetails(postId) {
 
 .share-image {
   width: 100%;
-  height: 300px; /* 設置固定高度 */
+  height: 300px;
+  /* 設置固定高度 */
   overflow: hidden;
 }
 
 .share-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+  object-fit: cover;
+  /* 確保圖片填滿容器並保持比例 */
 }
 
 .share-info {

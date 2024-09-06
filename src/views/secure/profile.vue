@@ -173,7 +173,11 @@
           >
             更改密碼
           </button>
-          <button class="ts-button is-outlined" data-dialog="updatePwdModal">
+          <button
+            class="ts-button is-outlined"
+            data-dialog="updatePwdModal"
+            @click="cancelChange"
+          >
             取消
           </button>
         </div>
@@ -378,6 +382,7 @@ const isLoginDisabled = computed(function () {
 });
 
 async function updatePwd() {
+  document.querySelector("#updatePwdModal").close();
   const result = await Swal.fire({
     title: "確認更新密碼",
     text: `您確定要更改密碼嗎？`,
@@ -396,7 +401,7 @@ async function updatePwd() {
       );
 
       if (response.data.success) {
-        document.querySelector("#updatePwdModal").close();
+        // document.querySelector("#updatePwdModal").close();
         Swal.fire({
           text: response.data.message,
           icon: "success",
@@ -427,9 +432,17 @@ async function updatePwd() {
         allowOutsideClick: false,
       });
     }
+  } else {
+    console.log("取消");
+    document.querySelector("#updatePwdModal").showModal();
   }
 }
 
+function cancelChange() {
+  uPwdInput.oldPwd = "";
+  uPwdInput.newPwd = "";
+  uPwdInput.checkPwd = "";
+}
 ///////////////////////////// 其他 /////////////////////////////
 
 onMounted(function () {
