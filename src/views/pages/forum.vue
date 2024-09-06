@@ -118,47 +118,94 @@ export default defineComponent({
       callFind(); // 加載獲取所有文章
     });
 
-    function callFind() {
-      axiosapi.get("/post").then(function (response) {
-        console.log("回覆:", response.data);
-        // 過濾不屬於論壇和刪除過後的帖子
-        const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt && post.images && post.images.length > 0);
-        
-        // 獲取留言的數量，過濾掉已刪除的留言
-      filteredPosts.forEach(post => {
-      post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0; 
-      post.collects = post.collects ? post.collects.length : 0; 
-      post.likes = post.likes ? post.likes.length : 0; 
-    });
-
-        // 按創建時間排序文章，最新的在最上面
-        filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        listData.value = filteredPosts;
-        pagination.value.total = listData.value.length; 
-      }).catch(function (error) {
-        console.error("發現錯誤", error.response ? error.response.data : error.message);
-      });
+    async function callFind() {
+  try {
+    const response = await axiosapi.get("/post");
+    console.log("回覆:", response.data);
+    // 過濾不屬於論壇和刪除過後的帖子
+    const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt && post.images && post.images.length > 0);
+    // 獲取留言的數量，過濾掉已刪除的留言
+    for (const post of filteredPosts) {
+      post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0;
+      post.collects = post.collections ? post.collections.length : 0;
+      post.likes = post.likes ? post.likes.length : 0;
+      // 確保狀態正確更新
+      post.liked = await checkIfUserLiked(post.postId);
+      post.collected = await checkIfUserCollected(post.postId);
     }
+    filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    listData.value = filteredPosts;
+    pagination.value.total = listData.value.length;
+  } catch (error) {
+    console.error("發現錯誤:", error.response ? error.response.data : error.message);
+  }
+}
 
-    const likePost = (id) => {
-      // const post = listData.value.find(item => item.postId === id);
-      // if (post) {
-      //   if (!post.liked) {
-      //     post.likes += 1; 
-      //     post.liked = true; 
-      //   }
-      // }
-    };
+    const checkIfUserLiked = async (postId) => {
+  try {
+    const response = await axiosapi.get(`/likes/${userStore.userId}/${postId}`);
+    return response.status === 200; // 如果返回200，表示用戶已經點讚
+  } catch (error) {
+    return false; // 如果出現錯誤，表示用戶未點讚
+  }
+};
 
-    const collectPost = (id) => {
-      // const post = listData.value.find(item => item.postId === id);
-      // if (post) {
-      //   if (!post.collected) {
-      //     post.collects += 1; 
-      //     post.collected = true; 
-      //   }
-      // }
-    };
+const checkIfUserCollected = async (postId) => {
+  try {
+    const response = await axiosapi.get(`/collections/${userStore.userId}/${postId}`);
+    return response.status === 200; // 如果返回200，表示用戶已經收藏
+  } catch (error) {
+    return false; // 如果出現錯誤，表示用戶未收藏
+  }
+};
+
+    const likePost = async (id) => {
+      try {
+    const post = listData.value.find(item => item.postId === id);
+    if (post) {
+      if (post.liked) {
+        await axiosapi.post('/likes/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.likes -= 1;
+      } else {
+        await axiosapi.post('/likes/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.likes += 1;
+      }
+      post.liked = !post.liked;
+    }
+  } catch (error) {
+    console.error("喜歡操作失敗:", error.response ? error.response.data : error.message);
+  }
+};
+
+    const collectPost = async (id) => {
+      try {
+    const post = listData.value.find(item => item.postId === id);
+    if (post) {
+      if (post.collected) {
+        await axiosapi.post('/collections/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.collects -= 1;
+      } else {
+        await axiosapi.post('/collections/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.collects += 1;
+      }
+      post.collected = !post.collected;
+    }
+  } catch (error) {
+    console.error("收藏操作失敗:", error.response ? error.response.data : error.message);
+  }
+};
 
     const commentPost = (id) => {
       // const post = listData.value.find(item => item.postId === id);
