@@ -7,6 +7,10 @@ import { createStyleImportPlugin, AntdResolve } from 'vite-plugin-style-import';
 // https://vitejs.dev/config/
 export default defineConfig({
   // base: '/',
+  fs: {
+    // 允許訪問指定的路徑
+    allow: ['/home/a385500062appletw/frontend/StyleCode_FrontEnd']
+  },
   plugins: [
     vue(),  
     vueJsx(),
