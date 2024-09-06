@@ -53,7 +53,7 @@ const data = computed(() => {
 })
 </script>
 
-<style>
+<style scoped>
 
 .ts-box{
     margin-top: 5px;

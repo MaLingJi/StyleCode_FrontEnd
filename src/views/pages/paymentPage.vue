@@ -127,7 +127,7 @@ const formatCurrency = (amount) => {
 
 </script>
 
-<style>
+<style scoped>
 .ts-box2 {
     display: flex;
     flex-direction: column;

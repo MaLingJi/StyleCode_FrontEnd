@@ -225,4 +225,4 @@ const getStatusText = (status) => {
 }
 </script>
 
-<style></style>
+<style scoped></style>

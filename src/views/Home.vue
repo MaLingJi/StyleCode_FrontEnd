@@ -225,13 +225,12 @@ onMounted(async () => {
 .shared-posts-section {
   padding: 20px;
   background-color: #f0f0f0;
+  overflow: hidden; /* 防止內容溢出 */
 }
-
 .shared-posts-section h2 {
   text-align: center;
   margin-bottom: 20px;
 }
-
 .shared-posts-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

@@ -170,7 +170,7 @@ const refund = (order) => {
 
 </script>
 
-<style>
+<style scoped>
 .ts-table th,
 .ts-table td,
 .ts-table tr {

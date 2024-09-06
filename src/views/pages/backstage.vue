@@ -135,4 +135,4 @@ function handleEditProductDetail() {
 }
 </script>
 
-<style></style>
+<style scoped></style>
