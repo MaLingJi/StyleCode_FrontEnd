@@ -34,7 +34,17 @@
 
     <div class="ts-box is-top-indicated">
       <div class="ts-content is-dense">
-        <div class="ts-header is-heavy">會員清單</div>
+        <div class="ts-grid is-spaced-between">
+          <div class="ts-header is-heavy">會員清單</div>
+          <div class="ts-input is-solid">
+            <input
+              type="text"
+              placeholder="搜尋Email"
+              v-model="searchQuery"
+              @keyup.enter="handleEnterKey"
+            />
+          </div>
+        </div>
       </div>
       <div class="ts-divider"></div>
       <table class="ts-table is-basic">
@@ -42,8 +52,13 @@
           <tr>
             <th>使用者名稱</th>
             <th>電子郵件信箱</th>
-            <th>權限</th>
-            <th>啟用日期</th>
+            <th class="hover" @click="toggleRole">
+              權限 ({{ displayRoleOptions[currentRoleIndex] }})
+            </th>
+            <th class="is-start-icon hover" @click="toggleSortOrder">
+              啟用日期<span :class="sortIconClass" class="margin-left"></span>
+            </th>
+            <!-- caret-up -->
           </tr>
         </thead>
         <tbody>
@@ -111,6 +126,21 @@ const totalItems = ref(0);
 const totalPages = ref(0);
 const pageCount = computed(() => totalPages.value);
 
+//註冊日期排序
+const sortOrder = ref("asc");
+
+///////////// 權限篩選搜尋 /////////////
+// 顯示名稱和實際值的對應映射
+const displayRoleOptions = ["全部", "一般會員", "管理員"]; // 顯示在前端的名稱
+const backendRoleValues = ["all", "Member", "Admin"]; // 傳送到後端的實際值
+// 當前權限索引
+const currentRoleIndex = ref(0);
+// 響應式變量，用於 API 請求的權限值
+const selectedRole = ref(backendRoleValues[currentRoleIndex.value]);
+
+// 搜尋關鍵字
+const searchQuery = ref("");
+
 //今日註冊變數
 const todayRegistrations = ref(0);
 
@@ -121,12 +151,15 @@ const formatDate = (dateString) => {
 
 function callFindUsers(page = 1) {
   currentPage.value = page;
-
+  console.log("searchQuery.value", searchQuery.value);
   axiosapi
     .get(`/admin/userback`, {
       params: {
         page: currentPage.value - 1, // 後端頁碼從 0 開始
         pageSize: pageSize.value,
+        sortOrder: sortOrder.value,
+        permissions: selectedRole.value,
+        search: searchQuery.value,
       },
     })
     .then(function (response) {
@@ -134,7 +167,6 @@ function callFindUsers(page = 1) {
         console.log(response.data);
         const data = response.data;
         userList.value = data.items;
-        totalItems.value = data.totalItems;
         totalPages.value = data.totalPages;
         currentPage.value = data.currentPage + 1; // 前端頁碼從 1 開始
       } else if (response.status == 204) {
@@ -156,15 +188,17 @@ function callFindUsers(page = 1) {
     });
 }
 
-//今日註冊人數
+////////獲取會員統計數據
 const fetchTodayRegistrations = async () => {
   try {
     const response = await axiosapi.get("/admin/todayregistrations");
-    todayRegistrations.value = response.data;
+    // console.log(response.data);
+    totalItems.value = response.data.totalUsers;
+    todayRegistrations.value = response.data.todayRegistrations;
   } catch (error) {
     console.error("Error fetching today's registrations:", error);
     Swal.fire({
-      text: "獲取今日註冊人數時出現錯誤: " + error.message,
+      text: "獲取數據時出現錯誤: " + error.message,
       icon: "error",
       confirmButtonText: "確認",
       confirmButtonColor: "rgb(35 40 44)",
@@ -237,6 +271,31 @@ const updateRole = async (userId, event) => {
     }
   }
 };
+// 切換角色的方法
+const toggleRole = () => {
+  // 切換到下一個角色
+  currentRoleIndex.value =
+    (currentRoleIndex.value + 1) % displayRoleOptions.length;
+  selectedRole.value = backendRoleValues[currentRoleIndex.value]; // 更新選擇的角色值
+  callFindUsers(); // 切換角色後重新獲取用戶列表
+};
+
+const toggleSortOrder = () => {
+  sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+  callFindUsers();
+};
+// 計算排序圖標的類名
+const sortIconClass = computed(() => {
+  return sortOrder.value === "asc"
+    ? "ts-icon is-caret-down-icon"
+    : "ts-icon is-caret-up-icon";
+});
+
+// 處理按下 Enter 鍵
+const handleEnterKey = () => {
+  callFindUsers(); // 傳入頁碼和搜尋字串
+};
+
 // 處理頁面變化
 function handlePageChange(page) {
   callFindUsers(page);
@@ -264,5 +323,15 @@ select {
 }
 ul {
   margin-top: 0;
+}
+.margin-left {
+  margin-left: 5px;
+}
+.hover:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
+}
+.ts-input {
+  width: 50%;
 }
 </style>
