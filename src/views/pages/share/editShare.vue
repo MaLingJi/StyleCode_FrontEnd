@@ -25,12 +25,12 @@
                     </div>
 
                     <div class="image-previews">
-                        <div v-for="(image, index) in imageFiles" :key="index" class="image-preview"
-                            @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
-                            <img :src="image.previewUrl" alt="Preview Image" />
-                            <div class="image-controls" v-if="hoverIndexImages === index">
+                        <div v-for="(image, index) in filteredImages" :key="index" class="image-preview"
+                            @mouseover="hoverIndexPreview = index" @mouseleave="hoverIndexPreview = null">
+                            <img :src="image.previewUrl || getImageUrl(image.imgUrl)" alt="Preview Image" />
+                            <div class="image-controls" v-if="hoverIndexPreview === index">
                                 <i class="ts-icon is-pen-to-square-icon" @click="editImage(index)"></i>
-                                <i class="ts-icon is-trash-can-icon" @click="removeImage(index)"></i>
+                                <i class="ts-icon is-trash-can-icon" @click="removeImage(image, index)"></i>
                             </div>
                         </div>
                     </div>
@@ -38,7 +38,8 @@
                     <br>
                     <button class="ts-button" @click="submitPost">更新文章</button>
                 </div>
-                <!-- <div>{{ categories }}</div> -->
+                <div>{{ imageFiles.value }}</div>
+
             </div>
             <div class="column is-3-wide">
                 <div class="cell is-vertical">
@@ -84,13 +85,13 @@
                     <!-- 顯示已新增的單品 -->
                     <div class="product-list" v-if="productTags.length">
                         <div class="ts-card" v-for="(product, index) in productTags" :key="index"
-                            @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
+                            @mouseover="hoverIndexProduct = index" @mouseleave="hoverIndexProduct = null">
                             <div class="ts-content is-center-aligned">
                                 <p>商品: {{ product.productName }}</p>
                                 <p>分類: {{ product.subcategoryName }}</p>
 
                                 <!-- 編輯與刪除按鈕 -->
-                                <div class="product-controls" v-if="hoverIndexImages === index">
+                                <div class="product-controls" v-if="hoverIndexProduct === index">
                                     <button class="edit-button" @click="editProduct(index)">
                                         <span class="ts-icon is-pen-to-square-icon"></span>
                                     </button>
@@ -129,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
@@ -142,9 +143,13 @@ const userStore = useUserStore();
 
 const postTitle = ref('');
 const contentText = ref('');
-const imageFiles = ref([]);
+const imageFiles = ref([]); // 用于存储已存在的图片和新上传的图片
+const newImages = ref([]);  // 用于存储新上传的图片
+const deletedImages = ref([]);  // 用于存储标记为删除的图片
+const path = import.meta.env.VITE_POST_IMAGE_URL;
 const hoverIndexTags = ref(null);
-const hoverIndexImages = ref(null);
+const hoverIndexPreview = ref(null); // 用於圖片預覽
+const hoverIndexProduct = ref(null); // 用於商品資訊
 const inputTagValue = ref('');
 const tags = ref([]);
 const userName = ref('');
@@ -153,19 +158,12 @@ const editingImageIndex = ref(null); // 用來追蹤正在編輯的圖片索引
 
 const isEditing = ref(false);
 const editingIndex = ref(null);
-// 控制顯示/隱藏新增單品表單
 const showProductForm = ref(false);
-
 const post = ref({});
-
-// 存儲單品資料
 const productTags = ref([]);
-
 const categories = ref([]);
 const subcategories = ref([]);
 const selectedCategoryId = ref(null);
-
-// 新增的單品資料
 const newProduct = ref({
     productName: '',
     categoryId: null,
@@ -174,13 +172,9 @@ const newProduct = ref({
     subcategoryName: ''
 });
 
-
-
 function updateSubcategories() {
     const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
     subcategories.value = selectedCategory ? selectedCategory.subcategories : [];
-
-    // 更新 newProduct 中的 categoryId 和 categoryName
     if (selectedCategory) {
         newProduct.value.categoryId = selectedCategory.categoryId;
         newProduct.value.categoryName = selectedCategory.categoryName;
@@ -190,8 +184,6 @@ function updateSubcategories() {
     }
 }
 
-
-// 編輯單品
 function editProduct(index) {
     isEditing.value = true;
     showProductForm.value = true;
@@ -199,7 +191,6 @@ function editProduct(index) {
     newProduct.value = { ...productTags.value[index] };
 }
 
-// 更新單品
 function updateProduct() {
     if (editingIndex.value !== null) {
         productTags.value[editingIndex.value].productName = newProduct.value.productName;
@@ -208,12 +199,10 @@ function updateProduct() {
     resetForm();
 }
 
-// 取消新增/編輯
 function cancelProductForm() {
     resetForm();
 }
 
-// 重置表單
 function resetForm() {
     isEditing.value = false;
     showProductForm.value = false;
@@ -227,12 +216,10 @@ function resetForm() {
     };
 }
 
-// 刪除單品
 function deleteProduct(index) {
     productTags.value.splice(index, 1);
 }
 
-// 開始新增單品
 function startAddProduct() {
     showProductForm.value = true;
     isEditing.value = false;
@@ -265,23 +252,20 @@ function addTag() {
 }
 
 function removeTag(index) {
-    tags.value.splice(index, 1); // 從 tags 列表中刪除對應的標籤
+    tags.value.splice(index, 1); // 从 tags 列表中删除对应的标签
 }
 
 const loadPostData = async (id) => {
     try {
         const response = await axiosapi.get(`/post/${id}`);
         post.value = response.data;
-        console.log("loadPostData: ", post.value);
         postTitle.value = post.value.postTitle;
         contentText.value = post.value.contentText;
         imageFiles.value = post.value.images || [];
-        tags.value = post.value.postTags;
-        productTags.value = post.value.productTags;            ;
-        console.log("tags: ", tags.value);
-        console.log("productTags: ", productTags.value);
+        tags.value = post.value.postTags.map(tag => tag.tagName);
+        productTags.value = post.value.productTags;
     } catch (error) {
-        console.error('加載文章數據時出錯：', error);
+        console.error('加载文章数据时出错：', error);
     }
 };
 
@@ -295,7 +279,6 @@ onMounted(() => {
         .then(response => {
             userName.value = response.data.userDetail.userName;
             userPhoto.value = userPhotoPath + response.data.userDetail.userPhoto;
-            // console.log("userId: ", userPhoto.value);
         })
         .catch(error => {
             console.error('Error fetching URL:', error);
@@ -304,61 +287,61 @@ onMounted(() => {
     axiosapi.get('/categories')
         .then(catagoryResponse => {
             categories.value = catagoryResponse.data;
-            console.log("Categories:", categories.value);
         })
         .catch(error => {
             console.error('Error fetching categories:', error);
         });
 });
 
-function handleFileUpload(event) {
-    const files = Array.from(event.target.files); // 获取多个文件
+// 確保顯示所有已存在且未被標記為刪除的圖片以及新上傳的圖片
+const filteredImages = computed(() => {
+    return [
+        ...imageFiles.value.filter(image => !image.deletedAt),
+        ...newImages.value
+    ];
+});
+
+const handleFileUpload = (event) => {
+    const files = Array.from(event.target.files);
     files.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
-            if (editingImageIndex.value !== null) {
-                // 如果正在编辑，更新相应的图片
-                imageFiles.value[editingImageIndex.value] = {
-                    file,
-                    previewUrl: e.target.result,
-                };
-                editingImageIndex.value = null; // 重置编辑索引
-            } else {
-                // 否则，添加新的图片
-                imageFiles.value.push({
-                    file,
-                    previewUrl: e.target.result,
-                });
-            }
+            newImages.value.push({
+                file,
+                previewUrl: e.target.result
+            });
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // 開始讀取文件
     });
-}
+};
 
-function removeImage(index) {
-    imageFiles.value.splice(index, 1);
-}
+const removeImage = (image, index) => {
+    if (image.imageId) {
+        // 標記已存在的圖片為刪除
+        deletedImages.value.push(image.imageId);
+        // 從原有的圖片列表中刪除該圖片
+        imageFiles.value = imageFiles.value.filter(img => img.imageId !== image.imageId);
+    } else {
+        // 對於新上傳的圖片，直接從 newImages 列表中刪除
+        newImages.value.splice(index - imageFiles.value.length, 1);
+    }
+};
+
+const getImageUrl = (imgUrl) => {
+    return `${path}${imgUrl}`;
+};
 
 function editImage(index) {
     editingImageIndex.value = index;
-    document.querySelector('input[type="file"]').click(); // 觸發文件選擇器
+    document.querySelector('input[type="file"]').click(); // 触发文件选择器
 }
 
 function submitPost() {
     if (!postTitle.value || !contentText.value) {
         Swal.fire({
-            text: '標題和內容不能為空',
+            text: '标题和内容不能为空',
             icon: 'warning',
-            confirmButtonText: '確認',
-        });
-        return;
-    }
-
-    if (imageFiles.value.length === 0) {
-        Swal.fire({
-            text: '至少上傳一張圖片',
-            icon: 'warning',
-            confirmButtonText: '確認',
+            confirmButtonText: '确认',
         });
         return;
     }
@@ -369,7 +352,9 @@ function submitPost() {
         allowOutsideClick: false,
     });
 
-    const tagNames = tags.value.map(tag => tag.tagName);
+    const unifiedPostTags = tags.value.map(tag => {
+        return { tagName: tag.tagName || tag }; // 保留或转化成 { tagName: '...' } 格式
+    });
 
     const putData = {
         postDTO: {
@@ -378,22 +363,27 @@ function submitPost() {
             contentType: 'share',
             userId: userStore.userId,
             productTags: productTags.value,
-            postTags: tagNames
+            postTags: unifiedPostTags
         }
     };
 
-    console.log("putData: ", putData);
-    
     axiosapi.put(`/post/postwithtags/${route.params.postId}`, putData)
-    .then(postResponse => {
-        const postId = postResponse.data.postId;
-        console.log('User ID: ', userStore.userId);
-        console.log('Post ID: ', postId);
-            // 2. 如果有圖片，發送圖片上傳請求
-            if (imageFiles.value.length > 0) {
+        .then(postResponse => {
+            const postId = postResponse.data.postId;
+
+            // 软删除标记为删除的图片
+            if (deletedImages.value.length > 0) {
+                return Promise.all(deletedImages.value.map(imageId => {
+                    return axiosapi.delete(`/images/${imageId}`);
+                }));
+            }
+        })
+        .then(() => {
+            // 上传新的图片
+            if (newImages.value.length > 0) {
                 const formData = new FormData();
-                formData.append('postId', postId);
-                imageFiles.value.forEach(file => {
+                formData.append('postId', route.params.postId);
+                newImages.value.forEach(file => {
                     formData.append('file', file.file);
                 });
 
@@ -411,7 +401,7 @@ function submitPost() {
                 icon: 'success',
                 confirmButtonText: '確認',
             }).then(() => {
-                router.push(`/shareDetails/${route.params.postId}`); // 跳轉到文章列表頁面或其他頁面
+                router.push(`/shareDetails/${route.params.postId}`); // 跳转到文章详情页
             });
         })
         .catch(error => {

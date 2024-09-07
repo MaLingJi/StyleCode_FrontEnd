@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="ts-grid thumbnail-grid">
-                    <div class="column is-2-wide" v-for="(image, index) in post.images" :key="index">
+                    <div class="column is-2-wide" v-for="(image, index) in filteredImages" :key="index">
                         <div class="ts-image is-middle-aligned thumbnail" @click="setCurrentImage(index)"
                             :class="{ active: currentImageIndex === index }">
                             <img :src="getImageUrl(image.imgUrl)" />
@@ -35,7 +35,7 @@
             <div class="ts-column is-9-wide">
                 <div class="ts-box">
                     <div class="ts-content">
-                        <RouterLink :to="{
+                        <RouterLink :to="{  
                             name: 'edit-share-link',
                             params: { postId: route.params.postId }
                         }">
@@ -46,14 +46,6 @@
                         <p><i class="ts-icon is-clock-icon"></i> {{ formatDate(post.createdAt) }}</p>
 
                         <div class="ts-divider"></div>
-
-                        <!-- <h5 class="ts-header">穿著服飾 ({{ productTags.length }})</h5>
-                        <div class="ts-list" v-if="productTags.length">
-                            <div class="ts-item" v-for="productTag in productTags" :key="productTag.id">
-                                <div class="ts-content">{{ productTag.productName }}</div>
-                                <div class="ts-meta">{{ productTag.subcategoryName }}</div>
-                            </div>
-                        </div> -->
 
                         <h5 class="ts-header">分享單品 ({{ productTags.length }})</h5>
                         <div v-if="productTags.length" class="product-tags-container">
@@ -76,8 +68,8 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- <div class="ts-divider"></div> -->
 
-                        <div class="ts-divider"></div>
 
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
@@ -119,8 +111,12 @@ const getImageUrl = (imageName) => {
     return "../../../public/No_image.png";
 };
 
+const filteredImages = computed(() => {
+    return post.value.images?.filter(image => !image.deletedAt) || [];
+});
+
 const currentImage = computed(() => {
-    return post.value.images?.[currentImageIndex.value]?.imgUrl;
+    return filteredImages.value[currentImageIndex.value]?.imgUrl;
 });
 
 // 照片輪播 下一張照片
