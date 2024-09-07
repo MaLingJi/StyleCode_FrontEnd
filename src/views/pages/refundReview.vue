@@ -17,7 +17,8 @@
                 <thead>
                     <tr>
                         <th>訂單編號</th>
-                        <th>日期</th>
+                        <th>訂單日期</th>
+                        <th>申請時間</th>
                         <th>總金額</th>
                         <th>付款方式</th>
                         <th></th>
@@ -29,6 +30,7 @@
                         <tr>
                             <td>{{ order.orderId }}</td>
                             <td>{{ formatDate(order.orderDate) }}</td>
+                            <td>{{ formatDate(order.applyRefundDate) }}</td>
                             <td>{{ formatCurrency(order.totalAmounts) }}</td>
                             <td>{{ order.paymentMethod === 1 ? 'LinePay' : '其他' }}</td>
                             <td>
@@ -62,10 +64,13 @@
                                     <div class="ts-box" style="margin-top: 20px;">
                                         <div class="ts-content"
                                             style="display: flex; justify-content: space-between;align-items: center;">
-                                            <span class="ts-text">退款理由:{{ order.refundReason }}</span>
-                                            <div class="ts-wrap">
+                                            <span class="ts-text">{{ order.refundReason }} </span>
+                                            <div class="ts-wrap" v-if="order.refundStatus == 1">
                                                 <button class="ts-button" @click="agreeRefund(order)">同意</button>
-                                                <button class="ts-button">拒絕</button>
+                                                <button class="ts-button" @click="rejectRefund(order)" style="background-color:#9e9e9e;border: 0;">拒絕</button>
+                                            </div>
+                                            <div v-else>
+                                                狀態:{{getStatusText(order.status)}}
                                             </div>
                                         </div>
                                     </div>
@@ -103,22 +108,21 @@ const orderDetails = ref([]);
 const user = useUserStore().userId;
 const router = useRouter()
 
+const loadOrders = async () => {
+    try {
+        const response = await axiosapi.get(`/admin/findByRefundStatus/${status.value}`);
+        console.log('findByRefundStatus : ' + JSON.stringify(response.data));
+        if (response.data !== '') {
+            orders.value = response.data;
+        } else {
+            console.log('cantfind');
+        }
+    } catch (error) {
+        console.error('cant load orders' + error);
+    }
+};
 
-watch(status, () => {
-    axiosapi
-        .get(`/order/findByRefundStatus/${status.value}`)
-        .then(response => {
-            console.log('findByRefundStatus : ' + JSON.stringify(response.data))
-            if (response.data !== '') {
-                orders.value = response.data;
-            } else {
-                console.log('cantfind');
-            }
-        })
-        .catch(error => {
-            console.error('cant load orders' + error);
-        });
-}, { immediate: true }); // 确保组件加载时也会执行一次
+watch(status, loadOrders, { immediate: true });
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
@@ -152,7 +156,39 @@ const getOrderDetails = async (orderId) => {
 
 const agreeRefund = async (order) => {
     try {
-        const response = await axiosapi.post('/pay/agreeRefund', {
+        const response = await axiosapi.post('/admin/agreeRefund', {
+            orderId: order.orderId
+        });
+        if (response.data != '') {
+            console.log(response.data)
+            Swal.fire({
+                icon: 'success',
+                title: '操作成功',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+            })
+            await loadOrders();
+        } else {
+            console.log(response.data)
+            Swal.fire({
+                icon: 'error',
+                title: '請稍後再試',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        alert('操作出錯');
+    }
+};
+
+
+const rejectRefund = async (order) => {
+    try {
+        const response = await axiosapi.post('/admin/rejectRefund', {
             orderId: order.orderId
         });
         if (response.data != '') {
@@ -174,14 +210,19 @@ const agreeRefund = async (order) => {
                 timerProgressBar: true,
             })
         }
+        await loadOrders();
     } catch (error) {
         console.log(error);
         alert('操作出錯');
     }
 };
 
-
-
+const getStatusText = (status) => {
+    switch(status) {
+        case 1: return '拒絕退款';
+        case 3: return '同意退款';
+    }
+}
 </script>
 
 <style></style>

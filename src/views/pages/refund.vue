@@ -1,8 +1,8 @@
 <template>
     <div class="ts-content is-tertiary is-vertically-padded">
         <div class="ts-container is-very-narrow has-vertically-spaced">
-            <div class="ts-header is-big is-heavy">註冊會員</div>
-            <div class="ts-text is-secondary">初次見面，歡迎加入貓咪罐頭股份有限公司！</div>
+            <div class="ts-header is-big is-heavy">退款服務</div>
+            <div class="ts-text is-secondary">若有退款相關問題，請不吝嗇與我們聯絡，謝謝!</div>
         </div>
     </div>
     <div class="ts-container">
@@ -63,18 +63,40 @@
                     </tr>
                 </tbody>
             </table>
-            <form class="ts-form" @submit="sendRefundApply">
+            <form class="ts-form" @submit="sendRefundApply" style="margin-top: 1.5rem;">
+                <div class="field"      >
+                    <div class="control">
+                        <div class="ts-select is-fluid" style="margin-top: 1rem;">
+                            <select v-model="selectedReason" required >
+                                <option value="" disabled selected>請選擇退款理由</option>
+                                <option value="quality">商品品質問題</option>
+                                <option value="wrongItem">收到錯誤商品</option>
+                                <option value="late">送達時間過晚</option>
+                                <option value="damaged">商品損壞</option>
+                                <option value="other">其他原因</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <label class="label">說明欄</label>
+                <div class="field" style="margin-top: 1rem;">
+                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
+                        required></textarea>
+                    <button class="ts-button is-primary" type="submit">提交退款申請</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- <form class="ts-form" @submit="sendRefundApply">
                 <div class="field">
                     <label class="label">退款理由</label>
                     <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
                         required></textarea>
                 </div>
                 <button class="ts-button is-primary" type="submit">提交退款申請</button>
-            </form>
-        </div>
-    </div>
-
-
+            </form> -->
 </template>
 
 <script setup>
@@ -91,6 +113,7 @@ const expandedOrderId = ref(null);
 const orderDetails = ref([]);
 const refundReason = ref('');
 const router = useRouter()
+const selectedReason =ref('');
 
 
 onMounted(async () => {
@@ -111,24 +134,25 @@ const sendRefundApply = async (event) => {
     try {
         const response = await axiosapi.post('/order/addRefund', {
             orderId: orderId,
-            refundReason: refundReason.value
+            refundReason: selectedReason.value +':'+ refundReason.value
         });
         if (response.data) {
             Swal.fire({
-                title: '成功!',
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 1000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading()
-                }
-            }).then((result) => {
-                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    router.push('/secure/profile');
-                }
+                title: '確認退款',
+                text: '您確定要申請退款嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'rgb(35 40 44)',
+                cancelButtonColor: '#9e9e9e',
+                confirmButtonText: '確認',
+                cancelButtonText: '取消'
             })
+                .then((result) => {
+                    // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                    if (result.isConfirmed) {
+                        router.push('/secure/profile');
+                    }
+                })
         } else {
 
             console.log('退款申請失敗');
@@ -173,4 +197,17 @@ const getOrderDetails = async (orderId) => {
 
 </script>
 
-<style></style>
+<style>
+.ts-box {
+    border-radius: 8px;
+}
+
+
+.ts-textarea {
+    width: 100%;
+    height: 250px;
+    border-radius: 8px;
+}
+
+
+</style>

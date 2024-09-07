@@ -22,6 +22,7 @@
       </div>
       <div class="ts-menu is-dense is-small" style="opacity: 0.8">
         <a class="item" @click="switchComps(userProfile)">個人資料</a>
+        <a class="item" @click="switchComps(notificationsList)">通知列表</a>
         <a class="item" @click="switchComps(card)">信用卡資訊</a>
         <a href="#!" class="item" data-dialog="updatePwdModal">修改密碼</a>
       </div>
@@ -40,7 +41,7 @@
         <a class="item" @click="switchComps(order)">購買清單</a>
       </div>
       <div class="ts-divider has-top-spaced-small"></div>
-      <a href="#!" class="ts-content is-interactive is-dense">
+      <a href="#!" class="ts-content is-dense">
         <div class="ts-grid">
           <div class="column is-fluid">
             <div class="ts-text is-bold">管理文章</div>
@@ -51,8 +52,8 @@
         </div>
       </a>
       <div class="ts-menu is-dense is-small" style="opacity: 0.8">
-        <a href="#!" class="item">我的文章</a>
-        <a href="#!" class="item">收藏文章</a>
+        <a href="#!" class="item" @click="switchComps(myPostList)">我的文章</a>
+        <a href="#!" class="item" @click="switchComps(myLikePost)">收藏文章</a>
       </div>
     </div>
     <div class="cell is-fluid is-scrollable is-secondary">
@@ -172,7 +173,11 @@
           >
             更改密碼
           </button>
-          <button class="ts-button is-outlined" data-dialog="updatePwdModal">
+          <button
+            class="ts-button is-outlined"
+            data-dialog="updatePwdModal"
+            @click="cancelChange"
+          >
             取消
           </button>
         </div>
@@ -184,7 +189,11 @@
 <script setup>
 import userProfile from "@/components/profile/userProfile.vue";
 import card from "@/components/profile/card.vue";
-    import order from '../pages/order.vue';
+import order from "../pages/order.vue";
+import notificationsList from "@/components/profile/notificationsList.vue";
+import myPostList from "@/components/profile/myPostList.vue";
+import myLikePost from "@/components/profile/myLikePost.vue";
+
 import {
   shallowRef,
   ref,
@@ -192,10 +201,15 @@ import {
   onUnmounted,
   reactive,
   computed,
+  watch,
 } from "vue";
+import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 import Swal from "sweetalert2";
+
+const route = useRoute();
+const props = defineProps(["initialView"]);
 
 const userStore = useUserStore();
 const currentComp = shallowRef(userProfile);
@@ -210,8 +224,32 @@ const pwdMessage = ref("");
 const pwdFomatMsg = ref("");
 
 //切換components
+// function switchComps(comp) {
+//   currentComp.value = comp;
+// }
+
 function switchComps(comp) {
-  currentComp.value = comp;
+  console.log("Switching to component:", comp);
+  if (typeof comp === "string") {
+    switch (comp) {
+      case "userProfile":
+        currentComp.value = userProfile;
+        break;
+      case "card":
+        currentComp.value = card;
+        break;
+      case "order":
+        currentComp.value = order;
+        break;
+      case "notificationList":
+        currentComp.value = notificationsList;
+        break;
+      default:
+        currentComp.value = userProfile;
+    }
+  } else {
+    currentComp.value = comp;
+  }
 }
 
 ///////////////////////////// 顯示使用者資料 /////////////////////////////
@@ -276,6 +314,7 @@ async function uploadPhoto() {
         text: response.data.message,
         icon: "success",
         confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
       });
     } else {
@@ -284,10 +323,8 @@ async function uploadPhoto() {
         text: response.data.message,
         icon: "warning",
         confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
-        customClass: {
-          container: "my-swal",
-        },
       });
     }
   } catch (error) {
@@ -296,6 +333,7 @@ async function uploadPhoto() {
       text: "更新失敗，請稍後再試。" + error.message,
       icon: "error",
       confirmButtonText: "確認",
+      confirmButtonColor: "rgb(35 40 44)",
       allowOutsideClick: false,
     });
   }
@@ -346,55 +384,105 @@ const isLoginDisabled = computed(function () {
 });
 
 async function updatePwd() {
-  try {
-    const response = await axiosapi.put(
-      `changePassword/${userStore.userId}`,
-      uPwdInput
-    );
+  document.querySelector("#updatePwdModal").close();
+  const result = await Swal.fire({
+    title: "確認更新密碼",
+    text: `您確定要更改密碼嗎？`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+    confirmButtonColor: "rgb(35 40 44)",
+    cancelButtonColor: "#9e9e9e",
+  });
+  if (result.isConfirmed) {
+    try {
+      const response = await axiosapi.put(
+        `changePassword/${userStore.userId}`,
+        uPwdInput
+      );
 
-    if (response.data.success) {
+      if (response.data.success) {
+        // document.querySelector("#updatePwdModal").close();
+        Swal.fire({
+          text: response.data.message,
+          icon: "success",
+          confirmButtonText: "確認",
+          confirmButtonColor: "rgb(35 40 44)",
+          allowOutsideClick: false,
+        });
+        uPwdInput.oldPwd = "";
+        uPwdInput.newPwd = "";
+        uPwdInput.checkPwd = "";
+      } else {
+        document.querySelector("#updatePwdModal").close();
+        Swal.fire({
+          text: response.data.message,
+          icon: "warning",
+          confirmButtonText: "確認",
+          confirmButtonColor: "rgb(35 40 44)",
+          allowOutsideClick: false,
+        });
+      }
+    } catch {
       document.querySelector("#updatePwdModal").close();
       Swal.fire({
-        text: response.data.message,
-        icon: "success",
+        text: "更新失敗，請稍後再試。" + error.message,
+        icon: "error",
         confirmButtonText: "確認",
-        allowOutsideClick: false,
-      });
-      uPwdInput.oldPwd = "";
-      uPwdInput.newPwd = "";
-      uPwdInput.checkPwd = "";
-    } else {
-      document.querySelector("#updatePwdModal").close();
-      Swal.fire({
-        text: response.data.message,
-        icon: "warning",
-        confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
       });
     }
-  } catch {
-    document.querySelector("#updatePwdModal").close();
-    Swal.fire({
-      text: "更新失敗，請稍後再試。" + error.message,
-      icon: "error",
-      confirmButtonText: "確認",
-      allowOutsideClick: false,
-    });
+  } else {
+    console.log("取消");
+    document.querySelector("#updatePwdModal").showModal();
   }
 }
 
+function cancelChange() {
+  uPwdInput.oldPwd = "";
+  uPwdInput.newPwd = "";
+  uPwdInput.checkPwd = "";
+}
 ///////////////////////////// 其他 /////////////////////////////
 
 onMounted(function () {
-  axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
   console.log("Current auth header:", axiosapi.defaults.headers.authorization);
   showData(userStore.userId);
+
+  ////////跳轉回到購買清單
+  handleInitialView();
+  if (route.params.initialView) {
+    switchComps(route.params.initialView);
+  }
 });
+
 onUnmounted(() => {
   if (photoPreview.value) {
     URL.revokeObjectURL(photoPreview.value); // 釋放臨時 URL
   }
 });
+
+//////跳轉回到購買清單
+
+function handleInitialView() {
+  console.log("Handling initial view:", props.initialView);
+  if (props.initialView) {
+    switchComps(props.initialView);
+  }
+}
+
+// 監聽路由參數變化
+watch(
+  () => props.initialView,
+  (newView) => {
+    console.log("initialView changed:", newView);
+    if (newView) {
+      switchComps(newView);
+    }
+  }
+);
 </script>
 
 <style scoped>

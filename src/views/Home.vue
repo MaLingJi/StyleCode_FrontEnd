@@ -25,9 +25,9 @@
     </div>
 
     <div class="shared-posts-section">
-      <h2>最新分享</h2>
-      <div class="shared-posts-grid">
-        <ShareCard v-for="post in limitedSharedPosts" :key="post.postId" :post="post" />
+      <h2>最新貼文</h2>
+      <div class="shared-posts-grid" >
+        <ShareCard v-for="post in limitedSharedPosts" :key="post.postId" :post="post" style="cursor: pointer"/>
       </div>
     </div>
 

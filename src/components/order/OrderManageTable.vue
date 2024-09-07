@@ -1,4 +1,5 @@
 <template>
+    <div class="table-container">
         <table class="ts-table ">
             <thead>
                 <tr>
@@ -15,6 +16,7 @@
                 </tr>
             </tbody>
         </table>
+    </div>
 </template>
 
 <script setup>
@@ -49,4 +51,24 @@ const ordersData = computed(() => {
 
 </script>
 
-<style></style>
+<style scoped>
+.table-container {
+    justify-content: center;
+}
+
+.ts-table {
+    text-align: center;
+}
+
+.ts-table th,
+.ts-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.ts-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+</style>

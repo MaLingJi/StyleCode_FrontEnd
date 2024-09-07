@@ -3,8 +3,8 @@
         <table class="ts-table ">
             <thead>
                 <tr>
-                    <th>照片</th>
                     <th>商品資料</th>
+                    <th>照片</th>
                     <th>單件價格</th>
                     <th>數量</th>
                     <th>小計</th>
@@ -13,8 +13,9 @@
             </thead>
             <tbody>
                 <tr v-for="item in cartItems" style="vertical-align: middle;">
-                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" style="width: 100px; height: 100px;" /></td>
                     <td>{{ item.productName }}</td>
+                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))"
+                            style="width: 100px; height: 100px;" /></td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
                     <td>
                         <div>
@@ -38,7 +39,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="6">購物車：{{ cartItems.length }} 件</th>
+                    <th colspan="6" style="text-align: right;">購物車：{{ cartItems.length }} 件</th>
                 </tr>
             </tfoot>
         </table>
@@ -52,7 +53,7 @@ import { ref } from 'vue';
 import { onMounted } from 'vue';
 import useUserStore from "@/stores/user.js"
 import { watch } from 'vue';
-
+import Swal from 'sweetalert2';
 
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
@@ -144,28 +145,37 @@ const updateQuantity = (item) => {
 }
 
 const removeItem = (item) => {
-    if (!confirm('確定要從購物車移除此商品嗎？')) return;
-
-    axiosapi.delete('/cart/delete', {
-        data: {
-            userId: user,
-            productDetailsId: item.productDetailsId
+    Swal.fire({
+        title: '移除商品',
+        text: '您確定要移除商品嗎？',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'rgb(35 40 44)',
+        cancelButtonColor: '#9e9e9e',
+        confirmButtonText: '確認',
+        cancelButtonText: '取消'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axiosapi.delete('/cart/delete', {
+                data: {
+                    userId: user,
+                    productDetailsId: item.productDetailsId
+                }
+            }).then(response => {
+                console.log(response);
+                if (response != null) {
+                    const index = props.cartItems.indexOf(item);
+                    if (index > -1) {
+                        props.cartItems.splice(index, 1);
+                    }
+                    updateParent();
+                }
+            }).catch(error => {
+                console.error('Failed to load cart items' + error)
+            })
         }
-    }).then(response => {
-        console.log(response);
-        if (response != null) {
-            const index = props.cartItems.indexOf(item);
-            if (index > -1) {
-                props.cartItems.splice(index, 1);
-            }
-            updateParent();
-        }
-    }).catch(error => {
-        console.error('Failed to load cart items' + error)
-    })
-
-
-
+    }
+    )
 }
 
 onMounted(async () => {

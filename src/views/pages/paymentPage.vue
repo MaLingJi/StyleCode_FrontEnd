@@ -24,7 +24,7 @@
         </div>
 
 
-        <div>
+        <div style="text-align: right; margin-top: 10PX;">
             <!-- <h3>合計:{{ formatCurrency(totalAmount) }}</h3> -->
             <!-- <button class="ts-button" @click="proceedPayment">Submit</button> -->
             <button class="ts-button" @click="lpPayment">LinePay</button>
@@ -79,17 +79,18 @@ const lpPayment = async () => {
         if (response.data) {
             // 重定向到 LINE Pay 支付頁面
             Swal.fire({
-                title: '前往中!',
-                icon: 'info',
-                showConfirmButton: false,
-                timer: 1000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading()
-                }
-            }).then((result) => {
+                title: '確認付款',
+                text: '您確定要進行付款嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'rgb(35 40 44)',
+                cancelButtonColor: '#9e9e9e',
+                confirmButtonText: '確認付款',
+                cancelButtonText: '取消'
+            })
+            .then((result) => {
                 // 確保 SweetAlert 的計時器結束後才執行路由跳轉
-                if (result.dismiss === Swal.DismissReason.timer) {
+                if (result.isConfirmed) {
                     window.location.href = response.data
                 }
             })

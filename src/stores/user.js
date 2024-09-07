@@ -44,10 +44,18 @@ export const user = defineStore('user', {
         userId: "",
         userToken: "",
         permissions: "",
-        isLogedin: false
+        isLogedin: false,
+        expirationTime: null,
     }),
     getters: {
-        isAdmin: (state) => state.permissions === "Admin"
+        isAdmin: (state) => state.permissions === "Admin",
+        isSessionExpired: (state) => {
+            const curentime = new Date()
+            const expirationTime = new Date(state.expirationTime);
+            console.log("Current time:", curentime);
+            console.log("Expiration time:", expirationTime);
+
+            return state.expirationTime && new Date() > new Date(state.expirationTime)}
     },
     actions: {
         setUserId(userId) {
@@ -56,16 +64,41 @@ export const user = defineStore('user', {
         setUserToken(userToken) {
             this.userToken = userToken
         },
-    setPermissions(permissions) {
-        this.permissions = permissions
-    },
-    setLogedin(isLogedin) {
-        this.isLogedin = isLogedin
-    }
+        setPermissions(permissions) {
+            this.permissions = permissions
+        },
+        setLogedin(isLogedin) {
+            this.isLogedin = isLogedin
+        },
+        setExpirationTime(expirationTime) {
+            this.expirationTime = expirationTime
+        },
+        checkSession() {
+            if (this.isSessionExpired) {
+                this.logout()
+            }else {
+                console.log("Session is still valid.");
+            }
+        },
+        logout() {
+            console.log("logout....")
+            this.userId = "";
+            this.userToken = "";
+            this.permissions = "";
+            this.isLogedin = false;
+            this.expirationTime = null;
+
+            // 同時刪除 localStorage 中的數據
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('permissions');
+            localStorage.removeItem('isLogedin');
+            localStorage.removeItem('expirationTime');
+        }
 },
 persist: {
     storage: localStorage,
-    paths: ["userId", "isLogedin", "userToken", "permissions"]
+    paths: ["userId", "isLogedin", "userToken", "permissions", "expirationTime"]
 }
 })
 

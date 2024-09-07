@@ -4,7 +4,7 @@
       <img :src="imgUrl" :alt="post.postTitle" />
     </div>
     <div class="share-info">
-      <h3>{{ post.userName || 'Unknown User' }}</h3>
+      <h3>{{ post.userName || "Unknown User" }}</h3>
       <p>{{ post.postTitle }}</p>
     </div>
   </div>
@@ -21,7 +21,7 @@ const props = defineProps({
     required: true
   }
 });
-const imgUrl = ref('');
+const imgUrl = ref("");
 const router = useRouter();
 
 onMounted(() => {
@@ -29,12 +29,12 @@ onMounted(() => {
   if (props.post && props.post.images && props.post.images.length > 0) {
     imgUrl.value = `${path}${props.post.images[0].imgUrl}`;
   } else {
-    imgUrl.value = '/path/to/default/image.jpg';
+    imgUrl.value = "/path/to/default/image.jpg";
   }
 });
 
 function navigateToShareDetails(postId) {
-  router.push({ name: 'shareDetails-link', params: { postId } });
+  router.push({ name: "shareDetails-link", params: { postId } });
 }
 </script>
 
@@ -44,13 +44,13 @@ function navigateToShareDetails(postId) {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .share-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .share-image {

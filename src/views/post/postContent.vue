@@ -21,7 +21,6 @@
             class="post-image"
             :width="200" 
           />
-          <!-- @error="handleImageError"   -->
         </div>
 
         <div class="actions">
@@ -55,6 +54,7 @@
           </span> -->
           
         </div>
+        
         <!-- 編輯按鈕 -->
         <a-button v-if="post.userId === userId" type="primary" 
           @click="() => goToEditPage(post.postId)">編輯</a-button>
@@ -67,7 +67,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute,useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
 import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
@@ -109,10 +109,10 @@ const fetchPostData = async () => {
       .filter(image => !image.deletedAt)  // 過濾已刪除的圖片
       .map(image => ({
         ...image,
-        imgUrl: `${path}${image.imgUrl}` //用path變數構建完整的URL
+        imgUrl: `${path}${image.imgUrl}` //用 path 變數構建URL
       }));
     } else {
-      post.value.images = []; // 如果不是數組,初始化為空數組
+      post.value.images = []; //不是數組,初始化為空數組
     }
   } catch (error) {
     console.error("獲取文章數據失敗:", error);
@@ -231,29 +231,5 @@ onMounted(async () => {
   object-fit: cover; /* 确保图片在容器中覆盖并保持比例 */
   border-radius: 8px; 
   width: calc(33.333% - 10px); 
-}
-.edit-button {
-  background-color: #1890ff; /* 藍色背景 */
-  color: #fff; 
-  border: none; 
-  padding: 6px 12px; 
-  border-radius: 4px; 
-  cursor: pointer; /* 滑鼠指標樣式 */
-  transition: background-color 0.3s; 
-}
-.edit-button:hover {
-  background-color: #40a9ff; /* 滑鼠懸停時改變背景顏色 */
-}
-.delete-button {
-  background-color: #ff4d4f; 
-  color: #fff; 
-  border: none; 
-  padding: 6px 12px; 
-  border-radius: 4px; 
-  cursor: pointer; /* 滑鼠指標樣式 */
-  transition: background-color 0.3s; 
-}
-.delete-button:hover {
-  background-color: #ff7875; /* 滑鼠懸停時改變背景顏色 */
 }
 </style>

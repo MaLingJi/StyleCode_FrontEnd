@@ -1,6 +1,5 @@
 <template>
-  <div class="ts-box">
-    <h3 class="ts-header">商品詳情管理</h3>
+    <h3 class="ts-header" style="margin: 10px;">商品詳情管理</h3>
 
     <!-- 分類和子分類過濾 -->
     <div class="ts-grid">
@@ -154,7 +153,6 @@
             :last-button-class="'item is-last'"
           />
         </div>
-    </div>
   </template>
   
   <script setup>

@@ -1,6 +1,5 @@
 <template>
-    <div class="ts-box">
-      <h3 class="ts-header">分類管理</h3>
+      <h3 class="ts-header" style="margin: 10px;">分類管理</h3>
       
       <!-- 新增分類表單 -->
       <form @submit.prevent="addCategory" class="ts-form">
@@ -58,7 +57,6 @@
         :first-button-class="'item is-first'"
         :last-button-class="'item is-last'"
       />
-    </div>
 </div>
   </template>
   
