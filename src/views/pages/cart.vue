@@ -2,14 +2,12 @@
         <!DOCTYPE html>
         <html class="is-secondary">
         <div class="ts-container">
-                <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
+                <div class="ts-content circle-container">
                         <Circle :current-step="1" />
-                        <!-- <span class="ts-text">圈圈1</span> -->
                 </div>
 
-                <div v-if="!user" class="ts-box" style="margin-top: 20px;">
-                        <div class="ts-content"
-                                style="display: flex; justify-content: space-between;align-items: center;">
+                <div v-if="!user" class="ts-box login-box">
+                        <div class="ts-content login-content">
                                 <span class="ts-text">已經是會員？登入後可以更方便管理訂單！</span>
                                 <div class="ts-wrap">
                                         <RouterLink to="/secure/login"><button class="ts-button">會員登入</button>
@@ -18,34 +16,20 @@
                         </div>
                 </div>
 
-                <!-- <div v-if="!isLoggedIn" class="ts-box" style="margin-top: 20px;">
-                        <div class="ts-content login-box">
-                                <span class="ts-text">已經是會員？登入後可以更方便管理訂單！</span>
-                                <div class="ts-wrap">
-                                        <button class="ts-button" @click="login">會員登入</button>
-                                        <button class="ts-button" @click="register">註冊會員</button>
-                                </div>
-                        </div>
-                </div> -->
                 <br>
 
                 <CartList :cart-items="cartItems" @update:car-items="updateCartItems"></CartList>
-                <div>
-                        <h3 style="text-align: right; margin-top: 10px;" >訂單總金額:{{ formatCurrency(totalAmount) }}</h3>
+                <div class="total-amount">
+                        <h3>訂單總金額:{{ formatCurrency(totalAmount) }}</h3>
                 </div>
-                <div style="text-align: right; margin-top: 10px;">
-                        <RouterLink to="/shop"><button class="ts-button" style="margin-right: 10px;">繼續選購</button></RouterLink>
-                        <!-- <button class="ts-button" @click="proceedPayment">Submit</button> -->
-                        <button class="ts-button" @click="checkInventoryAndProceed"
-                                >前往付款</button>
+                <div class="action-buttons">
+                        <RouterLink to="/shop"><button class="ts-button continue-shopping">繼續選購</button></RouterLink>
+                        <button class="ts-button" @click="checkInventoryAndProceed">前往付款</button>
                 </div>
 
         </div>
 
-
-
         </html>
-
 </template>
 
 <script setup>
@@ -160,6 +144,36 @@ const checkInventoryAndProceed = async () => {
 </script>
 
 <style scoped>
+.circle-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+}
+
+.login-box {
+        margin-top: 20px;
+}
+
+.login-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+}
+
+.total-amount h3 {
+        text-align: right;
+        margin-top: 10px;
+}
+
+.action-buttons {
+        text-align: right;
+        margin-top: 10px;
+}
+
+.continue-shopping {
+        margin-right: 10px;
+}
+
 .progress-container {
         display: flex;
         justify-content: space-between;

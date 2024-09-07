@@ -1,15 +1,15 @@
 <template>
     <div class="ts-container">
-        <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
+        <div class="ts-content circle-container">
             <Circle :current-step="3" />
         </div>
     </div>
     <div class="ts-container">
-    <div class="ts-content" style="display: flex; justify-content: center;"> 
-        <p v-if="isLoading">正在確認支付結果...</p>
-        <p v-if="status === 'success'">支付成功！正在跳轉到訂單頁面...</p>
-        <p v-if="status === 'error'">支付失敗：{{ errorMessage }}</p>
-    </div>
+        <div class="ts-content status-container">
+            <p v-if="isLoading">正在確認支付結果...</p>
+            <p v-if="status === 'success'">支付成功！正在跳轉到訂單頁面...</p>
+            <p v-if="status === 'error'">支付失敗：{{ errorMessage }}</p>
+        </div>
     </div>
 </template>
 
@@ -54,3 +54,15 @@ onMounted(async () => {
     }
 })
 </script>
+<style scoped>
+.circle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-container {
+    display: flex;
+    justify-content: center;
+}
+</style>

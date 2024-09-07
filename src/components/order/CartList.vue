@@ -12,10 +12,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems" style="vertical-align: middle;">
+                <tr class="carttr" v-for="item in cartItems">
                     <td>{{ item.productName }}</td>
-                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))"
-                            style="width: 100px; height: 100px;" /></td>
+                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" class="cartimage" /></td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
                     <td>
                         <div>
@@ -24,7 +23,7 @@
                                 <button @click="decreaseQuantity(item)" :disabled="item.quantity < 1"
                                     class="ts-icon is-minus-icon"></button>
                                 <input v-model.number="item.quantity" type="number" min="1" class="custom-number-input"
-                                    @input="updateQuantity(item)" style="text-align: center;">
+                                    @input="updateQuantity(item)">
                                 <button @click="increaseQuantity(item)" class="ts-icon is-plus-icon"></button>
                             </div>
                             <div>
@@ -39,7 +38,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="6" style="text-align: right;">購物車：{{ cartItems.length }} 件</th>
+                    <th colspan="6" class="cartsummary">購物車：{{ cartItems.length }} 件</th>
                 </tr>
             </tfoot>
         </table>
@@ -232,17 +231,28 @@ const getImageUrl = (imageName) => {
 
 </script>
 
-<style>
-.custom-number-input {
+<style scoped>
+.carttr {
+    vertical-align: middle;
+}
 
-    /* 設置寬度 */
+.cartimage {
+    width: 100px;
+    height: 100px;
+}
+
+.custom-number-input {
     width: 50px;
-    /* 您可以根據需要調整這個值 */
+    text-align: center;
 }
 
 .custom-number-input::-webkit-inner-spin-button,
 .custom-number-input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+.cartsummary {
+    text-align: right;
 }
 </style>

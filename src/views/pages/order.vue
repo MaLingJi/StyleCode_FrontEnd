@@ -1,7 +1,7 @@
 <template>
     <!DOCTYPE html>
-    <html class="is-secondary" style="width: 900px;">
-    <div class="ts-container" style="margin-top: 10px;">
+    <html class="is-secondary html-container">
+    <div class="ts-container container-margin">
         <div class="ts-selection is-fluid">
             <label class="item">
                 <input type="radio" name="language" value="1" v-model="status" />
@@ -170,7 +170,15 @@ const refund = (order) => {
 
 </script>
 
-<style>
+<style scoped>
+.html-container {
+    width: 900px;
+}
+
+.container-margin {
+    margin-top: 10px;
+}
+
 .ts-table th,
 .ts-table td,
 .ts-table tr {
