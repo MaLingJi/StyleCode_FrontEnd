@@ -87,38 +87,29 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, onMounted } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
 
-export default defineComponent({
-  components: {
-    StarOutlined,
-    StarFilled,
-    HeartOutlined,
-    HeartFilled,
-    MessageOutlined,
+const userStore = useUserStore();
+const listData = ref([]);
+const path = import.meta.env.VITE_POST_IMAGE_URL; 
+
+const pagination = ref({
+  onChange: (page) => {
+    console.log(page);
   },
-  setup() {
-    const userStore = useUserStore();
-    const listData = ref([]); // 使用 ref 來存儲文章數據
-    const path = import.meta.env.VITE_POST_IMAGE_URL; 
+  pageSize: 10,
+  total: 0,
+});
 
-    const pagination = ref({
-      onChange: (page) => {
-        console.log(page);
-      },
-      pageSize: 10,
-      total: 0,
-    });
+onMounted(() => {
+  callFind(); // 加載獲取所有文章
+});
 
-    onMounted(() => {
-      callFind(); // 加載獲取所有文章
-    });
-
-    async function callFind() {
+async function callFind() {
   try {
     const response = await axiosapi.get("/post");
     console.log("回覆:", response.data);
@@ -141,7 +132,7 @@ export default defineComponent({
   }
 }
 
-    const checkIfUserLiked = async (postId) => {
+const checkIfUserLiked = async (postId) => {
   try {
     const response = await axiosapi.get(`/likes/${userStore.userId}/${postId}`);
     return response.status === 200; // 如果返回200，表示用戶已經點讚
@@ -159,8 +150,8 @@ const checkIfUserCollected = async (postId) => {
   }
 };
 
-    const likePost = async (id) => {
-      try {
+const likePost = async (id) => {
+  try {
     const post = listData.value.find(item => item.postId === id);
     if (post) {
       if (post.liked) {
@@ -183,8 +174,8 @@ const checkIfUserCollected = async (postId) => {
   }
 };
 
-    const collectPost = async (id) => {
-      try {
+const collectPost = async (id) => {
+  try {
     const post = listData.value.find(item => item.postId === id);
     if (post) {
       if (post.collected) {
@@ -207,36 +198,10 @@ const checkIfUserCollected = async (postId) => {
   }
 };
 
-    const commentPost = (id) => {
-      // const post = listData.value.find(item => item.postId === id);
-    };
+const commentPost = (id) => {
+  // const post = listData.value.find(item => item.postId === id);
 
-    const handleSubmit = async () => {
-      const postData = {
-        title: "新貼文標題",
-        content: "這是貼文內容",
-        // 其他必要的字段
-      };
-      try {
-        await axiosapi.post('/post', postData);
-        callFind(); // 發文後重新獲取貼文
-      } catch (error) {
-        console.error("發文失敗:", error.response ? error.response.data : error.message);
-      }
-    };
-
-    return {
-      listData,
-      pagination,
-      likePost,
-      collectPost,
-      commentPost,
-      handleSubmit,
-      path,
-      userStore,
-    };
-  },
-});
+};
 </script>
 
 <style scoped>
@@ -282,13 +247,13 @@ img {
   border-radius: 8px;
 }
 
-:global(.footer) {
+.footer {
   background-color: #f8f8f8;
   padding: 20px 0;
   margin-top: auto;
 }
 
-:global(.footer-content) {
+.footer-content {
   display: flex;
   justify-content: space-around;
   max-width: 1200px;
@@ -296,12 +261,12 @@ img {
   padding: 0 20px;
 }
 
-:global(.footer-section) {
+.footer-section {
   flex: 1;
   margin: 0 10px;
 }
 
-:global(.footer-bottom) {
+.footer-bottom {
   text-align: center;
   margin-top: 20px;
   padding-top: 10px;

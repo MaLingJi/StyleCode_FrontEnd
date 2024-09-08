@@ -1,6 +1,6 @@
 <template>
   <div class="ts-grid header-title is-middle-aligned is-spaced-between">
-    <div class="ts-header is-huge is-heavy">我的文章</div>
+    <div class="ts-header is-huge is-heavy">我的收藏</div>
   </div>
   <div class="ts-container" style="margin-top: 10px">
     <div class="ts-selection is-fluid">
@@ -9,7 +9,7 @@
         <div class="text">分享區</div>
       </label>
       <label class="item">
-        <input type="radio" name="language" value="post" v-model="postType" />
+        <input type="radio" name="language" value="forum" v-model="postType" />
         <div class="text">論壇</div>
       </label>
     </div>
@@ -20,69 +20,24 @@
       class="ts-grid is-3-columns is-relaxed is-stretched"
       v-if="postType === 'share'"
     >
-      <div class="column">
-        <div class="share-card" @click="">
-          <div class="ts-icon is-bookmark-icon is-huge bookmark"></div>
+    <div class="column" v-for="(post, index) in sharePosts" :key="index">
+      <div class="share-card" @click="">
+        <div class="ts-icon is-bookmark-icon is-huge bookmark"></div>
           <!-- ^書籤按鈕^ -->
           <div class="share-image">
-            <img src="/MDFK-removebg-preview.png" />
-          </div>
-          <div class="share-info">
-            <h3>{{ "Unknown User" }}</h3>
-            <div class="ts-grid is-spaced-between">
-              <p class="column">{{ "postTitle" }}</p>
-              <div class="ts-grid share-icons column">
-                <div class="column">
-                  <span class="ts-icon is-heart-icon margin-right"></span>12
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-bookmark-icon margin-right"></span>1
-                </div>
-              </div>
-            </div>
-          </div>
+            <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" alt="Share Image" /> />
         </div>
-      </div>
-      <div class="column">
-        <div class="share-card" @click="">
-          <div class="ts-icon is-bookmark-icon is-huge bookmark"></div>
-          <!-- ^編輯按鈕^ -->
-          <div class="share-image">
-            <img src="/MDFK-removebg-preview.png" />
-          </div>
-          <div class="share-info">
-            <h3>{{ "Unknown User" }}</h3>
-            <div class="ts-grid is-spaced-between">
-              <p class="column">{{ "postTitle" }}</p>
-              <div class="ts-grid share-icons column">
-                <div class="column">
-                  <span class="ts-icon is-heart-icon margin-right"></span>12
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-bookmark-icon margin-right"></span>1
-                </div>
+        <div class="share-info">
+          <h3>{{ post.userName }}</h3>
+          <div class="ts-grid is-spaced-between">
+            <p class="column">{{ post.postTitle }}</p>
+            <div class="ts-grid share-icons column">
+              <div class="column">
+                <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="share-card" @click="">
-          <div class="ts-icon is-bookmark-icon is-huge bookmark"></div>
-          <!-- ^編輯按鈕^ -->
-          <div class="share-image">
-            <img src="/MDFK-removebg-preview.png" />
-          </div>
-          <div class="share-info">
-            <h3>{{ "Unknown User" }}</h3>
-            <div class="ts-grid is-spaced-between">
-              <p class="column">{{ "postTitle" }}</p>
-              <div class="ts-grid share-icons column">
-                <div class="column">
-                  <span class="ts-icon is-heart-icon margin-right"></span>12
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-bookmark-icon margin-right"></span>1
+              <div class="column">
+                <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+              </div>
                 </div>
               </div>
             </div>
@@ -91,101 +46,92 @@
       </div>
     </div>
     <!-------- 論 壇 主 要 頁 面 -------->
-    <div v-if="postType === 'post'">
-      <div class="ts-box is-horizontal">
-        <div class="ts-icon is-bookmark-icon is-huge column bookmark"></div>
-        <div class="ts-image is-covered">
-          <img src="/MDFK-removebg-preview.png" width="150" height="100%" />
-        </div>
-        <div class="ts-content right-side">
-          <div class="ts-grid is-spaced-between">
-            <div class="ts-header column">
-              Zedd - Papercut (Audio) ft. Troye Sivan
-            </div>
-          </div>
-          <p>Get "True Colors" on iTunes: http://smarturl.it/ZeddTrueColors</p>
-          <div class="ts-grid icons">
-            <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>12
-            </div>
-            <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>1
-            </div>
-          </div>
-        </div>
+    <div v-if="postType === 'forum'">
+    <div class="ts-box is-horizontal" v-for="(post, index) in forumPosts" :key="index">
+      <div
+        class="ts-icon is-bookmark-icon is-huge column bookmark"
+        @click="removeBookmark(post.id)"
+      ></div>
+      <div class="ts-image is-covered">
+        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" alt="Post Image" />
       </div>
-      <div class="ts-box is-horizontal">
-        <div class="ts-icon is-bookmark-icon is-huge column bookmark"></div>
-        <div class="ts-image is-covered">
-          <img src="/MDFK-removebg-preview.png" width="150" height="100%" />
+      <div class="ts-content right-side">
+        <div class="ts-grid is-spaced-between">
+          <div class="ts-header column">{{ post.postTitle }}</div>
         </div>
-        <div class="ts-content right-side">
-          <div class="ts-grid is-spaced-between">
-            <div class="ts-header column">
-              Zedd - Papercut (Audio) ft. Troye Sivan
-            </div>
+        <p>{{ post.contentText }}</p>
+        <div class="ts-grid icons">
+          <div class="column">
+            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
           </div>
-          <p>Get "True Colors" on iTunes: http://smarturl.it/ZeddTrueColors</p>
-          <div class="ts-grid icons">
-            <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>12
-            </div>
-            <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>1
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="ts-box is-horizontal">
-        <div class="ts-icon is-bookmark-icon is-huge column bookmark"></div>
-        <div class="ts-image is-covered">
-          <img src="/MDFK-removebg-preview.png" width="150" height="100%" />
-        </div>
-        <div class="ts-content right-side">
-          <div class="ts-grid is-spaced-between">
-            <div class="ts-header column">
-              Zedd - Papercut (Audio) ft. Troye Sivan
-            </div>
-          </div>
-          <p>Get "True Colors" on iTunes: http://smarturl.it/ZeddTrueColors</p>
-          <div class="ts-grid icons">
-            <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>12
-            </div>
-            <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>1
+          <div class="column">
+            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import axiosapi from "@/plugins/axios.js";
 import { ref, watch } from "vue";
 import useUserStore from "@/stores/user.js";
 
-const user = useUserStore().userId;
+const userId = Number(useUserStore().userId);
 const postType = ref("share");
+const sharePosts = ref([]);  // 存儲分享區文章
+const forumPosts = ref([]);  // 存儲論壇文章
+const path = import.meta.env.VITE_POST_IMAGE_URL; 
 
 //寫法參考 page/order.vue
 watch(
   postType,
   () => {
+    // 清空數組
+    sharePosts.value = [];
+    forumPosts.value = [];
     axiosapi
-      .get(`/order/find/${user}?status=${postType.value}`)
-      .then((response) => {
-        console.log(response);
-        if (response.data !== "") {
-        } else {
+    .get(`/collections/post/${userId}`)
+    .then((response) => {
+      const posts = response.data;
+      // console.log(`取得用戶的貼文 ${userId}`);
+        posts.forEach(post => {
+          if (post.contentType === 'forum') {
+            forumPosts.value.push(post);
+          } else if (post.contentType === 'share') {
+            sharePosts.value.push(post);
+          }
+        });
+        // 根據 postType 顯示相應的文章
+        if (postType.value === "share") {
+          console.log('分享文章:', sharePosts.value);
+        } else if (postType.value === "post") {
+          console.log('論壇文章:', forumPosts.value);
         }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error('取得貼文時出錯:', error.response ? error.response.data : error.message);
+      });
   },
   { immediate: true }
-); // 確保元件加載時也會執行一次
+); //確保元件載入時也會執行一次
+
+// 取消收藏
+// const removeBookmark = (postId) => {
+//   axiosapi
+//     .delete(`/collections/${userId}/${postId}`)
+//     .then(() => {
+//       if (postType.value === "share") {
+//         sharePosts.value = sharePosts.value.filter((post) => post.id !== postId);
+//       } else if (postType.value === "forum") {
+//         forumPosts.value = forumPosts.value.filter((post) => post.id !== postId);
+//       }
+//     })
+//     .catch((error) => {
+//       console.error('刪除書籤時發生錯誤:', error.response ? error.response.data : error.message);
+//     });
+// };
 </script>
 
 <style scoped>

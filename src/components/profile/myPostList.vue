@@ -9,7 +9,7 @@
         <div class="text">分享區</div>
       </label>
       <label class="item">
-        <input type="radio" name="language" value="post" v-model="postType" />
+        <input type="radio" name="language" value="forum" v-model="postType" />
         <div class="text">論壇</div>
       </label>
     </div>
@@ -17,79 +17,34 @@
   <!-------- 分 享 區 主 要 頁 面 -------->
   <div class="ts-container has-top-spaced">
     <div
-      class="ts-grid is-3-columns is-relaxed is-stretched"
-      v-if="postType === 'share'"
-    >
-      <div class="column">
-        <div class="share-card" @click="">
-          <div
-            class="ts-icon is-circular is-pen-icon is-large share-edit-button"
-          ></div>
-          <!-- ^編輯按鈕^ -->
-          <div class="share-image">
-            <img src="/MDFK-removebg-preview.png" />
-          </div>
-          <div class="share-info">
-            <h3>{{ "Unknown User" }}</h3>
-            <div class="ts-grid is-spaced-between">
-              <p class="column">{{ "postTitle" }}</p>
-              <div class="ts-grid share-icons column">
-                <div class="column">
-                  <span class="ts-icon is-heart-icon margin-right"></span>12
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-bookmark-icon margin-right"></span>1
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  class="ts-grid is-3-columns is-relaxed is-stretched"
+  v-if="postType === 'share'"
+>
+  <div class="column" v-for="post in shareposts" :key="post.postId">
+    <div class="share-card" @click="">
+      <div
+        class="ts-icon is-circular is-pen-icon is-large share-edit-button"
+      ></div>
+      <!-- ^編輯按鈕^ -->
+      <div class="share-image">
+        <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
+        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
       </div>
-      <div class="column">
-        <div class="share-card" @click="">
-          <div
-            class="ts-icon is-circular is-pen-icon is-large share-edit-button"
-          ></div>
-          <!-- ^編輯按鈕^ -->
-          <div class="share-image">
-            <img src="/MDFK-removebg-preview.png" />
-          </div>
-          <div class="share-info">
-            <h3>{{ "Unknown User" }}</h3>
-            <div class="ts-grid is-spaced-between">
-              <p class="column">{{ "postTitle" }}</p>
-              <div class="ts-grid share-icons column">
-                <div class="column">
-                  <span class="ts-icon is-heart-icon margin-right"></span>12
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-bookmark-icon margin-right"></span>1
-                </div>
-              </div>
+      <div class="share-info">
+        <!-- 動態綁定用戶名稱 -->
+        <h3>{{ post.userName }}</h3>
+        <div class="ts-grid is-spaced-between">
+          <!-- 動態綁定文章標題 -->
+          <p class="column">{{ post.postTitle }}</p>
+          <div class="ts-grid share-icons column">
+            <div class="column">
+              <!-- 動態顯示喜歡數量 -->
+              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="share-card" @click="">
-          <div
-            class="ts-icon is-circular is-pen-icon is-large share-edit-button"
-          ></div>
-          <!-- ^編輯按鈕^ -->
-          <div class="share-image">
-            <img src="/MDFK-removebg-preview.png" />
-          </div>
-          <div class="share-info">
-            <h3>{{ "Unknown User" }}</h3>
-            <div class="ts-grid is-spaced-between">
-              <p class="column">{{ "postTitle" }}</p>
-              <div class="ts-grid share-icons column">
-                <div class="column">
-                  <span class="ts-icon is-heart-icon margin-right"></span>12
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-bookmark-icon margin-right"></span>1
-                </div>
+            <div class="column">
+              <!-- 動態顯示收藏數量 -->
+              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            </div>
               </div>
             </div>
           </div>
@@ -97,71 +52,27 @@
       </div>
     </div>
     <!-------- 論 壇 主 要 頁 面 -------->
-    <div v-if="postType === 'post'">
-      <div class="ts-box is-horizontal">
-        <div class="ts-image is-covered">
-          <img src="/MDFK-removebg-preview.png" width="150" height="100%" />
-        </div>
-        <div class="ts-content right-side">
-          <div class="ts-grid is-spaced-between">
-            <div class="ts-header column">
-              Zedd - Papercut (Audio) ft. Troye Sivan
-            </div>
-            <div class="ts-icon is-pen-icon is-large column edit-button"></div>
-            <!-- ^編輯按鈕^ -->
-          </div>
-          <p>Get "True Colors" on iTunes: http://smarturl.it/ZeddTrueColors</p>
-          <div class="ts-grid icons">
-            <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>12
-            </div>
-            <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>1
-            </div>
-          </div>
-        </div>
+    <div v-if="postType === 'forum'">
+    <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
+      <div class="ts-image is-covered">
+        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" />
       </div>
-      <div class="ts-box is-horizontal">
-        <div class="ts-image is-covered">
-          <img src="/MDFK-removebg-preview.png" width="150" height="100%" />
-        </div>
-        <div class="ts-content right-side">
-          <div class="ts-grid is-spaced-between">
-            <div class="ts-header column">
-              Zedd - Papercut (Audio) ft. Troye Sivan
-            </div>
-            <div class="ts-icon is-pen-icon is-large column edit-button"></div>
+      <div class="ts-content right-side">
+        <div class="ts-grid is-spaced-between">
+          <div class="ts-header column">
+            {{ post.postTitle }}
           </div>
-          <p>Get "True Colors" on iTunes: http://smarturl.it/ZeddTrueColors</p>
-          <div class="ts-grid icons">
-            <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>12
-            </div>
-            <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>1
-            </div>
-          </div>
+          <div class="ts-icon is-pen-icon is-large column edit-button"></div>
+          <!-- ^編輯按鈕^ -->
         </div>
-      </div>
-      <div class="ts-box is-horizontal">
-        <div class="ts-image is-covered">
-          <img src="/MDFK-removebg-preview.png" width="150" height="100%" />
-        </div>
-        <div class="ts-content right-side">
-          <div class="ts-grid is-spaced-between">
-            <div class="ts-header column">
-              Zedd - Papercut (Audio) ft. Troye Sivan
-            </div>
-            <div class="ts-icon is-pen-icon is-large column edit-button"></div>
+        <p>{{ post.contentText }}</p>
+        <div class="ts-grid icons">
+          <div class="column">
+            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
           </div>
-          <p>Get "True Colors" on iTunes: http://smarturl.it/ZeddTrueColors</p>
-          <div class="ts-grid icons">
-            <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>12
-            </div>
-            <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>1
-            </div>
+          <div class="column">
+            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+          </div>
           </div>
         </div>
       </div>
@@ -169,30 +80,48 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import axiosapi from "@/plugins/axios.js";
 import { ref, watch } from "vue";
 import useUserStore from "@/stores/user.js";
 
-const user = useUserStore().userId;
+const userId = useUserStore().userId;
 const postType = ref("share");
+const posts = ref([]);
+const forumposts = ref([]);
+const shareposts = ref([]);
+const path = import.meta.env.VITE_POST_IMAGE_URL; 
 
 //寫法參考 page/order.vue
 watch(
   postType,
-  () => {
+  (newType) => {
+     // 清空數組不互相傳遞
+    forumposts.value = [];
+    shareposts.value = [];
+
     axiosapi
-      .get(`/order/find/${user}?status=${postType.value}`)
+      .get(`/post/user/${userId}?type=${newType}`)
       .then((response) => {
-        console.log(response);
-        if (response.data !== "") {
-        } else {
-        }
+        posts.value = response.data
+        console.log('Posts:', posts.value); // 打印所有的帖子数据
+        // 遍歷所有文章
+        response.data.forEach(post => {
+          if (post.contentType === 'forum') {
+            forumposts.value.push(post);
+          } else if (post.contentType === 'share') {
+            shareposts.value.push(post);
+          }
+        });
+        console.log('論壇文章:', forumposts.value); // 打印論壇文章
+        console.log('分享文章:', shareposts.value); // 打印分享文
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error('取得貼文時出錯:', error);
+      });
   },
-  { immediate: true }
-); // 確保元件加載時也會執行一次
+  { immediate: true } // 確保元件加載時也會執行一次
+);
 </script>
 
 <style scoped>
