@@ -18,7 +18,9 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axiosapi from '@/plugins/axios.js';
 import Circle from '@/components/order/Circle.vue';
+import { useCart } from '@/services/cartService';
 
+const { updateCartCount } = useCart();
 const route = useRoute()
 const router = useRouter()
 const isLoading = ref(true)
@@ -39,6 +41,7 @@ onMounted(async () => {
         status.value = response.data.status
         if (status.value === 'success') {
             // 支付成功，跳轉到訂單頁面
+            updateCartCount(0);
             setTimeout(() => router.push({
                 name: 'profile-ling',
                 params: { initialView: 'order' }

@@ -53,7 +53,9 @@ import { onMounted } from 'vue';
 import useUserStore from "@/stores/user.js"
 import { watch } from 'vue';
 import Swal from 'sweetalert2';
+import { useCart } from '@/services/cartService';
 
+const { fetchCartCount } = useCart();
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
@@ -66,6 +68,7 @@ const cauculate = (item) => {
 
 const updateParent = () => {
     emit('update:carItems', [...props.cartItems]);
+    fetchCartCount(user)
 }
 
 const increaseQuantity = (item) => {

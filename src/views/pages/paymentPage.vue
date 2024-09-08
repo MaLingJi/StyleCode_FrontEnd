@@ -88,7 +88,9 @@ const lpPayment = async () => {
                 .then((result) => {
                     // 確保 SweetAlert 的計時器結束後才執行路由跳轉
                     if (result.isConfirmed) {
+                        
                         window.location.href = response.data
+                        
                     }
                 })
         } else {
