@@ -121,7 +121,6 @@
                             &times;
                         </button>
                     </div>
-                    {{ tags }}
                 </div>
 
             </div>

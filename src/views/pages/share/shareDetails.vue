@@ -24,9 +24,16 @@
                 </div>
                 <div class="ts-content is-vertically-padded">
                     <div class="ts-wrap is-center-aligned">
-                        <button class="ts-button is-outlined is-start-icon"><span
-                                class="ts-icon is-star-icon"></span>1</button>
-                        <button class="ts-button is-start-icon"><span class="ts-icon is-heart-icon"></span>1</button>
+                        <button class="ts-button is-start-icon" :class="{ 'is-outlined': !isCollected }"
+                            @click="toggleCollection">
+                            <span class="ts-icon is-star-icon" :class="{ 'is-filled': isCollected }"></span>
+                            {{ collectionCount }}
+                        </button>
+                        <button class="ts-button is-start-icon" :class="{ 'is-outlined': !isLiked }"
+                            @click="toggleLike">
+                            <span class="ts-icon is-heart-icon" :class="{ 'is-filled': isLiked }"></span>
+                            {{ likeCount }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -35,12 +42,18 @@
             <div class="ts-column is-9-wide">
                 <div class="ts-box">
                     <div class="ts-content">
-                        <RouterLink :to="{  
+                        <RouterLink :to="{
                             name: 'edit-share-link',
                             params: { postId: route.params.postId }
                         }">
                             <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
                         </RouterLink>
+                        <div class="ts-grid is-middle-aligned">
+                            <div class="ts-image">
+                                <img :src="userPhoto" width="40">
+                            </div>
+                            <h3>{{ post.userName || "Unknown User" }}</h3>
+                        </div>
                         <h4 class="ts-header">{{ post.postTitle }}</h4>
                         <!-- <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p> -->
                         <p><i class="ts-icon is-clock-icon"></i> {{ formatDate(post.createdAt) }}</p>
@@ -88,17 +101,75 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
+import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
 
 const userStore = useUserStore();
 const productStore = useProductStore();
 const route = useRoute();
 const post = ref({});
+const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 const currentImageIndex = ref(0);
 
+const userPhoto = ref('');
+const collectionCount = ref(0); // 收藏數量
+const isCollected = ref(false); // 當前用戶是否已收藏
+const likeCount = ref(0); // Like 數量
+const isLiked = ref(false); // 當前用戶是否已 Like
+
 const productTags = ref([]);
 const tags = ref([]);
+
+const toggleCollection = () => {
+    axiosapi.post('/collections/toggle', {
+        userId: userStore.userId,
+        postId: route.params.postId
+    })
+        .then(response => {
+            isCollected.value = !isCollected.value;
+            collectionCount.value += isCollected.value ? 1 : -1;
+
+            Swal.fire({
+                text: response.data,
+                icon: 'success',
+                confirmButtonText: '確認',
+            });
+        })
+        .catch(error => {
+            console.error('Error toggling collection:', error);
+            Swal.fire({
+                text: '操作失敗，請稍後重試。',
+                icon: 'error',
+                confirmButtonText: '確認',
+            });
+        });
+};
+
+const toggleLike = () => {
+    axiosapi.post('/likes/toggle', {
+        userId: userStore.userId,
+        postId: route.params.postId
+    })
+        .then(response => {
+            isLiked.value = !isLiked.value;
+            likeCount.value += isLiked.value ? 1 : -1;
+
+            Swal.fire({
+                text: response.data,
+                icon: 'success',
+                confirmButtonText: '確認',
+            });
+        })
+        .catch(error => {
+            console.error('Error toggling like:', error);
+            Swal.fire({
+                text: '操作失敗，請稍後重試。',
+                icon: 'error',
+                confirmButtonText: '確認',
+            });
+        });
+};
 
 const filterProductsBySubcategory = (subcategoryId, categoryId) => {
     productStore.fetchProductsBySubcategory(categoryId, subcategoryId);
@@ -138,6 +209,32 @@ const setCurrentImage = (index) => {
 
 onMounted(() => {
     const postId = route.params.postId;
+
+    axiosapi.get(`/collections/${userStore.userId}/${postId}`)
+        .then(response => {
+            isCollected.value = true;
+            console.log("isCollected: ", isCollected.value)
+        })
+        .catch(error => {
+            if (error.response && error.response.status === 404) {
+                isCollected.value = false;
+            } else {
+                console.error('Error checking collection status:', error);
+            }
+        });
+
+    axiosapi.get(`/likes/${userStore.userId}/${postId}`)
+        .then(response => {
+            isLiked.value = true;
+        })
+        .catch(error => {
+            if (error.response && error.response.status === 404) {
+                isLiked.value = false;
+            } else {
+                console.error('Error checking collection status:', error);
+            }
+        });
+
     axiosapi.get(`/post/${postId}`)
         .then(response => {
             post.value = response.data;
@@ -145,25 +242,17 @@ onMounted(() => {
             // images.value = post.value.images || [];
             productTags.value = post.value.productTags || [];
             tags.value = post.value.postTags || ["Taiwan", "Taichung"];
-            console.log("tag: ", tags.value);
-            console.log("productTags: ", productTags.value);
+            // console.log("tag: ", tags.value);
+            // console.log("productTags: ", productTags.value);
+            collectionCount.value = post.value.collections.length;
+            likeCount.value = post.value.likes.length;
+            // console.log("collectionCount: ", collectionCount.value);
+            userPhoto.value = `${userPhotoPath}${post.value.userPhoto}`;
+            // console.log(userPhoto.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);
         });
-
-    // axiosapi.get(`/images/post/${postId}`)
-    //     .then(response => {
-    //         images.value = response.data;
-    //         console.log("images.value: ", images.value);
-
-    //         images.value.forEach(image => {
-    //             console.log(image.imgUrl);
-    //         });
-    //     })
-    //     .catch(error => {
-    //         console.error('Error loading post:', error);
-    //     });
 });
 
 function formatDate(date) {

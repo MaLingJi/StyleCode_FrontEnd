@@ -15,7 +15,7 @@
                 :key="post.postId"
                 class="column"
             >
-                <ShareCard  :post="post" style="cursor: pointer"/>
+                <ShareCard :post="post" style="cursor: pointer"/>
             </div>
         </div>
     </div>
@@ -49,7 +49,7 @@ function callFind() {
     axiosapi.get("/post").then(function (response) {
         // console.log("response: ", response);
 
-        posts.value = response.data;
+        posts.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         console.log("posts.value: ", posts.value);
 
         setTimeout(function () {
