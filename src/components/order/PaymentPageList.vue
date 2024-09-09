@@ -52,7 +52,7 @@ const formatCurrency = (amount) => {
 
 </script>
 
-<style>
+<style scoped>
 .custom-number-input {
 
     /* 設置寬度 */

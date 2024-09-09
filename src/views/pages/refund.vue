@@ -185,7 +185,7 @@ const getOrderDetails = async (orderId) => {
 
 </script>
 
-<style>
+<style scoped>
 .ts-box {
     border-radius: 8px;
 }
