@@ -322,6 +322,7 @@ function submitPost() {
         Swal.fire({
             text: '標題和內容不能為空',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
         return;
@@ -331,6 +332,7 @@ function submitPost() {
         Swal.fire({
             text: '至少上傳一張圖片',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
         return;
@@ -387,6 +389,7 @@ function submitPost() {
             Swal.fire({
                 text: '發文成功',
                 icon: 'success',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             }).then(() => {
                 router.push('/share'); // 跳轉到文章列表頁面或其他頁面
@@ -397,6 +400,7 @@ function submitPost() {
             Swal.fire({
                 text: '發文失敗：' + error.message,
                 icon: 'error',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             });
         });

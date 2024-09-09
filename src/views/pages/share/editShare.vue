@@ -341,6 +341,7 @@ function submitPost() {
         Swal.fire({
             text: '标题和内容不能为空',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '确认',
         });
         return;
@@ -399,6 +400,7 @@ function submitPost() {
             Swal.fire({
                 text: '更新成功',
                 icon: 'success',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             }).then(() => {
                 router.push(`/shareDetails/${route.params.postId}`); // 跳转到文章详情页
@@ -409,6 +411,7 @@ function submitPost() {
             Swal.fire({
                 text: '更新失敗：' + error.message,
                 icon: 'error',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             });
         });

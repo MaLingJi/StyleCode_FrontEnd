@@ -111,6 +111,7 @@ const toggleCollection = () => {
       Swal.fire({
         text: response.data,
         icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
         confirmButtonText: '確認',
       });
     })
@@ -119,6 +120,7 @@ const toggleCollection = () => {
       Swal.fire({
         text: '操作失敗，請稍後重試。',
         icon: 'error',
+        confirmButtonColor: 'rgb(35 40 44)',
         confirmButtonText: '確認',
       });
     });
@@ -135,6 +137,7 @@ const toggleLike = () => {
       Swal.fire({
         text: response.data,
         icon: 'success',
+        confirmButtonColor: 'rgb(35 40 44)',
         confirmButtonText: '確認',
       });
     })
@@ -143,6 +146,7 @@ const toggleLike = () => {
       Swal.fire({
         text: '操作失敗，請稍後重試。',
         icon: 'error',
+        confirmButtonColor: 'rgb(35 40 44)',
         confirmButtonText: '確認',
       });
     });
