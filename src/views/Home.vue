@@ -79,8 +79,11 @@ onMounted(async () => {
 
 async function loadImages() {
   for (const post of posts.value) {
+    const validImages = post.images.filter(image => !image.deletedAt);
+    // console.log("validImage: ", validImages);
+    // console.log("0:", validImages[0].imgUrl);
     if (post.imageUrls && post.imageUrls.length > 0) {
-      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${post.imageUrls[0]}`;
+      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${validImages[0].imgUrl}`;
     } else {
       imageUrls.value[post.postId] = '../../../public/No_image.png';
     }

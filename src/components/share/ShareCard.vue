@@ -54,7 +54,7 @@ const isLiked = ref(false);
 
 onMounted(() => {
   if (props.post && props.post.images && props.post.images.length > 0) {
-    // 過濾掉 deletedAt 不為 null 的圖片
+    
     const validImages = props.post.images.filter(image => !image.deletedAt);
 
     if (validImages.length > 0) {

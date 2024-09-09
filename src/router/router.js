@@ -28,7 +28,7 @@ import refundReview from "@/views/pages/refundReview.vue";
 import paymentPage from "@/views/pages/paymentPage.vue";
 
 import productDetails from '@/views/pages/product/productDetails.vue';
-import addProduct from "@/components/product/AddProduct.vue";
+import addProduct from "@/components/product/addProduct.vue";
 import Shop from "@/views/pages/product/shop.vue";
 const routes = [
   { name: "home-link", path: "/", component: Home },
