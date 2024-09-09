@@ -7,8 +7,8 @@
                 <input type="text" id="title" v-model="post.postTitle" disabled />
             </div>
             <div>
-                <label for="content">內容:</label>
-                <textarea id="content" v-model="post.contentText" class="textarea" rows="4"></textarea>
+                <H3><label for="content">內容:</label></H3>
+                <a-textarea id="content" v-model:value="post.contentText" class="textarea" rows="4" show-count :maxlength="255" ></a-textarea>
             </div>
             <div class="clearfix">
                 <a-upload

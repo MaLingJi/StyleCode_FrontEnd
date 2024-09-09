@@ -46,6 +46,8 @@
             :rows="4" 
             placeholder="新增評論..." 
             class="comment-textarea"
+            show-count 
+            :maxlength="255"
           />
         </a-form-item>
         <a-form-item>
@@ -129,7 +131,7 @@ const handleSubmit = async () => {
         commentId: response.data.commentId,
         commentText: newComment.value, //確保命名是commentText
         post: { postId: props.postId },
-        userDetail: { id: userId, userName: userStore.userName },
+        userDetail: { id: userId, userName: userName },
         createdAt: new Date().toISOString(),
         isEditing: false,
         editContent: '',
