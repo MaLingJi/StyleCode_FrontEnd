@@ -322,6 +322,7 @@ function submitPost() {
         Swal.fire({
             text: '標題和內容不能為空',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
         return;
@@ -331,6 +332,7 @@ function submitPost() {
         Swal.fire({
             text: '至少上傳一張圖片',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
         return;
@@ -348,9 +350,14 @@ function submitPost() {
             contentText: contentText.value,
             contentType: 'share',
             userId: userStore.userId,
-            productTags: productTags.value
-        },
-        tagNames: tags.value
+            productTags: productTags.value,
+            postTags: tags.value.map(tag => ({
+                tagId: null, // 如果是新標籤，tagId 可以設為 null，後端會自動生成
+                postId: null, // 這裡 postId 也可以設為 null 或後端自行生成
+                tagName: tag
+            }))
+        }
+        
     };
 
     console.log("postData", postData);
@@ -358,6 +365,7 @@ function submitPost() {
     // 1. 先發送發文請求
     axiosapi.post("/post/postwithtags", postData)
         .then(postResponse => {
+            console.log("postResponse.data: ", postResponse.data)
             const postId = postResponse.data.postId;
             console.log('User ID: ', userStore.userId);
             console.log('Post ID: ', postId);
@@ -381,6 +389,7 @@ function submitPost() {
             Swal.fire({
                 text: '發文成功',
                 icon: 'success',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             }).then(() => {
                 router.push('/share'); // 跳轉到文章列表頁面或其他頁面
@@ -391,6 +400,7 @@ function submitPost() {
             Swal.fire({
                 text: '發文失敗：' + error.message,
                 icon: 'error',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             });
         });

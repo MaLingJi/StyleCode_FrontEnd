@@ -52,8 +52,8 @@
         </div>
       </a>
       <div class="ts-menu is-dense is-small" style="opacity: 0.8">
-        <a href="#!" class="item">我的文章</a>
-        <a href="#!" class="item">收藏文章</a>
+        <a href="#!" class="item" @click="switchComps(myPostList)">我的文章</a>
+        <a href="#!" class="item" @click="switchComps(myLikePost)">收藏文章</a>
       </div>
     </div>
     <div class="cell is-fluid is-scrollable is-secondary">
@@ -191,6 +191,8 @@ import userProfile from "@/components/profile/userProfile.vue";
 import card from "@/components/profile/card.vue";
 import order from "../pages/order.vue";
 import notificationsList from "@/components/profile/notificationsList.vue";
+import myPostList from "@/components/profile/myPostList.vue";
+import myLikePost from "@/components/profile/myLikePost.vue";
 
 import {
   shallowRef,

@@ -8,14 +8,15 @@
         </div>
     </div>
     <div class="ts-divider"></div>
-    <div class="ts-container">
-        <div class="ts-grid is-3-columns is-relaxed is-stretched">
+    <div class="ts-container" >
+        <div class="ts-grid is-3-columns is-relaxed is-stretched"  >
             <div 
                 v-for="post in filteredPosts"
                 :key="post.postId"
                 class="column"
+               style="margin: 0px 0px 10px 0px ;"
             >
-                <ShareCard  :post="post" style="cursor: pointer"/>
+                <ShareCard :post="post" style="cursor: pointer"/>
             </div>
         </div>
     </div>
@@ -49,7 +50,7 @@ function callFind() {
     axiosapi.get("/post").then(function (response) {
         // console.log("response: ", response);
 
-        posts.value = response.data;
+        posts.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         console.log("posts.value: ", posts.value);
 
         setTimeout(function () {
@@ -61,6 +62,7 @@ function callFind() {
             text: '失敗：' + error.message,
             icon: 'error',
             allowOutsideClick: false,
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
     });

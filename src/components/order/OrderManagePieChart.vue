@@ -1,5 +1,5 @@
 <template>
-    <div class="ts-box" >
+    <div class="ts-box">
         <Pie :data="data" :options="options" />
     </div>
 </template>
@@ -45,7 +45,9 @@ const data = computed(() => {
         labels: ordersData.value.map(item => item.categoryName), //把上面拿到的依序拿出來
         datasets: [
             {
-                backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+                backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16', '#FFA07A',
+                    '#20B2AA', '#FF69B4', '#8A2BE2', '#00FA9A', '#FF6347',
+                    '#1E90FF', '#FFD700', '#32CD32', '#FF4500', '#9370DB'],
                 data: ordersData.value.map((item) => item.totalQuantity) //把上面拿到的依序拿出來
             }
         ]
@@ -54,8 +56,7 @@ const data = computed(() => {
 </script>
 
 <style>
-
-.ts-box{
+.ts-box {
     margin-top: 5px;
 }
 </style>

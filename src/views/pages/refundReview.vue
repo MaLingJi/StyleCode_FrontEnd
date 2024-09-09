@@ -1,5 +1,5 @@
-/<template>
-    <div class="ts-container" style="margin-top: 10px;">
+<template>
+    <div class="ts-container status-selection">
         <div class="ts-selection is-fluid">
             <label class="item">
                 <input type="radio" name="language" value="1" v-model="status" />
@@ -22,7 +22,6 @@
                         <th>總金額</th>
                         <th>付款方式</th>
                         <th></th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -61,16 +60,16 @@
                                         </tbody>
                                     </table>
 
-                                    <div class="ts-box" style="margin-top: 20px;">
-                                        <div class="ts-content"
-                                            style="display: flex; justify-content: space-between;align-items: center;">
+                                    <div class="ts-box reason-box">
+                                        <div class="ts-content reason-content">
                                             <span class="ts-text">{{ order.refundReason }} </span>
                                             <div class="ts-wrap" v-if="order.refundStatus == 1">
                                                 <button class="ts-button" @click="agreeRefund(order)">同意</button>
-                                                <button class="ts-button" @click="rejectRefund(order)" style="background-color:#9e9e9e;border: 0;">拒絕</button>
+                                                <button class="ts-button reject-button"
+                                                    @click="rejectRefund(order)">拒絕</button>
                                             </div>
                                             <div v-else>
-                                                狀態:{{getStatusText(order.status)}}
+                                                狀態:{{ getStatusText(order.status) }}
                                             </div>
                                         </div>
                                     </div>
@@ -90,7 +89,6 @@
             </table>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -218,11 +216,30 @@ const rejectRefund = async (order) => {
 };
 
 const getStatusText = (status) => {
-    switch(status) {
+    switch (status) {
         case 1: return '拒絕退款';
         case 3: return '同意退款';
     }
 }
 </script>
 
-<style></style>
+<style scoped>
+.status-selection {
+    margin-top: 10px;
+}
+
+.reason-box {
+    margin-top: 20px;
+}
+
+.reason-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reject-button {
+    background-color: #9e9e9e;
+    border: 0;
+}
+</style>

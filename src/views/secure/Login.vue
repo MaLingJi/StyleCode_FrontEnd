@@ -129,6 +129,7 @@ function login() {
           const expirationTime = new Date(
             new Date().getTime() + 100 * 60 * 1000
           ); //100分鐘
+          userStore.setExpirationTime(expirationTime.toISOString()); // 使用ISO字串格式保存
           userStore.setUserId(response.data.userId);
           userStore.setUserToken(response.data.token);
           userStore.setPermissions(response.data.permissions);

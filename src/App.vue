@@ -21,7 +21,14 @@ import useUserStore from "@/stores/user.js";
 import axiosapi from "@/plugins/axios.js";
 import Footerpage from "@/views/Footerpage.vue";
 
+import { provideCart } from './services/cartService'
+provideCart()
+
+
+
 const userStore = useUserStore();
+
+
 axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
 </script>
 <style>

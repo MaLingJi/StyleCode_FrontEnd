@@ -116,7 +116,10 @@ import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js"
 import Swal from "sweetalert2";
 import { useRouter } from 'vue-router';
+import { useCart } from '@/services/cartService';
 
+const userStore = useUserStore();
+const { fetchCartCount } = useCart();
 const route = useRoute(); // 使用 vue-router 獲取當前路由
 const product = ref({}); // 用於存儲產品數據
 const selectedColor = ref(""); // 存儲選擇的顏色
@@ -294,6 +297,7 @@ const addToCart = () => {
         timer: 1000,
         timerProgressBar: true,
       })
+      fetchCartCount(userStore.userId);
     } else {
       Swal.fire({
         icon: 'error',

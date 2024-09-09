@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="ts-grid thumbnail-grid">
-                    <div class="column is-2-wide" v-for="(image, index) in post.images" :key="index">
+                    <div class="column is-2-wide" v-for="(image, index) in filteredImages" :key="index">
                         <div class="ts-image is-middle-aligned thumbnail" @click="setCurrentImage(index)"
                             :class="{ active: currentImageIndex === index }">
                             <img :src="getImageUrl(image.imgUrl)" />
@@ -24,9 +24,16 @@
                 </div>
                 <div class="ts-content is-vertically-padded">
                     <div class="ts-wrap is-center-aligned">
-                        <button class="ts-button">收藏</button>
-                        <button class="ts-button"><i class="ts-icon is-heart-icon"></i> 10</button>
-                        <!-- <button class="ts-button"><i class="ts-icon is-comment-icon"></i> 0</button> -->
+                        <button class="ts-button is-start-icon" :class="{ 'is-outlined': !isCollected }"
+                            @click="toggleCollection">
+                            <span class="ts-icon is-star-icon" :class="{ 'is-filled': isCollected }"></span>
+                            {{ collectionCount }}
+                        </button>
+                        <button class="ts-button is-start-icon" :class="{ 'is-outlined': !isLiked }"
+                            @click="toggleLike">
+                            <span class="ts-icon is-heart-icon" :class="{ 'is-filled': isLiked }"></span>
+                            {{ likeCount }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -35,19 +42,23 @@
             <div class="ts-column is-9-wide">
                 <div class="ts-box">
                     <div class="ts-content">
+                        <RouterLink :to="{
+                            name: 'edit-share-link',
+                            params: { postId: route.params.postId }
+                        }">
+                            <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
+                        </RouterLink>
+                        <div class="ts-grid is-middle-aligned">
+                            <div class="ts-image">
+                                <img :src="userPhoto" width="40">
+                            </div>
+                            <h3>{{ post.userName || "Unknown User" }}</h3>
+                        </div>
                         <h4 class="ts-header">{{ post.postTitle }}</h4>
                         <!-- <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p> -->
                         <p><i class="ts-icon is-clock-icon"></i> {{ formatDate(post.createdAt) }}</p>
 
                         <div class="ts-divider"></div>
-
-                        <!-- <h5 class="ts-header">穿著服飾 ({{ productTags.length }})</h5>
-                        <div class="ts-list" v-if="productTags.length">
-                            <div class="ts-item" v-for="productTag in productTags" :key="productTag.id">
-                                <div class="ts-content">{{ productTag.productName }}</div>
-                                <div class="ts-meta">{{ productTag.subcategoryName }}</div>
-                            </div>
-                        </div> -->
 
                         <h5 class="ts-header">分享單品 ({{ productTags.length }})</h5>
                         <div v-if="productTags.length" class="product-tags-container">
@@ -70,8 +81,8 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- <div class="ts-divider"></div> -->
 
-                        <div class="ts-divider"></div>
 
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
@@ -90,15 +101,79 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
+import Swal from 'sweetalert2';
+import useUserStore from "@/stores/user.js"
 
+const userStore = useUserStore();
 const productStore = useProductStore();
 const route = useRoute();
 const post = ref({});
+const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 const currentImageIndex = ref(0);
 
+const userPhoto = ref('');
+const collectionCount = ref(0); // 收藏數量
+const isCollected = ref(false); // 當前用戶是否已收藏
+const likeCount = ref(0); // Like 數量
+const isLiked = ref(false); // 當前用戶是否已 Like
+
 const productTags = ref([]);
 const tags = ref([]);
+
+const toggleCollection = () => {
+    axiosapi.post('/collections/toggle', {
+        userId: userStore.userId,
+        postId: route.params.postId
+    })
+        .then(response => {
+            isCollected.value = !isCollected.value;
+            collectionCount.value += isCollected.value ? 1 : -1;
+
+            Swal.fire({
+                text: response.data,
+                icon: 'success',
+                confirmButtonColor: 'rgb(35 40 44)',
+                confirmButtonText: '確認',
+            });
+        })
+        .catch(error => {
+            console.error('Error toggling collection:', error);
+            Swal.fire({
+                text: '操作失敗，請稍後重試。',
+                icon: 'error',
+                confirmButtonColor: 'rgb(35 40 44)',
+                confirmButtonText: '確認',
+            });
+        });
+};
+
+const toggleLike = () => {
+    axiosapi.post('/likes/toggle', {
+        userId: userStore.userId,
+        postId: route.params.postId
+    })
+        .then(response => {
+            isLiked.value = !isLiked.value;
+            likeCount.value += isLiked.value ? 1 : -1;
+
+            Swal.fire({
+                text: response.data,
+                icon: 'success',
+                confirmButtonColor: 'rgb(35 40 44)',
+                confirmButtonText: '確認',
+            });
+        })
+        .catch(error => {
+            console.error('Error toggling like:', error);
+            Swal.fire({
+                text: '操作失敗，請稍後重試。',
+                icon: 'error',
+                confirmButtonColor: 'rgb(35 40 44)',
+                confirmButtonText: '確認',
+            });
+        });
+};
 
 const filterProductsBySubcategory = (subcategoryId, categoryId) => {
     productStore.fetchProductsBySubcategory(categoryId, subcategoryId);
@@ -111,8 +186,12 @@ const getImageUrl = (imageName) => {
     return "../../../public/No_image.png";
 };
 
+const filteredImages = computed(() => {
+    return post.value.images?.filter(image => !image.deletedAt) || [];
+});
+
 const currentImage = computed(() => {
-    return post.value.images?.[currentImageIndex.value]?.imgUrl;
+    return filteredImages.value[currentImageIndex.value]?.imgUrl;
 });
 
 // 照片輪播 下一張照片
@@ -134,6 +213,32 @@ const setCurrentImage = (index) => {
 
 onMounted(() => {
     const postId = route.params.postId;
+
+    axiosapi.get(`/collections/${userStore.userId}/${postId}`)
+        .then(response => {
+            isCollected.value = true;
+            console.log("isCollected: ", isCollected.value)
+        })
+        .catch(error => {
+            if (error.response && error.response.status === 404) {
+                isCollected.value = false;
+            } else {
+                console.error('Error checking collection status:', error);
+            }
+        });
+
+    axiosapi.get(`/likes/${userStore.userId}/${postId}`)
+        .then(response => {
+            isLiked.value = true;
+        })
+        .catch(error => {
+            if (error.response && error.response.status === 404) {
+                isLiked.value = false;
+            } else {
+                console.error('Error checking collection status:', error);
+            }
+        });
+
     axiosapi.get(`/post/${postId}`)
         .then(response => {
             post.value = response.data;
@@ -141,25 +246,17 @@ onMounted(() => {
             // images.value = post.value.images || [];
             productTags.value = post.value.productTags || [];
             tags.value = post.value.postTags || ["Taiwan", "Taichung"];
-            console.log("tag: ", tags.value);
-            console.log("productTags: ", productTags.value);
+            // console.log("tag: ", tags.value);
+            // console.log("productTags: ", productTags.value);
+            collectionCount.value = post.value.collections.length;
+            likeCount.value = post.value.likes.length;
+            // console.log("collectionCount: ", collectionCount.value);
+            userPhoto.value = `${userPhotoPath}${post.value.userPhoto}`;
+            // console.log(userPhoto.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);
         });
-
-    // axiosapi.get(`/images/post/${postId}`)
-    //     .then(response => {
-    //         images.value = response.data;
-    //         console.log("images.value: ", images.value);
-
-    //         images.value.forEach(image => {
-    //             console.log(image.imgUrl);
-    //         });
-    //     })
-    //     .catch(error => {
-    //         console.error('Error loading post:', error);
-    //     });
 });
 
 function formatDate(date) {
