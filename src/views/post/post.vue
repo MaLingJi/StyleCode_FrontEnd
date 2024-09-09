@@ -5,15 +5,17 @@
         <a-typography-title :level="2">新增文章</a-typography-title>
         <a-form layout="vertical" @submit.prevent="handleSubmit" class="form">
             <a-form-item label="標題">
-            <a-input v-model:value="title" placeholder="輸入標題" class="input-large" />
+            <a-input v-model:value="title" placeholder="輸入標題" class="input-large" :maxlength="30" show-count/>
             </a-form-item>
 
             <a-form-item label="敘述">
             <a-textarea
                 v-model:value="description"
                 placeholder="輸入敘述"
-                :rows="5"
+                rows="5"
                 class="textarea"
+                show-count 
+                :maxlength="230"
             />
             </a-form-item>
 

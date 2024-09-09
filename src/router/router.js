@@ -13,7 +13,7 @@ import cart from "@/views/pages/cart.vue";
 import order from "@/views/pages/order.vue";
 import newShare from "@/views/pages/share/newShare.vue";
 import editShare from "@/views/pages/share/editShare.vue";
-import post from "@/views/pages/post.vue";
+import post from "@/views/post/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
