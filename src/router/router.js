@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import useUserStore from "@/stores/user.js";
 
 import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
@@ -34,7 +35,6 @@ const routes = [
   { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },
   { name: "403-link", path: "/403", component: Forbidden },
   
-  { name: "secure-login-link", path: "/secure/login", component: Login },
   { name: "forum-link", path: "/forum", component: Forum },
   { name: "backstage-link", path: "/backstage", component: backstage },
   { name: "share-link", path: "/share", component: share },
@@ -44,10 +44,10 @@ const routes = [
   
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
-  { name: "profile-ling", path: "/secure/profile/:initialView?", component: profile ,  props: true},
+  { name: "profile-ling", path: "/secure/profile/:initialView?", component: profile ,  props: true, meta: { requiresAuth: true }},
   
   { name: "comment-link", path: "/comment/:id", component: comment },
-  { name: "editPost-link", path: "/editPost/:id", component: editPost},
+  { name: "editPost-link", path: "/editPost/:id", component: editPost, meta: { requiresAuth: true }},
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post },
   
@@ -73,6 +73,17 @@ const router = createRouter({
   routes: routes,
 });
 
+//登入判斷 上面網址列 需要判斷是否登入網頁 + meta: { requiresAuth: true }
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  const isAuthenticated = userStore.isLogedin
+  const requiresAuth = to.meta.requiresAuth
 
+  if (requiresAuth && !isAuthenticated) {
+    next('/403')
+  } else {
+    next()
+  }
+})
 
 export default router;

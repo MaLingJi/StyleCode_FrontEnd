@@ -3,17 +3,23 @@
     <section class="post-content">
       <div v-if="loading">載入中...</div>
       <div v-else>
-        <h1>{{ post.postTitle }}</h1>
+        <h1 style="display: inline-block;">{{ post.postTitle }}</h1>
+        <span class="post-timestamp" style="margin-left: 10px;">
+          <a-tooltip :title="dayjs(post.createdAt).format('YYYY-MM-DD HH:mm:ss')">
+            <span>{{ dayjs(post.createdAt).fromNow() }}</span>
+          </a-tooltip>
+        </span>
         <p>{{ post.contentText }}</p>
 
         <!-- 顯示圖片 -->
         <div v-if="Array.isArray(post.images) && post.images.length > 0" class="post-images">
-          <img 
+          <a-image 
             v-for="image in post.images" 
             :key="image.imageId" 
             :src="image.imgUrl" 
             alt="Post Image" 
             class="post-image"
+            :width="200" 
           />
         </div>
 
@@ -40,19 +46,20 @@
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ collects }}</span>
           </span>
-          <span key="comment-basic-share">
+          <!-- <span key="comment-basic-share">
             <a-tooltip title="Share">
               <share-alt-outlined @click="toggleShare" style="color: #1890ff;" />
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ shares }}</span>
-          </span>
+          </span> -->
+          
         </div>
         
         <!-- 編輯按鈕 -->
-        <a-button type="primary" @click="() => goToEditPage(post.postId)">編輯</a-button>
-
-        <!-- 嵌入評論組件 -->
-        <comment :post-id="postId" />
+        <a-button v-if="post.userId === userId" type="primary" 
+          @click="() => goToEditPage(post.postId)">編輯</a-button>
+        <!-- 鑲入留言列表和新增留言區 -->
+        <comment :post-id="postId"></comment>
       </div>
     </section>
   </div>
@@ -65,12 +72,18 @@ import axiosapi from "@/plugins/axios.js";
 import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
 import comment from './comment.vue';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
+dayjs.locale('zh-tw'); // 設置語言為中文
 
 const post = ref({});
 const likes = ref(0);
 const collects = ref(0);
 const shares = ref(0);
 const loading = ref(true);
+const isLoading = ref(false); // 新增的變量，控制載入狀態
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 
 const userStore = useUserStore();
@@ -83,9 +96,14 @@ const postId = Number(route.params.id);
 const fetchPostData = async () => {
   try {
     const response = await axiosapi.get(`/post/${postId}`);
+    console.log("文章数据:",response.data); 
     post.value = response.data;
-    likes.value = post.value.likesCount || 0; 
-    collects.value = post.value.collectionsCount || 0;
+
+    likes.value = post.value.likes.length;
+    post.value.isLiked = post.value.likes.some(like => like.userId === userId); 
+    collects.value = post.value.collections.length; 
+    post.value.isCollected = post.value.collections.some(collection => collection.userId === userId);
+
     if (Array.isArray(post.value.images)) {
       post.value.images = post.value.images
       .filter(image => !image.deletedAt)  // 過濾已刪除的圖片
@@ -106,24 +124,6 @@ const goToEditPage = (postId) => {
   router.push({ name: "editPost-link", params: { id: postId } });
 };
 
-// 監聽路由參數變化
-// watch(() => route.params.id, async (newId) => {
-//   if (newId) {
-//     loading.value = true; // 開始載入
-//     await fetchPostData();
-//     await fetchComments();
-//     loading.value = false; // 完成載入
-//   }
-// });
-
-// // 初始載入
-// onMounted(async () => {
-//   loading.value = true; // 開始載入
-//   await fetchPostData();
-//   await fetchComments();
-//   loading.value = false; // 完成載入
-// });
-
 // // 處理圖片載入錯誤
 // const handleImageError = (event: Event) => {
 //   const target = event.target as HTMLImageElement;
@@ -132,59 +132,62 @@ const goToEditPage = (postId) => {
 
 // 點擊喜歡
 const toggleLike = async () => {
-  if (post.value.isLiked) {
-    // 用戶已經點讚，執行取消讚
-    try {
-      await axiosapi.delete(`/likes/${postId}/${userId}`);
-      post.value.isLiked = false;
-      likes.value = Math.max(likes.value - 1, 0);
-    } catch (error) {
-      console.error("取消喜歡失敗:", error.response ? error.response.data : error.message);
+  try {
+    const response = await axiosapi.post("/likes/toggle", {
+      userId: userId,
+      postId: postId
+    });
+    if (response.data === "按讚成功") {
+      post.value.isLiked = true; 
+      likes.value += 1; 
+    } else if (response.data === "按讚收回成功") {
+      post.value.isLiked = false; 
+      likes.value -= 1; 
     }
-  } else {
-    // 用戶尚未點讚，執行新增讚
-    try {
-      await axiosapi.post(`/likes`, { posts: { postId: postId }, userDetail: { id: userStore.userId } });
-      post.value.isLiked = true;
-      likes.value++;
-    } catch (error) {
-      console.error("更新喜歡狀態失敗:", error.response ? error.response.data : error.message);
-    }
+    console.log("喜歡:", response.data);
+  } catch (error) {
+    console.error("喜歡操作失败:", error);
   }
 };
 
 // 點擊收藏
 const toggleCollect = async () => {
-  post.value.isCollected = !post.value.isCollected;
-  collects.value += post.value.isCollected ? 1 : -1;
-
-  if (post.value.isCollected) {
-    try {
-      await axiosapi.post(`/collections`, {
-        post: { postId: postId },
-        userDetail: { id: userStore.userId },
-      });
-    } catch (error) {
-      console.error("添加收藏失敗:", error);
+  // 重複邏輯需要多一個變量 isLoading
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const response = await axiosapi.post("/collections/toggle", {
+      userId: userId,
+      postId: postId
+    });
+    if (response.data === "收藏成功") {
+      if (!post.value.isCollected) {
+        post.value.isCollected = true; 
+        collects.value += 1; 
+      }
+    } else if (response.data === "收回收藏成功") {
+      if (post.value.isCollected) {
+        post.value.isCollected = false; 
+        collects.value -= 1; 
+      }
     }
-  } else {
-    try {
-      await axiosapi.delete(`/collections/${postId}/${userId}`);
-    } catch (error) {
-      console.error("取消收藏失敗:", error);
-    }
+    console.log("收藏響應:", response.data);
+  } catch (error) {
+    console.error("收藏操作失敗:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
 // 點擊分享
-const toggleShare = async () => {
-  try {
-    await axiosapi.post(`/shares`, { posts: { postId: postId }, userDetail: { id: userStore.userId } });
-    shares.value += 1;
-  } catch (error) {
-    console.error("分享失敗:", error.response ? error.response.data : error.message);
-  }
-};
+// const toggleShare = async () => {
+//   try {
+//     await axiosapi.post(`/shares`, { posts: { postId: postId }, userDetail: { id: userStore.userId } });
+//     shares.value += 1;
+//   } catch (error) {
+//     console.error("分享失敗:", error.response ? error.response.data : error.message);
+//   }
+// };
 
 // 監聽路由參數變化
 watch(() => route.params.id, async (newId) => {

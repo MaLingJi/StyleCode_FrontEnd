@@ -52,8 +52,8 @@
         </div>
       </a>
       <div class="ts-menu is-dense is-small" style="opacity: 0.8">
-        <a href="#!" class="item">我的文章</a>
-        <a href="#!" class="item">收藏文章</a>
+        <a href="#!" class="item" @click="switchComps(myPostList)">我的文章</a>
+        <a href="#!" class="item" @click="switchComps(myLikePost)">收藏文章</a>
       </div>
     </div>
     <div class="cell is-fluid is-scrollable is-secondary">
@@ -173,7 +173,11 @@
           >
             更改密碼
           </button>
-          <button class="ts-button is-outlined" data-dialog="updatePwdModal">
+          <button
+            class="ts-button is-outlined"
+            data-dialog="updatePwdModal"
+            @click="cancelChange"
+          >
             取消
           </button>
         </div>
@@ -187,6 +191,8 @@ import userProfile from "@/components/profile/userProfile.vue";
 import card from "@/components/profile/card.vue";
 import order from "../pages/order.vue";
 import notificationsList from "@/components/profile/notificationsList.vue";
+import myPostList from "@/components/profile/myPostList.vue";
+import myLikePost from "@/components/profile/myLikePost.vue";
 
 import {
   shallowRef,
@@ -378,6 +384,7 @@ const isLoginDisabled = computed(function () {
 });
 
 async function updatePwd() {
+  document.querySelector("#updatePwdModal").close();
   const result = await Swal.fire({
     title: "確認更新密碼",
     text: `您確定要更改密碼嗎？`,
@@ -396,7 +403,7 @@ async function updatePwd() {
       );
 
       if (response.data.success) {
-        document.querySelector("#updatePwdModal").close();
+        // document.querySelector("#updatePwdModal").close();
         Swal.fire({
           text: response.data.message,
           icon: "success",
@@ -427,9 +434,17 @@ async function updatePwd() {
         allowOutsideClick: false,
       });
     }
+  } else {
+    console.log("取消");
+    document.querySelector("#updatePwdModal").showModal();
   }
 }
 
+function cancelChange() {
+  uPwdInput.oldPwd = "";
+  uPwdInput.newPwd = "";
+  uPwdInput.checkPwd = "";
+}
 ///////////////////////////// 其他 /////////////////////////////
 
 onMounted(function () {

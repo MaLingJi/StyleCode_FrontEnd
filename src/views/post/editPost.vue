@@ -47,6 +47,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import { PlusOutlined } from '@ant-design/icons-vue';
+import Swal from 'sweetalert2'
 
 const route = useRoute();
 const router = useRouter();
@@ -69,7 +70,7 @@ onMounted(async () => {
         const response = await axiosapi.get(`/post/${postId}`);
         post.value = response.data;
         if (post.value.images) {
-            post.value.images.forEach(image => {
+            post.value.images.filter(image => !image.deletedAt).forEach(image => {
                 fileList.value.push({
                     uid: image.imageId,
                     name: image.imgUrl,
@@ -116,58 +117,98 @@ const handlePreview = async (file) => {
         const handleChange = async (info) => {
             fileList.value = info.fileList;
 
-    // if (info.file.status === 'done') {
-    //     const formData = new FormData();
-    //     formData.append('file', info.file.originFileObj);
-    //     formData.append('postId', postId);
-
-    //     try {
-    //         const response = await axiosapi.post(`/images`, formData);
-    //         console.log('圖片已上傳:', response.data);
-    //     } catch (error) {
-    //         console.error('上傳圖片時發生錯誤:', error.response ? error.response.data : error);
-    //     }
-    //     }
-    };
-
-    const updatePost = async () => {
-    try {
-        // 更新內容的請求
-        const contentResponse = await axiosapi.put(`/post/${post.value.postId}`, {
-            contentText: post.value.contentText
-        });
-        console.log('文章內容已更新:', contentResponse.data);
-
-        for (const file of fileList.value) {
-            if (file.originFileObj) {
+            for (const file of info.fileList) {
+                if (file.status === 'done' && file.originFileObj) {
                 const formData = new FormData();
                 formData.append('file', file.originFileObj);
                 formData.append('postId', postId);
-                
-                const imageResponse = await axiosapi.post(`/images`, formData);
-                console.log('圖片已上傳:', imageResponse.data);
+
+            try {
+                const response = await axiosapi.post(`/images`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log('圖片已上傳:', response.data);
+            } catch (error) {
+                console.error('上傳圖片時發生錯誤:', error.response ? error.response.data : error);
+            }
+        }
+    }
+};
+
+        const updatePost = async () => {
+        const result = await Swal.fire({
+            title: '確認更新?',
+            text: "您確定要更新這篇文章嗎?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '是的，更新!',
+            cancelButtonText: '取消'
+        });
+
+        if (result.isConfirmed) {
+            // 如果用戶確認，執行更新操作
+            try {
+            const contentResponse = await axiosapi.put(`/post/${post.value.postId}`, {
+                contentText: post.value.contentText
+            });
+            console.log('文章內容已更新:', contentResponse.data);
+            for (const file of fileList.value) {
+                if (file.originFileObj) {
+                    const formData = new FormData();
+                    formData.append('file', file.originFileObj);
+                    formData.append('postId', postId);
+                    const imageResponse = await axiosapi.post(`/images`, formData);
                 // 更新 fileList 中對應項目的 uid 和 url
                 file.uid = imageResponse.data.imageId;
                 file.url = `${path}/${imageResponse.data.imgUrl}`;
             }
         }
-        router.push(`/post/${post.value.postId}`);
-    } catch (error) {
-        console.error('更新文章時發生錯誤:', error.response ? error.response.data : error);
+            Swal.fire({
+                icon: 'success',
+                title: '更新成功!',
+                text: '文章已成功更新。',
+                timer: 1000, 
+                showConfirmButton: false
+            });
+            router.push(`/post/${post.value.postId}`);
+        } catch (error) {
+            console.error('更新文章時發生錯誤:', error.response ? error.response.data : error);
+        }
     }
 };
 
-const deletePost = async () => {
-    try {
-        const imageIds = post.value.images.map(image => image.imageId);
-        
-        await axiosapi.delete(`/post/${post.value.postId}`);
-        for (const imageId of imageIds) {
-            await axiosapi.delete(`/images/${imageId}`);
+    const deletePost = async () => {
+        const result = await Swal.fire({
+        title: '確定刪除?',
+        text: "您確定要刪除這篇文章嗎?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '是的，刪除!',
+        cancelButtonText: '取消'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const imageIds = post.value.images.map(image => image.imageId);
+            await axiosapi.delete(`/post/${post.value.postId}`);
+            
+            for (const imageId of imageIds) {
+                await axiosapi.delete(`/images/${imageId}`);
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: '刪除成功!',
+                text: '文章已成功刪除。',
+                timer: 1000, 
+                showConfirmButton: false 
+            });
+            router.push('/posts');
+        } catch (error) {
+            console.error('刪除貼文時出錯:', error);
         }
-        router.push('/posts');
-    } catch (error) {
-        console.error('刪除貼文和圖片時出錯:', error);
     }
 };
 

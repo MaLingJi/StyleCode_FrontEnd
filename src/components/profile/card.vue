@@ -277,7 +277,8 @@ function deleteCard(cardId) {
     showCancelButton: true,
     confirmButtonText: "刪除",
     cancelButtonText: "取消",
-    reverseButtons: true,
+    confirmButtonColor: "rgb(35 40 44)",
+    cancelButtonColor: "#9e9e9e",
   }).then((result) => {
     if (result.isConfirmed) {
       axiosapi
