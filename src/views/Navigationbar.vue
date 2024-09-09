@@ -60,7 +60,7 @@
                 >
                   <div class="item" @click="readNotification(notification.Nid)">
                     <div
-                      class="ts-iconset is-outlined ts-wrap is-middle-aligned"
+                      class="ts-iconset is-outlined ts-wrap is-middle-aligned flaxbox"
                     >
                       <span
                         :class="{
@@ -69,7 +69,7 @@
                           'is-heart-icon': notification.type === 'post',
                         }"
                       ></span>
-                      <div>
+                      <div class="column">
                         <div
                           class="ts-text"
                           :class="{
@@ -384,12 +384,15 @@ const toggleMobileMenu = () => {
 .notification-badge {
   position: absolute;
   top: 0;
-  right: 0;
+  right: -10px;
 }
 .noti-popver {
-  width: 300px;
+  width: 400px;
 }
 .unread-notification {
   color: rgb(48, 103, 205);
+}
+.flaxbox {
+  display: flex;
 }
 </style>

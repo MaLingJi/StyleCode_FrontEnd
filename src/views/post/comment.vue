@@ -91,14 +91,18 @@ const fetchComments = async () => {
     
     // 確保 response.data 是數組
     if (Array.isArray(response.data)) {
+      
       comments.value = response.data.filter(comment => !comment.deletedAt) .map(comment => ({
         commentId: comment.commentId,
         postId: comment.postId,
         userId: comment.userId,
-        userDetail: { userName: comment.userDetail?.userName || `用戶${comment.userId}` },
+        userDetail: { userName: comment.userName || `用戶${comment.userId}` },
         commentText: comment.commentText,
         createdAt: comment.createdAt,
-        deletedAt: comment.deletedAt
+        deletedAt: comment.deletedAt,
+        isEditing: false,
+        editContent: '',
+        userId: comment.userId
       }));
     } else {
       console.error("獲取的評論數據不是數組:", response.data);
@@ -120,6 +124,7 @@ const handleSubmit = async () => {
     });
 
     if (response.data) {
+      console.log("response.data",response.data);
       comments.value.unshift({ //留言跑 push最下面 unshift最上面
         commentId: response.data.commentId,
         commentText: newComment.value, //確保命名是commentText
@@ -127,7 +132,8 @@ const handleSubmit = async () => {
         userDetail: { id: userId, userName: userStore.userName },
         createdAt: new Date().toISOString(),
         isEditing: false,
-        editContent: ''
+        editContent: '',
+        userId: userId
       });
       newComment.value = ''; 
     } else {

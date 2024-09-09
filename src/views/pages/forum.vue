@@ -87,109 +87,121 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, onMounted } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
 
-export default defineComponent({
-  components: {
-    StarOutlined,
-    StarFilled,
-    HeartOutlined,
-    HeartFilled,
-    MessageOutlined,
+const userStore = useUserStore();
+const listData = ref([]);
+const path = import.meta.env.VITE_POST_IMAGE_URL; 
+
+const pagination = ref({
+  onChange: (page) => {
+    console.log(page);
   },
-  setup() {
-    const userStore = useUserStore();
-    const listData = ref([]); // 使用 ref 來存儲文章數據
-    const path = import.meta.env.VITE_POST_IMAGE_URL; 
-
-    const pagination = ref({
-      onChange: (page) => {
-        console.log(page);
-      },
-      pageSize: 10,
-      total: 0,
-    });
-
-    onMounted(() => {
-      callFind(); // 加載獲取所有文章
-    });
-
-    function callFind() {
-      axiosapi.get("/post").then(function (response) {
-        console.log("回覆:", response.data);
-        // 過濾不屬於論壇和刪除過後的帖子
-        const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt && post.images && post.images.length > 0);
-        
-        // 獲取留言的數量，過濾掉已刪除的留言
-      filteredPosts.forEach(post => {
-      post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0; 
-      post.collects = post.collects ? post.collects.length : 0; 
-      post.likes = post.likes ? post.likes.length : 0; 
-    });
-
-        // 按創建時間排序文章，最新的在最上面
-        filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        listData.value = filteredPosts;
-        pagination.value.total = listData.value.length; 
-      }).catch(function (error) {
-        console.error("發現錯誤", error.response ? error.response.data : error.message);
-      });
-    }
-
-    const likePost = (id) => {
-      // const post = listData.value.find(item => item.postId === id);
-      // if (post) {
-      //   if (!post.liked) {
-      //     post.likes += 1; 
-      //     post.liked = true; 
-      //   }
-      // }
-    };
-
-    const collectPost = (id) => {
-      // const post = listData.value.find(item => item.postId === id);
-      // if (post) {
-      //   if (!post.collected) {
-      //     post.collects += 1; 
-      //     post.collected = true; 
-      //   }
-      // }
-    };
-
-    const commentPost = (id) => {
-      // const post = listData.value.find(item => item.postId === id);
-    };
-
-    const handleSubmit = async () => {
-      const postData = {
-        title: "新貼文標題",
-        content: "這是貼文內容",
-        // 其他必要的字段
-      };
-      try {
-        await axiosapi.post('/post', postData);
-        callFind(); // 發文後重新獲取貼文
-      } catch (error) {
-        console.error("發文失敗:", error.response ? error.response.data : error.message);
-      }
-    };
-
-    return {
-      listData,
-      pagination,
-      likePost,
-      collectPost,
-      commentPost,
-      handleSubmit,
-      path,
-      userStore,
-    };
-  },
+  pageSize: 10,
+  total: 0,
 });
+
+onMounted(() => {
+  callFind(); // 加載獲取所有文章
+});
+
+async function callFind() {
+  try {
+    const response = await axiosapi.get("/post");
+    console.log("回覆:", response.data);
+    // 過濾不屬於論壇和刪除過後的帖子
+    const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt && post.images && post.images.length > 0);
+    // 獲取留言的數量，過濾掉已刪除的留言
+    for (const post of filteredPosts) {
+      post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0;
+      post.collects = post.collections ? post.collections.length : 0;
+      post.likes = post.likes ? post.likes.length : 0;
+      // 確保狀態正確更新
+      post.liked = await checkIfUserLiked(post.postId);
+      post.collected = await checkIfUserCollected(post.postId);
+    }
+    filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    listData.value = filteredPosts;
+    pagination.value.total = listData.value.length;
+  } catch (error) {
+    console.error("發現錯誤:", error.response ? error.response.data : error.message);
+  }
+}
+
+const checkIfUserLiked = async (postId) => {
+  try {
+    const response = await axiosapi.get(`/likes/${userStore.userId}/${postId}`);
+    return response.status === 200; // 如果返回200，表示用戶已經點讚
+  } catch (error) {
+    return false; // 如果出現錯誤，表示用戶未點讚
+  }
+};
+
+const checkIfUserCollected = async (postId) => {
+  try {
+    const response = await axiosapi.get(`/collections/${userStore.userId}/${postId}`);
+    return response.status === 200; // 如果返回200，表示用戶已經收藏
+  } catch (error) {
+    return false; // 如果出現錯誤，表示用戶未收藏
+  }
+};
+
+const likePost = async (id) => {
+  try {
+    const post = listData.value.find(item => item.postId === id);
+    if (post) {
+      if (post.liked) {
+        await axiosapi.post('/likes/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.likes -= 1;
+      } else {
+        await axiosapi.post('/likes/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.likes += 1;
+      }
+      post.liked = !post.liked;
+    }
+  } catch (error) {
+    console.error("喜歡操作失敗:", error.response ? error.response.data : error.message);
+  }
+};
+
+const collectPost = async (id) => {
+  try {
+    const post = listData.value.find(item => item.postId === id);
+    if (post) {
+      if (post.collected) {
+        await axiosapi.post('/collections/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.collects -= 1;
+      } else {
+        await axiosapi.post('/collections/toggle', {
+          userId: userStore.userId,
+          postId: id
+        });
+        post.collects += 1;
+      }
+      post.collected = !post.collected;
+    }
+  } catch (error) {
+    console.error("收藏操作失敗:", error.response ? error.response.data : error.message);
+  }
+};
+
+const commentPost = (id) => {
+  // const post = listData.value.find(item => item.postId === id);
+
+};
 </script>
 
 <style scoped>
@@ -235,13 +247,13 @@ img {
   border-radius: 8px;
 }
 
-:global(.footer) {
+.footer {
   background-color: #f8f8f8;
   padding: 20px 0;
   margin-top: auto;
 }
 
-:global(.footer-content) {
+.footer-content {
   display: flex;
   justify-content: space-around;
   max-width: 1200px;
@@ -249,12 +261,12 @@ img {
   padding: 0 20px;
 }
 
-:global(.footer-section) {
+.footer-section {
   flex: 1;
   margin: 0 10px;
 }
 
-:global(.footer-bottom) {
+.footer-bottom {
   text-align: center;
   margin-top: 20px;
   padding-top: 10px;

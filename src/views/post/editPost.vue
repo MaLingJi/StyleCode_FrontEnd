@@ -47,7 +47,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'
 
 const route = useRoute();
 const router = useRouter();
@@ -117,37 +117,54 @@ const handlePreview = async (file) => {
         const handleChange = async (info) => {
             fileList.value = info.fileList;
 
-    // if (info.file.status === 'done') {
-    //     const formData = new FormData();
-    //     formData.append('file', info.file.originFileObj);
-    //     formData.append('postId', postId);
+            for (const file of info.fileList) {
+                if (file.status === 'done' && file.originFileObj) {
+                const formData = new FormData();
+                formData.append('file', file.originFileObj);
+                formData.append('postId', postId);
 
-    //     try {
-    //         const response = await axiosapi.post(`/images`, formData);
-    //         console.log('圖片已上傳:', response.data);
-    //     } catch (error) {
-    //         console.error('上傳圖片時發生錯誤:', error.response ? error.response.data : error);
-    //     }
-    //     }
-    };
+            try {
+                const response = await axiosapi.post(`/images`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log('圖片已上傳:', response.data);
+            } catch (error) {
+                console.error('上傳圖片時發生錯誤:', error.response ? error.response.data : error);
+            }
+        }
+    }
+};
 
-    const updatePost = async () => {
-    const result = await Swal.fire({
-        title: '確認更新?',
-        text: "您確定要更新這篇文章嗎?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '是的，更新!',
-        cancelButtonText: '取消'
-    });
+        const updatePost = async () => {
+        const result = await Swal.fire({
+            title: '確認更新?',
+            text: "您確定要更新這篇文章嗎?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '是的，更新!',
+            cancelButtonText: '取消'
+        });
 
-    if (result.isConfirmed) {
-        // 如果用戶確認，執行更新操作
-        try {
+        if (result.isConfirmed) {
+            // 如果用戶確認，執行更新操作
+            try {
             const contentResponse = await axiosapi.put(`/post/${post.value.postId}`, {
                 contentText: post.value.contentText
             });
             console.log('文章內容已更新:', contentResponse.data);
+            for (const file of fileList.value) {
+                if (file.originFileObj) {
+                    const formData = new FormData();
+                    formData.append('file', file.originFileObj);
+                    formData.append('postId', postId);
+                    const imageResponse = await axiosapi.post(`/images`, formData);
+                // 更新 fileList 中對應項目的 uid 和 url
+                file.uid = imageResponse.data.imageId;
+                file.url = `${path}/${imageResponse.data.imgUrl}`;
+            }
+        }
             Swal.fire({
                 icon: 'success',
                 title: '更新成功!',
@@ -162,8 +179,8 @@ const handlePreview = async (file) => {
     }
 };
 
-const deletePost = async () => {
-    const result = await Swal.fire({
+    const deletePost = async () => {
+        const result = await Swal.fire({
         title: '確定刪除?',
         text: "您確定要刪除這篇文章嗎?",
         icon: 'warning',
@@ -174,7 +191,13 @@ const deletePost = async () => {
 
     if (result.isConfirmed) {
         try {
+            const imageIds = post.value.images.map(image => image.imageId);
             await axiosapi.delete(`/post/${post.value.postId}`);
+            
+            for (const imageId of imageIds) {
+                await axiosapi.delete(`/images/${imageId}`);
+            }
+
             Swal.fire({
                 icon: 'success',
                 title: '刪除成功!',

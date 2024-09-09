@@ -49,7 +49,13 @@ export const user = defineStore('user', {
     }),
     getters: {
         isAdmin: (state) => state.permissions === "Admin",
-        isSessionExpired: (state) => state.expirationTime && new Date() > new Date(state.expirationTime)
+        isSessionExpired: (state) => {
+            const curentime = new Date()
+            const expirationTime = new Date(state.expirationTime);
+            console.log("Current time:", curentime);
+            console.log("Expiration time:", expirationTime);
+
+            return state.expirationTime && new Date() > new Date(state.expirationTime)}
     },
     actions: {
         setUserId(userId) {
@@ -70,16 +76,24 @@ export const user = defineStore('user', {
         checkSession() {
             if (this.isSessionExpired) {
                 this.logout()
+            }else {
+                console.log("Session is still valid.");
             }
         },
         logout() {
-            
-            this.userId = ""
-            this.userToken = ""
-            this.permissions = ""
-            this.isLogedin = false
-            this.expirationTime = null
-            localStorage.clear()
+            console.log("logout....")
+            this.userId = "";
+            this.userToken = "";
+            this.permissions = "";
+            this.isLogedin = false;
+            this.expirationTime = null;
+
+            // 同時刪除 localStorage 中的數據
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('permissions');
+            localStorage.removeItem('isLogedin');
+            localStorage.removeItem('expirationTime');
         }
 },
 persist: {

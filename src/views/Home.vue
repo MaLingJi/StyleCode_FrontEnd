@@ -93,7 +93,9 @@ onMounted(async () => {
 
     // 獲取分享文章
     const sharedResponse = await axiosapi.get('/post?contentType=分享&limit=20'); // 根據您的API調整
-    sharedPosts.value = sharedResponse.data;
+    // sharedPosts.value = sharedResponse.data;
+    sharedPosts.value = sharedResponse.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   } catch (error) {
     console.error('Error fetching data:', error);
   }
