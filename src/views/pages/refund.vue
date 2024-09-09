@@ -18,7 +18,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     <tr>
                         <td>{{ orderData.orderId }}</td>
                         <td>{{ formatDate(orderData.orderDate) }}</td>
@@ -63,11 +62,11 @@
                     </tr>
                 </tbody>
             </table>
-            <form class="ts-form" @submit="sendRefundApply" style="margin-top: 1.5rem;">
-                <div class="field"      >
+            <form class="ts-form refund-form" @submit="sendRefundApply">
+                <div class="field">
                     <div class="control">
-                        <div class="ts-select is-fluid" style="margin-top: 1rem;">
-                            <select v-model="selectedReason" required >
+                        <div class="ts-select is-fluid reason-select">
+                            <select v-model="selectedReason" required>
                                 <option value="" disabled selected>請選擇退款理由</option>
                                 <option value="quality">商品品質問題</option>
                                 <option value="wrongItem">收到錯誤商品</option>
@@ -78,25 +77,14 @@
                         </div>
                     </div>
                 </div>
-                <label class="label">說明欄</label>
-                <div class="field" style="margin-top: 1rem;">
-                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
+                <div class="field">
+                    <textarea class="ts-textarea " v-model="refundReason" placeholder="請輸入退款理由..." rows="6"
                         required></textarea>
                     <button class="ts-button is-primary" type="submit">提交退款申請</button>
                 </div>
             </form>
-
         </div>
     </div>
-
-    <!-- <form class="ts-form" @submit="sendRefundApply">
-                <div class="field">
-                    <label class="label">退款理由</label>
-                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
-                        required></textarea>
-                </div>
-                <button class="ts-button is-primary" type="submit">提交退款申請</button>
-            </form> -->
 </template>
 
 <script setup>
