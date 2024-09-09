@@ -103,13 +103,13 @@ watch(range, () => {
     gap: 1rem;
 }
 
-/* 对于特定的元素，如果需要更多空间 */
+
 .datePicker {
     margin-top: 1rem;
     width: 100%;
 }
 
-/* 确保图表有足够的空间 */
+
 .charts {
     min-height: 500px;
 }
@@ -117,7 +117,6 @@ watch(range, () => {
 .chart.orderTable {
     display: flex;
     justify-content:center
-    /* 調整這個值來控制表格向右移動的距離 */
 }
 
 

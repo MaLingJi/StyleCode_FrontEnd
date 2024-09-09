@@ -118,7 +118,7 @@ onMounted(async () => {
 });
 
 const sendRefundApply = async (event) => {
-    event.preventDefault(); // 阻止表單的默認提交行為
+    event.preventDefault(); 
     try {
         const response = await axiosapi.post('/order/addRefund', {
             orderId: orderId,
@@ -136,7 +136,7 @@ const sendRefundApply = async (event) => {
                 cancelButtonText: '取消'
             })
                 .then((result) => {
-                    // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                    // 確保 SweetAlert 結束後再跳轉
                     if (result.isConfirmed) {
                         router.push('/secure/profile');
                     }

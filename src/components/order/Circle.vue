@@ -1,5 +1,3 @@
-<!-- LabeledProgressIndicator.vue -->
-<!-- AlignedProgressIndicator.vue -->
 <template>
     <div class="progress-bar">
         <div class="step">
@@ -47,7 +45,6 @@ const props = defineProps({
     flex-direction: column;
     align-items: center;
     width: 80px;
-    /* 固定寬度確保對齊 */
 }
 
 .circle {
