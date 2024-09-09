@@ -78,6 +78,14 @@
                   <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
                 </template>
                 <template #avatar><a-avatar :src="item.avatar" /></template>
+                <template #description>
+                  <div v-if="item.contentText.length <= 50">
+                    {{ item.contentText }}
+                  </div>
+                  <div v-else>
+                    {{ item.contentText.slice(0, 50) + '...' }}
+                  </div>
+                </template>
               </a-list-item-meta>
             </a-list-item>
           </template>

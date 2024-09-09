@@ -8,7 +8,7 @@
             </div>
             <div>
                 <H3><label for="content">內容:</label></H3>
-                <a-textarea id="content" v-model:value="post.contentText" class="textarea" rows="4" show-count :maxlength="255" ></a-textarea>
+                <a-textarea id="content" v-model:value="post.contentText" class="textarea" rows="4" show-count :maxlength="230" ></a-textarea>
             </div>
             <div class="clearfix">
                 <a-upload
@@ -175,6 +175,11 @@ const handlePreview = async (file) => {
             router.push(`/post/${post.value.postId}`);
         } catch (error) {
             console.error('更新文章時發生錯誤:', error.response ? error.response.data : error);
+            Swal.fire({
+                icon: 'error',
+                title: '更新失敗!',
+                text: '編輯文章時發生錯誤，請確認字數和格式問題。',
+            });
         }
     }
 };

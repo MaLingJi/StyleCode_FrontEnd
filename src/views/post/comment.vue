@@ -47,7 +47,7 @@
             placeholder="新增評論..." 
             class="comment-textarea"
             show-count 
-            :maxlength="255"
+            :maxlength="230"
           />
         </a-form-item>
         <a-form-item>
