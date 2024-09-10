@@ -67,8 +67,8 @@ const cauculate = (item) => {
 };
 
 const updateParent = () => {
-    emit('update:carItems', [...props.cartItems]);
-    fetchCartCount(user)
+    emit('update:carItems', [...props.cartItems]); //更新到母組件
+    fetchCartCount(user) //為了及時更新購物車上數字
 }
 
 const increaseQuantity = (item) => {
@@ -195,7 +195,7 @@ watch(() => props.cartItems, (newItems) => {
     }
 }, { immediate: true });
 
-
+//調用取得照片名稱API(productID去找)
 const loadPhotos = async (items) => {
     for (const item of items) {
         try {
@@ -223,12 +223,14 @@ const findImgUrl = (productDetailsId) => {
     return photo ? photo.url : null;
 }
 // 把找到的商品名稱路徑加上全域路徑
+// 路徑為8080 但會在商品後端API改成C:// 
 const getImageUrl = (imageName) => {
     const path = import.meta.env.VITE_PRODUCT_IMAGE_URL;
     if (imageName) {
         return `${path}${imageName}`;
     }
     return "../../../public/No_image.png";
+    //沒有的話回傳這個頁面
 };
 
 

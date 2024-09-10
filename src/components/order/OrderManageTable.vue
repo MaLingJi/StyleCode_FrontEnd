@@ -20,7 +20,7 @@
         </div>
 
         <div class="button-container">
-            <button @click="exportToCSV" class="ts-button is-secondary">Export</button>
+            <button @click="exportToCSV" class="ts-button is-secondary is-small">Export</button>
         </div>
     </div>
 </template>
@@ -102,21 +102,26 @@ const exportToCSV = () => {
     position: relative;
     width: 100%;
     padding-top: 50px;
+ 
 }
 
 .table-container {
     display: flex;
     justify-content: center;
+    max-height: 1000px; /* 設置最大高度，超過此高度將出現滾動條 */
+    overflow-y: auto; /* 允許垂直滾動 */
 }
 
 .button-container {
     position: absolute;
     top: 10px;
+    
   
 }
 
 .ts-table {
     text-align: center;
+    width: 100%; /* 確保表格寬度為100% */
 }
 
 .ts-table th,
@@ -129,6 +134,9 @@ const exportToCSV = () => {
 .ts-table th {
     background-color: #f2f2f2;
     font-weight: bold;
+    position: sticky; /* 使表頭固定 */
+    top: 0; /* 固定在頂部 */
+    z-index: 1; /* 確保表頭在內容之上 */
 }
 
 
