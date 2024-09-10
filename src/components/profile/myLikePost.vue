@@ -21,8 +21,8 @@
       v-if="postType === 'share'"
     >
     <div class="column" v-for="(post, index) in sharePosts" :key="index">
-      <div class="share-card" @click="">
-        <div class="ts-icon is-bookmark-icon is-huge bookmark"></div>
+      <div class="share-card">
+        <div class="ts-icon is-bookmark-icon is-huge bookmark" @click.stop="removeBookmark(post.postId)"></div>
           <!-- ^書籤按鈕^ -->
           <div class="share-image">
             <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" alt="Share Image" /> />
@@ -50,7 +50,7 @@
     <div class="ts-box is-horizontal" v-for="(post, index) in forumPosts" :key="index">
       <div
         class="ts-icon is-bookmark-icon is-huge column bookmark"
-        @click="removeBookmark(post.id)"
+        @click="removeBookmark(post.postId)"
       ></div>
       <div class="ts-image is-covered">
         <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" alt="Post Image" />
@@ -95,7 +95,7 @@ watch(
     .get(`/collections/post/${userId}`)
     .then((response) => {
       const posts = response.data;
-      // console.log(`取得用戶的貼文 ${userId}`);
+      // console.log('獲取的貼文:', posts); 
         posts.forEach(post => {
           if (post.contentType === 'forum') {
             forumPosts.value.push(post);
@@ -117,21 +117,26 @@ watch(
   { immediate: true }
 ); //確保元件載入時也會執行一次
 
-// 取消收藏
-// const removeBookmark = (postId) => {
-//   axiosapi
-//     .delete(`/collections/${userId}/${postId}`)
-//     .then(() => {
-//       if (postType.value === "share") {
-//         sharePosts.value = sharePosts.value.filter((post) => post.id !== postId);
-//       } else if (postType.value === "forum") {
-//         forumPosts.value = forumPosts.value.filter((post) => post.id !== postId);
-//       }
-//     })
-//     .catch((error) => {
-//       console.error('刪除書籤時發生錯誤:', error.response ? error.response.data : error.message);
-//     });
-// };
+  //取消收藏
+  const removeBookmark = async (postId) => {
+    console.log(`要刪除的 postId: ${postId}`); 
+  try {
+    // console.log(`刪除請求: /collections/${userId}/${postId}`);
+    await axiosapi.delete(`/collections/${userId}/${postId}`);
+    
+    if (postType.value === "share") {
+      sharePosts.value = sharePosts.value.filter(post => post.postId  !== postId);
+    } else if (postType.value === "forum") {
+      forumPosts.value = forumPosts.value.filter(post => post.postId  !== postId);
+    }
+    
+    console.log('收藏已移除');
+    console.log('當前分享文章:', sharePosts.value);
+    console.log('當前論壇文章:', forumPosts.value);
+  } catch (error) {
+    console.error('移除收藏時發生錯誤:', error.response ? error.response.data : error.message);
+  }
+};
 </script>
 
 <style scoped>

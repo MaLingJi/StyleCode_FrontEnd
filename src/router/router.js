@@ -17,7 +17,8 @@ import post from "@/views/pages/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
-
+// import reportPost from "@/views/post/reportPost.vue"
+import LoginSuccess from "@/views/secure/LoginSuccess.vue";
 
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
@@ -50,6 +51,8 @@ const routes = [
   { name: "editPost-link", path: "/editPost/:id", component: editPost, meta: { requiresAuth: true }},
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post },
+  // { name: "reportPost-link", path: "/report", component: reportPost },
+  { name: "LoginSuccess-link", path: "/LoginSuccess", component: LoginSuccess },
   
   
   { name: "refund-link", path: "/refund/:orderId", component: refund},

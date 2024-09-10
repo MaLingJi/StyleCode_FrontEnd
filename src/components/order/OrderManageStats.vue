@@ -8,9 +8,6 @@
                     </div>
                     累積訂單數
                 </div>
-                <!-- <div class="symbol">
-                <span class="ts-icon is-eye-icon"></span>
-            </div> -->
             </div>
         </div>
         <div class="column">
@@ -21,9 +18,6 @@
                     </div>
                     累積訂單金額
                 </div>
-                <!-- <div class="symbol">
-                <span class="ts-icon is-users-icon"></span>
-            </div> -->
             </div>
         </div>
     </div>

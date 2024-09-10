@@ -48,6 +48,8 @@
                         }">
                             <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
                         </RouterLink>
+                        <div class="ts-button" v-if="post.userId === userStore.userId" @click="deletePost(post.postId)">
+                            刪除</div>
                         <div class="ts-grid is-middle-aligned">
                             <div class="ts-image">
                                 <img :src="userPhoto" width="40">
@@ -81,8 +83,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="ts-divider"></div> -->
-
 
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
@@ -98,7 +98,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
@@ -107,6 +107,7 @@ import useUserStore from "@/stores/user.js"
 const userStore = useUserStore();
 const productStore = useProductStore();
 const route = useRoute();
+const router = useRouter();
 const post = ref({});
 const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 const path = import.meta.env.VITE_POST_IMAGE_URL;
@@ -258,6 +259,40 @@ onMounted(() => {
             console.error('Error loading post:', error);
         });
 });
+
+const deletePost = (postId) => {
+    Swal.fire({
+        title: '確定要刪除這篇文章嗎?',
+        text: "這個操作無法撤銷!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'rgb(35 40 44)',
+        cancelButtonColor: '#9e9e9e',
+        confirmButtonText: '是的, 刪除它!',
+        cancelButtonText: '取消'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axiosapi.delete(`/post/${postId}`)
+                .then(response => {
+                    Swal.fire(
+                        '已刪除!',
+                        '這篇文章已經被刪除.',
+                        'success'
+                    );
+                    // 這裡可以根據情況重定向到文章列表頁或其他頁面
+                    router.push('/share');  // 假設你有一個文章列表頁面
+                })
+                .catch(error => {
+                    Swal.fire(
+                        '刪除失敗!',
+                        '刪除文章的過程中發生了錯誤, 請稍後再試.',
+                        'error'
+                    );
+                    console.error('Error deleting post:', error);
+                });
+        }
+    });
+};
 
 function formatDate(date) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
