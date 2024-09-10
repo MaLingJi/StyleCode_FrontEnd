@@ -28,8 +28,8 @@
               <button
                 class="ts-text is-undecorated action-icon width-30"
                 popovertarget="noti-popup"
-                @click="clearNotifications"
               >
+                <!-- @click="clearNotifications" -->
                 <span class="ts-icon is-spinning is-bell-icon is-big"></span
                 ><span
                   class="ts-badge is-negative is-small notification-badge"
@@ -234,6 +234,7 @@ function readNotification(noid) {
         );
         if (notification) {
           notification.status = 1; // 更新狀態為已讀
+          unreadCount.value = unreadCount.value - 1;
         }
       } else {
         console.error("無法將通知標記為已讀:", response.data.message);
@@ -244,17 +245,13 @@ function readNotification(noid) {
     });
 }
 
-//打開鈴鐺通知歸0
-function clearNotifications() {
-  unreadCount.value = 0;
-}
-
 //前往通知列表
 function toNotificationList() {
   router.push({
     name: "profile-ling",
     params: { initialView: "notificationList" },
   });
+  document.querySelector("#noti-popup").hidePopover();
 }
 
 onMounted(function () {
