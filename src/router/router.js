@@ -17,7 +17,7 @@ import post from "@/views/pages/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
-import reportPost from "@/views/post/reportPost.vue"
+// import reportPost from "@/views/post/reportPost.vue"
 
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
@@ -28,7 +28,7 @@ import refundReview from "@/views/pages/refundReview.vue";
 import paymentPage from "@/views/pages/paymentPage.vue";
 
 import productDetails from '@/views/pages/product/productDetails.vue';
-import addProduct from "@/components/product/AddProduct.vue";
+import addProduct from "@/components/product/addProduct.vue";
 import Shop from "@/views/pages/product/shop.vue";
 const routes = [
   { name: "home-link", path: "/", component: Home },
@@ -50,7 +50,7 @@ const routes = [
   { name: "editPost-link", path: "/editPost/:id", component: editPost, meta: { requiresAuth: true }},
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post },
-  { name: "reportPost-link", path: "/report", component: reportPost },
+  // { name: "reportPost-link", path: "/report", component: reportPost },
   
   
   { name: "refund-link", path: "/refund/:orderId", component: refund},
