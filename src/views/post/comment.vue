@@ -37,7 +37,7 @@
 
     <a-comment class="new-comment">
       <template #avatar>
-        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="用戶" />
+        <a-avatar src="/public/MDFK.png" alt="用戶" />
       </template>
       <template #content>
         <a-form-item>
