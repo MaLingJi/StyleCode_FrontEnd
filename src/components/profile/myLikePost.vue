@@ -24,7 +24,7 @@
       <div class="share-card">
         <div class="ts-icon is-bookmark-icon is-huge bookmark" @click.stop="removeBookmark(post.postId)"></div>
           <!-- ^書籤按鈕^ -->
-          <div class="share-image">
+          <div class="share-image" @click="navigateToPost(post.postId)">
             <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" alt="Share Image" /> />
         </div>
         <div class="share-info">
@@ -52,7 +52,7 @@
         class="ts-icon is-bookmark-icon is-huge column bookmark"
         @click="removeBookmark(post.postId)"
       ></div>
-      <div class="ts-image is-covered">
+      <div class="ts-image is-covered" @click="navigateToPost(post.postId)">
         <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" alt="Post Image" />
       </div>
       <div class="ts-content right-side">
@@ -77,12 +77,22 @@
 import axiosapi from "@/plugins/axios.js";
 import { ref, watch } from "vue";
 import useUserStore from "@/stores/user.js";
+import { useRouter } from 'vue-router';
 
 const userId = Number(useUserStore().userId);
 const postType = ref("share");
 const sharePosts = ref([]);  // 存儲分享區文章
 const forumPosts = ref([]);  // 存儲論壇文章
 const path = import.meta.env.VITE_POST_IMAGE_URL; 
+const router = useRouter();
+
+const navigateToPost = (postId) => {
+  if (postType.value === 'share') {
+    router.push({ name: 'shareDetails-link', params: { postId } });
+  } else if (postType.value === 'forum') {
+    router.push({ name: 'postContent-link', params: { id: postId } });
+  }
+};
 
 //寫法參考 page/order.vue
 watch(
