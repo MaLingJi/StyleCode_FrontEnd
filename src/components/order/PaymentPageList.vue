@@ -54,10 +54,7 @@ const formatCurrency = (amount) => {
 
 <style scoped>
 .custom-number-input {
-
-    /* 設置寬度 */
     width: 50px;
-    /* 您可以根據需要調整這個值 */
 }
 
 .custom-number-input::-webkit-inner-spin-button,

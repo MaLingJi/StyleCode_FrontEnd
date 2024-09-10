@@ -74,7 +74,7 @@ const lpPayment = async () => {
         console.log('Payment initiation response:', response.data);
 
         if (response.data) {
-            // 重定向到 LINE Pay 支付頁面
+            // 重新導向 LINE Pay 支付頁面
             Swal.fire({
                 title: '確認付款',
                 text: '您確定要進行付款嗎？',
@@ -86,7 +86,7 @@ const lpPayment = async () => {
                 cancelButtonText: '取消'
             })
                 .then((result) => {
-                    // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                    // 確保 SweetAlert 結束後跳轉
                     if (result.isConfirmed) {
                         
                         window.location.href = response.data

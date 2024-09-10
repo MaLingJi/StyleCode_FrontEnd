@@ -116,7 +116,7 @@ watch(status, () => {
         .catch(error => {
             console.error('cant load orders' + error);
         });
-}, { immediate: true }); // 确保组件加载时也会执行一次
+}, { immediate: true }); // 確保加載時執行一次
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);

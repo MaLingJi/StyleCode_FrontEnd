@@ -40,7 +40,6 @@ onMounted(async () => {
         const response = await axiosapi.get(`pay/linePayConfirm?orderId=${orderId}`)
         status.value = response.data.status
         if (status.value === 'success') {
-            // 支付成功，跳轉到訂單頁面
             updateCartCount(0);
             setTimeout(() => router.push({
                 name: 'profile-ling',

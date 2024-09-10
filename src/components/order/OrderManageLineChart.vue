@@ -40,13 +40,13 @@ const chartData = computed(() => ({
         datasets: [
                 {
                         label: '範圍內訂單總金額',
-                        backgroundColor: 'rgba(135, 206, 250, 0.5)', // 淺藍色半透明背景
-                        borderColor: 'rgb(0, 191, 255)',            // 稍深的藍色邊線
+                        backgroundColor: 'rgba(135, 206, 250, 0.5)', 
+                        borderColor: 'rgb(0, 191, 255)',          
                         borderWidth: 2,
-                        pointBackgroundColor: 'rgb(30, 144, 255)',   // 數據點顏色
+                        pointBackgroundColor: 'rgb(30, 144, 255)',   
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(30, 144, 255)',  // 懸停時的邊框顏色
+                        pointHoverBorderColor: 'rgb(30, 144, 255)',  
                         data: amounts.value,
                         fill: true,
                         tension: 0.2
