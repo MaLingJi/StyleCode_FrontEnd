@@ -1,8 +1,14 @@
 <template>
   <div class="ts-app-center" style="height: 85vh">
     <div class="content">
-      <div class="ts-header is-large is-heavy is-icon">
-        <div class="ts-icon is-face-smile-icon"></div>
+      <div class="ts-header is-huge is-heavy is-icon">
+        <div>
+          <img
+            src="/MDFK-removebg-preview.png"
+            alt="logo"
+            style="width: 150px"
+          />
+        </div>
         登入
       </div>
       <div class="ts-box has-top-spaced-large" style="width: 400px">
@@ -11,17 +17,24 @@
             <div class="ts-text is-label">電子信箱地址</div>
             <div class="ts-input is-start-icon">
               <span class="ts-icon is-envelope-icon"></span>
-              <input type="email" v-model="userEmail" @change="checkEmail" />
+              <input type="email" v-model="userEmail" @input="checkEmail" />
             </div>
             <div id="err-msg">{{ emailMsg }}</div>
             <div class="ts-text is-label">密碼</div>
-            <div class="ts-input is-start-icon">
+            <div class="ts-input is-icon">
               <span class="ts-icon is-lock-icon"></span>
               <input
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 v-model="password"
-                @change="checkPwdFomat"
+                @input="checkPwdFomat"
               />
+              <span
+                :class="[
+                  'ts-icon',
+                  showPassword ? 'is-eye-icon' : 'is-eye-slash-icon',
+                ]"
+                @click="togglePasswordVisibility"
+              ></span>
             </div>
             <div id="err-msg">{{ pwdFomatMsg }}</div>
             <div id="err-msg">{{ message }}</div>
@@ -33,14 +46,42 @@
               登入
             </button>
             <div class="ts-divider is-center-text">
+              <div class="ts-text is-description">快捷輸入</div>
+            </div>
+            <div class="ts-grid is-spaced-between">
+              <button
+                class="ts-button is-start-icon is-outlined is-2-wide"
+                style="width: 45%"
+                @click="updateFields"
+              >
+                <span class="ts-icon is-pen-icon"></span> hoge123
+              </button>
+              <button
+                class="ts-button is-start-icon is-outlined is-2-wide"
+                style="width: 45%"
+                @click="adminInput"
+              >
+                <span class="ts-icon is-pen-icon"></span> 管理員
+              </button>
+            </div>
+            <div class="ts-divider is-center-text">
               <div class="ts-text is-description">或是透過下列方式登入</div>
             </div>
-            <button class="ts-button is-fluid is-start-icon is-outlined">
-              <span class="ts-icon is-google-icon"></span> Google
+            <button
+              class="ts-button is-fluid is-start-icon is-outlined"
+              @click="toGoogleLogin"
+            >
+              <span class="ts-icon is-google-icon"></span>
+              Google
             </button>
 
             <p class="ts-text is-center-aligned">
-              新朋友? <RouterLink to="/secure/register">去註冊</RouterLink>
+              新朋友?
+              <RouterLink
+                to="/secure/register"
+                class="link ts-text is-underlined"
+                >去註冊</RouterLink
+              >
             </p>
           </div>
         </div>
@@ -63,6 +104,11 @@ const router = useRouter();
 const userStore = useUserStore();
 const pwdFomatMsg = ref("");
 const emailMsg = ref("");
+const showPassword = ref(false);
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
 
 //其中一個欄位沒輸入就不給按登入
 const isLoginDisabled = computed(function () {
@@ -77,11 +123,24 @@ const isLoginDisabled = computed(function () {
   return true;
 });
 
+//管理員快捷輸入
+const adminInput = () => {
+  userEmail.value = "hoge@gmail.com";
+  password.value = "hogehoge";
+};
+
+const updateFields = () => {
+  userEmail.value = "hoge123@gmail.com";
+  password.value = "hogehoge";
+};
+
 function checkEmail() {
   let emailRE = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
   if (!emailRE.test(userEmail.value)) {
     emailMsg.value = "格式不正確";
     return;
+  } else {
+    emailMsg.value = ""; // 格式正確時清除錯誤訊息
   }
 }
 function checkPwdFomat() {
@@ -134,7 +193,6 @@ function login() {
           userStore.setUserToken(response.data.token);
           userStore.setPermissions(response.data.permissions);
           userStore.setLogedin(true);
-          userStore.setExpirationTime(expirationTime);
 
           //跳轉首頁
           router.push({ path: "/" });
@@ -151,10 +209,17 @@ function login() {
       });
     });
 }
+function toGoogleLogin() {
+  console.log("googleLogin");
+  window.location.href = `${import.meta.env.VITE_API_URL}/google-login`;
+}
 </script>
 
 <style scoped>
 #err-msg {
   color: red;
+}
+.link:hover {
+  color: cornflowerblue;
 }
 </style>

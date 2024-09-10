@@ -82,6 +82,7 @@
       <div class="ts-divider"></div>
       <div class="ts-content is-tertiary">
         <div class="ts-wrap is-end-aligned">
+          <button class="ts-button" @click="updateFields">快捷輸入</button>
           <button class="ts-button" @click="callUpdate">確定</button>
           <button
             class="ts-button is-outlined"
@@ -116,6 +117,13 @@ onMounted(function () {
   // axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
   Object.assign(userInput, props.userDetail);
 });
+
+const updateFields = () => {
+  userInput.userName = "hoge0707";
+  userInput.realName = "郭子綺";
+  userInput.address = "高雄市前金區中正四路211號8樓之1";
+  userInput.phone = "0933530123";
+};
 
 function callUpdate() {
   // 將空字符串轉換為 null

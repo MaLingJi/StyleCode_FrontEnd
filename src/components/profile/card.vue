@@ -108,6 +108,7 @@
       <div class="ts-divider"></div>
       <div class="ts-content is-tertiary">
         <div class="ts-wrap is-end-aligned">
+          <button class="ts-button" @click="updateFields">快捷輸入</button>
           <button class="ts-button" @click="callCreate">確定</button>
           <button class="ts-button is-outlined" data-dialog="createCardModal">
             取消
@@ -142,6 +143,15 @@ const userInput = reactive({
   securityCode: "",
   billingAddress: "",
 });
+
+const updateFields = () => {
+  userInput.holderName = "郭子綺";
+  userInput.cardNumber = "3577 5432 4236 1455";
+  userInput.expirationDate = "12/26";
+  userInput.securityCode = "452";
+  userInput.billingAddress = "高雄市前金區中正四路211號8樓之1";
+};
+
 // 處理格式化信用卡號碼
 const formattedCardNumber = computed({
   get: () => {
@@ -209,6 +219,7 @@ function callCreate() {
           text: response.data.message,
           icon: "success",
           confirmButtonText: "確認",
+          confirmButtonColor: "rgb(35 40 44)",
           allowOutsideClick: false,
         }).then(function () {
           callFindcard();
@@ -221,6 +232,7 @@ function callCreate() {
         Swal.fire({
           text: response.data.message || "操作失敗，請稍後再試。",
           icon: "error",
+          confirmButtonColor: "rgb(35 40 44)",
           confirmButtonText: "確認",
         });
       }
@@ -231,6 +243,7 @@ function callCreate() {
       Swal.fire({
         text: "系統錯誤，請稍後再試。",
         icon: "error",
+        confirmButtonColor: "rgb(35 40 44)",
         confirmButtonText: "確認",
       });
     });
