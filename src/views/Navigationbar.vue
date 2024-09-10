@@ -38,33 +38,56 @@
                 </div>
                 <div class="ts-divider"></div>
                 <!-- 如果沒有通知，顯示 "暫無通知" -->
-                <div v-if="notifications.length === 0" class="ts-content is-dense">
+                <div
+                  v-if="notifications && notifications.length === 0"
+                  class="ts-content is-dense"
+                >
                   <div class="ts-text is-secondary">暫無通知</div>
+                  <div class="ts-divider"></div>
                 </div>
-                <template v-for="(notification, index) in notifications.slice(0, 5)" :key="index">
-                  <div class="item" @click="readNotification(notification.Nid)">
-                    <div class="ts-iconset is-outlined ts-wrap is-middle-aligned">
-                      <span :class="{
-                        'ts-icon': true,
-                        'is-shop-icon': notification.type === 'shop',
-                        'is-heart-icon': notification.type === 'post',
-                      }"></span>
-                      <div>
-                        <div class="ts-text" :class="{
-                          'is-heavy': notification.status === 0,
-                          'unread-notification': notification.status === 0,
-                        }">
-                          {{ notification.message }}
-                        </div>
-                        <div class="ts-text is-tiny is-secondary">
-                          {{ getRelativeTime(notification.createdTime) }}
+                <!-- 有通知，顯示通知列表 -->
+                <div v-else>
+                  <template
+                    v-for="(notification, index) in notifications.slice(0, 5)"
+                    :key="index"
+                  >
+                    <div
+                      class="item"
+                      @click="readNotification(notification.Nid)"
+                    >
+                      <div
+                        class="ts-iconset is-outlined ts-grid is-middle-aligned is-spaced-between"
+                      >
+                        <span
+                          class="column"
+                          :class="{
+                            'ts-icon': true,
+                            'is-shop-icon': notification.type === 'shop',
+                            'is-heart-icon': notification.type === 'post',
+                          }"
+                        ></span>
+                        <div class="column" style="width: 80%">
+                          <div
+                            class="ts-text"
+                            :class="{
+                              'is-heavy': notification.status === 0,
+                              'unread-notification': notification.status === 0,
+                            }"
+                          >
+                            {{ notification.message }}
+                          </div>
+                          <div class="ts-text is-tiny is-secondary">
+                            {{ getRelativeTime(notification.createdTime) }}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="ts-divider"></div>
-                </template>
-                <div class="item ts-content is-secondary is-dense ts-wrap is-center-aligned">
+                    <div class="ts-divider"></div>
+                  </template>
+                </div>
+                <div
+                  class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
+                >
                   <div @click="toNotificationList">前往通知列表</div>
                 </div>
               </div>
@@ -98,6 +121,7 @@ import useUserStore from "@/stores/user.js";
 import { useRouter } from "vue-router";
 import { useCart } from '@/services/cartService';
 import { onMounted, onUnmounted, ref, watch } from "vue";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 const { cartItemCount, fetchCartCount ,updateCartCount} = useCart();
@@ -108,8 +132,9 @@ const intervalTime = 10000; //每隔10秒
 let intervalId; //儲存 setInterval 的 ID
 
 ///////////////////////////// 登出 /////////////////////////////
-function logout() {
+async function logout() {
   axiosapi.defaults.headers.authorization = "";
+  axiosapi.post("/logout");
   userStore.logout();
   unreadCount.value = 0;
   notifications.value = [];
@@ -117,21 +142,40 @@ function logout() {
     clearInterval(intervalId);
     intervalId = null;
   }
+
+  await Swal.fire({
+    icon: "success",
+    title: "登出成功",
+    text: "您已成功登出。",
+    timer: 2000,
+    showConfirmButton: false,
+  });
   router.push("/");
 }
 
 ///////////////////////////// 通知 /////////////////////////////
 
-function callFindNotification() {
-  axiosapi
-    .get(`/member/notifications/${userStore.userId}`)
-    .then(function (response) {
-      if (response.data.success) {
-        // console.log(response.data.notificationList);
-        notifications.value = response.data.notificationList;
-        unreadCount.value = response.data.unreadCount;
-      }
-    });
+async function callFindNotification() {
+  try {
+    if (!userStore.userId) {
+      console.error("User ID is not defined");
+      return;
+    }
+
+    const response = await axiosapi.get(
+      `/member/notifications/${userStore.userId}`
+    );
+
+    if (response.data.success) {
+      // console.log(response.data.notificationList);
+      notifications.value = response.data.notificationList || [];
+      unreadCount.value = response.data.unreadCount || 0;
+    } else {
+      console.error("Failed to fetch notifications:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+  }
 }
 
 function getRelativeTime(dateString) {
@@ -174,6 +218,7 @@ function clearNotifications() {
   unreadCount.value = 0;
 }
 
+//前往通知列表
 function toNotificationList() {
   router.push({
     name: "profile-ling",
@@ -203,13 +248,24 @@ const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
 
-watch(() => userStore.isLogedin, (newValue) => {
-  if (newValue) {
-    fetchCartCount(userStore.userId);
-  }else{
-    updateCartCount(0)
+// 監聽使用者登入狀態變化，當登入後調用 `callFindNotification`
+watch(
+  () => userStore.isLogedin,
+  (newValue) => {
+    if (newValue) {
+      callFindNotification(); // 登入後立即呼叫
+      if (!intervalId) {
+        intervalId = setInterval(callFindNotification, intervalTime);
+      }
+    } else {
+      // 如果使用者登出，清除間隔
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
   }
-});
+);
 </script>
 
 <style scoped>
@@ -361,8 +417,5 @@ watch(() => userStore.isLogedin, (newValue) => {
 
 .unread-notification {
   color: rgb(48, 103, 205);
-}
-.flaxbox {
-  display: flex;
 }
 </style>

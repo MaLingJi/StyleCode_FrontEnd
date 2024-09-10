@@ -24,7 +24,12 @@
         <a class="item" @click="switchComps(userProfile)">個人資料</a>
         <a class="item" @click="switchComps(notificationsList)">通知列表</a>
         <a class="item" @click="switchComps(card)">信用卡資訊</a>
-        <a href="#!" class="item" data-dialog="updatePwdModal">修改密碼</a>
+        <a
+          v-if="!userStore.isThirdPartyLogin"
+          class="item"
+          data-dialog="updatePwdModal"
+          >修改密碼</a
+        >
       </div>
       <div class="ts-divider has-top-spaced-small"></div>
       <div class="ts-content is-dense">
@@ -130,20 +135,37 @@
         <div class="ts-container">
           <div class="ts-wrap is-vertical is-compact">
             <div class="ts-text is-label has-top-spaced-large">舊密碼</div>
-            <div class="ts-input is-underlined has-top-spaced">
-              <input type="text" v-model="uPwdInput.oldPwd" />
+            <div class="ts-input is-underlined has-top-spaced is-end-icon">
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                v-model="uPwdInput.oldPwd"
+              />
+              <span
+                :class="[
+                  'ts-icon',
+                  showPassword ? 'is-eye-icon' : 'is-eye-slash-icon',
+                ]"
+                @click="togglePasswordVisibility"
+              ></span>
             </div>
             <div
               class="ts-text is-label has-top-spaced-large ts-wrap is-relaxed"
             >
               新密碼<span class="err-msg">{{ pwdFomatMsg }}</span>
             </div>
-            <div class="ts-input is-underlined has-top-spaced">
+            <div class="ts-input is-underlined has-top-spaced is-end-icon">
               <input
-                type="text"
+                :type="showPassword2 ? 'text' : 'password'"
                 v-model="uPwdInput.newPwd"
                 @change="checkPwdFomat"
               />
+              <span
+                :class="[
+                  'ts-icon',
+                  showPassword2 ? 'is-eye-icon' : 'is-eye-slash-icon',
+                ]"
+                @click="togglePasswordVisibility2"
+              ></span>
             </div>
             <div class="ts-text is-description">
               僅能是英文字母和數字，且最少 8 字，最多 20 字。
@@ -153,12 +175,19 @@
             >
               確認密碼<span class="err-msg">{{ pwdMessage }}</span>
             </div>
-            <div class="ts-input is-underlined has-top-spaced">
+            <div class="ts-input is-underlined has-top-spaced is-end-icon">
               <input
-                type="text"
+                :type="showPassword3 ? 'text' : 'password'"
                 v-model="uPwdInput.checkPwd"
                 @change="checkPwds"
               />
+              <span
+                :class="[
+                  'ts-icon',
+                  showPassword3 ? 'is-eye-icon' : 'is-eye-slash-icon',
+                ]"
+                @click="togglePasswordVisibility3"
+              ></span>
             </div>
           </div>
         </div>
@@ -166,6 +195,7 @@
       <div class="ts-divider"></div>
       <div class="ts-content is-tertiary">
         <div class="ts-wrap is-end-aligned">
+          <button class="ts-button" @click="changePwdInput">快捷輸入</button>
           <button
             class="ts-button"
             :disabled="isLoginDisabled"
@@ -263,8 +293,13 @@ function showData(userId) {
       if (response.data.success !== false) {
         console.log("response.data.userDetail", response.data.userDetail);
         userDetail.value = response.data.userDetail;
-        userPhoto.value = photoPath + response.data.userDetail.userPhoto;
-        photoPreview.value = photoPath + response.data.userDetail.userPhoto;
+        if (isUrl(response.data.userDetail.userPhoto)) {
+          userPhoto.value = response.data.userDetail.userPhoto;
+          photoPreview.value = response.data.userDetail.userPhoto;
+        } else {
+          userPhoto.value = photoPath + response.data.userDetail.userPhoto;
+          photoPreview.value = photoPath + response.data.userDetail.userPhoto;
+        }
       } else {
         console.error(response.data.message);
       }
@@ -272,6 +307,15 @@ function showData(userId) {
     .catch(function (error) {
       console.error("Error fetching user details:", error);
     });
+}
+
+function isUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 ///////////////////////////// 修改照片 /////////////////////////////
@@ -341,11 +385,31 @@ async function uploadPhoto() {
 
 ///////////////////////////// 修改密碼 /////////////////////////////
 
+const showPassword = ref(false);
+const showPassword2 = ref(false);
+const showPassword3 = ref(false);
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
+const togglePasswordVisibility2 = () => {
+  showPassword2.value = !showPassword2.value;
+};
+const togglePasswordVisibility3 = () => {
+  showPassword3.value = !showPassword3.value;
+};
+
 const uPwdInput = reactive({
   oldPwd: "",
   newPwd: "",
   checkPwd: "",
 });
+
+const changePwdInput = () => {
+  uPwdInput.oldPwd = "hogehoge";
+  uPwdInput.newPwd = "hogepassword";
+  uPwdInput.checkPwd = "hogepassword";
+};
 function checkPwds() {
   if (uPwdInput.newPwd !== uPwdInput.checkPwd) {
     pwdMessage.value = "新密碼與確認密碼不一致";

@@ -144,7 +144,7 @@ const searchQuery = ref("");
 //今日註冊變數
 const todayRegistrations = ref(0);
 
-// 格式化日期的輔助方法
+// 格式化日期
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(); // 根據需要調整格式
 };
@@ -293,21 +293,12 @@ const sortIconClass = computed(() => {
 
 // 處理按下 Enter 鍵
 const handleEnterKey = () => {
-  callFindUsers(); // 傳入頁碼和搜尋字串
+  callFindUsers(); // 搜尋字串
 };
 
 // 處理頁面變化
 function handlePageChange(page) {
   callFindUsers(page);
-}
-
-// 如果需要，您可以添加這些方法來處理首頁和尾頁
-function goToFirstPage() {
-  callFindUsers(1);
-}
-
-function goToLastPage() {
-  callFindUsers(pageCount.value);
 }
 
 onMounted(function () {

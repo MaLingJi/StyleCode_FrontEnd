@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import AddProduct from "@/components/product/AddProduct.vue";
+import AddProduct from "@/components/product/addProduct.vue";
 import CategoryManager from "@/components/product/CategoryManager.vue";
 import SubcategoryManager from "@/components/product/SubcategoryManager.vue";
 import ProductManager from "@/components/product/ProductManager.vue";
@@ -99,7 +99,7 @@ import { shallowRef, onMounted } from "vue";
 import OrderManagement from "@/components/order/OrderManage.vue";
 import refundReview from "./refundReview.vue";
 import backUser from "@/components/profile/backUser.vue";
-import postwebset from "./postwebset.vue";
+// import postwebset from "./postwebset.vue";
 
 import useUserStore from "@/stores/user.js";
 const userStore = useUserStore();

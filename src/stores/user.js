@@ -46,6 +46,7 @@ export const user = defineStore('user', {
         permissions: "",
         isLogedin: false,
         expirationTime: null,
+        isThirdPartyLogin: false
     }),
     getters: {
         isAdmin: (state) => state.permissions === "Admin",
@@ -73,6 +74,9 @@ export const user = defineStore('user', {
         setExpirationTime(expirationTime) {
             this.expirationTime = expirationTime
         },
+        setThirdPartyLogin(isThirdPartyLogin) {
+            this.isThirdPartyLogin = isThirdPartyLogin
+        },
         checkSession() {
             if (this.isSessionExpired) {
                 this.logout()
@@ -87,6 +91,7 @@ export const user = defineStore('user', {
             this.permissions = "";
             this.isLogedin = false;
             this.expirationTime = null;
+            this.isThirdPartyLogin = false;
 
             // 同時刪除 localStorage 中的數據
             localStorage.removeItem('userId');
@@ -94,11 +99,12 @@ export const user = defineStore('user', {
             localStorage.removeItem('permissions');
             localStorage.removeItem('isLogedin');
             localStorage.removeItem('expirationTime');
+            localStorage.removeItem('isThirdPartyLogin');
         }
 },
 persist: {
     storage: localStorage,
-    paths: ["userId", "isLogedin", "userToken", "permissions", "expirationTime"]
+    paths: ["userId", "isLogedin", "userToken", "permissions", "expirationTime","isThirdPartyLogin"]
 }
 })
 
