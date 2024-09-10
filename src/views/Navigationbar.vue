@@ -112,6 +112,7 @@ function logout() {
   axiosapi.defaults.headers.authorization = "";
   userStore.logout();
   unreadCount.value = 0;
+  updateCartCount(0);
   notifications.value = [];
   if (intervalId) {
     clearInterval(intervalId);
