@@ -21,10 +21,8 @@
   v-if="postType === 'share'"
 >
   <div class="column" v-for="post in shareposts" :key="post.postId">
-    <div class="share-card" @click="">
-      <div
-        class="ts-icon is-circular is-pen-icon is-large share-edit-button"
-      ></div>
+    <div class="share-card" @click="viewPost (post)">
+      <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost (post)"></div>
       <!-- ^編輯按鈕^ -->
       <div class="share-image">
         <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
@@ -62,7 +60,7 @@
           <div class="ts-header column">
             {{ post.postTitle }}
           </div>
-          <div class="ts-icon is-pen-icon is-large column edit-button"></div>
+          <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
           <!-- ^編輯按鈕^ -->
         </div>
         <p>{{ post.contentText }}</p>
@@ -84,13 +82,23 @@
 import axiosapi from "@/plugins/axios.js";
 import { ref, watch } from "vue";
 import useUserStore from "@/stores/user.js";
+import { useRouter } from 'vue-router';
 
 const userId = useUserStore().userId;
 const postType = ref("share");
 const posts = ref([]);
 const forumposts = ref([]);
 const shareposts = ref([]);
-const path = import.meta.env.VITE_POST_IMAGE_URL; 
+const path = import.meta.env.VITE_POST_IMAGE_URL;
+const router = useRouter();
+
+const viewPost = (post) => {
+  if (post.contentType === 'share') {
+    router.push({ name: 'shareDetails-link', params: { postId: post.postId } }); 
+  } else if (post.contentType === 'forum') {
+    router.push({ name: 'postContent-link', params: { id: post.postId } }); 
+  }
+};
 
 //寫法參考 page/order.vue
 watch(

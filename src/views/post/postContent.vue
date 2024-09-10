@@ -54,7 +54,24 @@
           </span> -->
           
         </div>
-        
+        <!-- 浮動式至頂效果 -->
+        <div :style="{ height: '1vh', padding: '10px' }">
+          <a-back-top />
+        </div>
+
+        <!-- 檢舉按鈕 -->
+        <a-float-button shape="square" description="檢舉"
+            :style="{ right: '24px', bottom: '96px',}">
+            <template #icon>
+              <a-tooltip title="檢舉">
+                <!-- 檢舉按鈕圖示 -->
+                <warning-outlined 
+                  @click="goToReport(post.postId)" 
+                  style="color: red; font-size: 20px;" />
+              </a-tooltip>
+            </template>
+          </a-float-button>
+
         <!-- 編輯按鈕 -->
         <a-button v-if="post.userId === userId" type="primary" 
           @click="() => goToEditPage(post.postId)">編輯</a-button>
@@ -69,14 +86,14 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
-import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
+import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined, WarningOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
 import comment from './comment.vue';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
-dayjs.locale('zh-tw'); // 設置語言為中文
+dayjs.locale('zh-tw'); 
 
 const post = ref({});
 const likes = ref(0);
@@ -122,6 +139,12 @@ const fetchPostData = async () => {
 // 導航到編輯頁面
 const goToEditPage = (postId) => {
   router.push({ name: "editPost-link", params: { id: postId } });
+};
+
+// 導航到檢舉頁面
+const goToReport = (postId) => {
+  router.push({ name: 'reportPost-link', params: { id: postId } 
+});
 };
 
 // // 處理圖片載入錯誤

@@ -12,7 +12,7 @@
             <a-textarea
                 v-model:value="description"
                 placeholder="輸入敘述"
-                rows="5"
+                :rows="5"
                 class="textarea"
             />
             </a-form-item>
