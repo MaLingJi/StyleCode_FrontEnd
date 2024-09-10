@@ -5,13 +5,19 @@
                 <div class="carousel-container">
                     <!-- 照片輪播 -->
                     <transition name="fade" mode="out-in">
-                        <div class="ts-image main-image" :key="currentImageIndex">
+                        <div class="ts-image main-image" :key="currentImageIndex" @click="openLightbox">
                             <img :src="getImageUrl(currentImage)" />
                         </div>
                     </transition>
                     <!-- 往前一張or下一張 -->
                     <button class="carousel-button prev" @click="prevImage">&lt;</button>
                     <button class="carousel-button next" @click="nextImage">&gt;</button>
+                </div>
+
+                <div v-if="isLightboxOpen" class="lightbox" @click="closeLightbox">
+                    <div class="lightbox-content">
+                        <img :src="getImageUrl(currentImage)" />
+                    </div>
                 </div>
 
                 <div class="ts-grid thumbnail-grid">
@@ -39,17 +45,19 @@
             </div>
 
             <!-- 右側：細節 -->
-            <div class="ts-column is-9-wide">
+            <div class="column is-5-wide">
                 <div class="ts-box">
                     <div class="ts-content">
-                        <RouterLink :to="{
-                            name: 'edit-share-link',
-                            params: { postId: route.params.postId }
-                        }">
-                            <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
-                        </RouterLink>
-                        <div class="ts-button" v-if="post.userId === userStore.userId" @click="deletePost(post.postId)">
-                            刪除</div>
+                        <div class="ts-wrap">
+                            <RouterLink :to="{
+                                name: 'edit-share-link',
+                                params: { postId: route.params.postId }
+                            }">
+                                <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
+                            </RouterLink>
+                            <div class="ts-button" v-if="post.userId === userStore.userId" @click="deletePost(post.postId)">
+                                刪除</div>
+                        </div>
                         <div class="ts-grid is-middle-aligned">
                             <div class="ts-image">
                                 <img :src="userPhoto" width="40">
@@ -83,7 +91,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="ts-divider"></div>
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
                             <span class="ts-chip" v-for="tag in tags" :key="tag">{{ tag.tagName }}</span>
@@ -119,8 +127,18 @@ const isCollected = ref(false); // 當前用戶是否已收藏
 const likeCount = ref(0); // Like 數量
 const isLiked = ref(false); // 當前用戶是否已 Like
 
+const isLightboxOpen = ref(false);
+
 const productTags = ref([]);
 const tags = ref([]);
+
+const openLightbox = () => {
+    isLightboxOpen.value = true;
+};
+
+const closeLightbox = () => {
+    isLightboxOpen.value = false;
+};
 
 const toggleCollection = () => {
     axiosapi.post('/collections/toggle', {
@@ -374,6 +392,7 @@ function formatDate(date) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .fade-enter-active,
@@ -510,5 +529,16 @@ function formatDate(date) {
 .product-subcategory {
     font-size: 0.9em;
     color: #666;
+}
+
+.column.is-2-wide {
+    flex: 0 0 auto;
+    max-width: none;
+    /* 避免預設的寬度設置影響圖片顯示 */
+}
+
+.ts-divider {
+    margin: 20px 0;
+    /* 確保分隔線有足夠的上下間距 */
 }
 </style>
