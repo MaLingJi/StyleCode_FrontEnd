@@ -35,6 +35,7 @@ import OrderManageTable from './OrderManageTable.vue';
 import OrderManageStats from './OrderManageStats.vue';
 import OrderManagePieChart from './OrderManagePieChart.vue';
 
+//DatePicker api 屬性
 const range = ref({
     start: new Date(),
     end: new Date()
@@ -68,8 +69,8 @@ const formatDate = (date) => {
     if (date instanceof Date) {
         const offset = date.getTimezoneOffset();
         const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
-        return adjustedDate.toISOString().slice(0, 19);  // 返回格式为 "YYYY-MM-DDTHH:mm:ss"
-    }
+        return adjustedDate.toISOString().slice(0, 19);  
+    }//DatePicker api 跟我們GMT+8會有時間差異 需要調整
     console.error('Invalid date format');
     return '';
 };

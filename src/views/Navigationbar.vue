@@ -118,6 +118,7 @@ async function logout() {
   axiosapi.post("/logout");
   userStore.logout();
   unreadCount.value = 0;
+  updateCartCount(0);
   notifications.value = [];
   if (intervalId) {
     clearInterval(intervalId);
