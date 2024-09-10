@@ -99,7 +99,7 @@ import { shallowRef, onMounted } from "vue";
 import OrderManagement from "@/components/order/OrderManage.vue";
 import refundReview from "./refundReview.vue";
 import backUser from "@/components/profile/backUser.vue";
-import postwebset from "./postwebset.vue";
+import postwebset from "@/components/profile/postwebset.vue";
 
 import useUserStore from "@/stores/user.js";
 const userStore = useUserStore();
