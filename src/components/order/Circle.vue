@@ -20,7 +20,7 @@
         </div>
     </div>
 </template>
-
+<!-- 依照頁面傳來的數字決定圈圈顏色要不要變 -->
 <script setup>
 const props = defineProps({
     currentStep: {

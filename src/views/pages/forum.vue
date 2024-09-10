@@ -122,9 +122,13 @@ async function callFind() {
     const response = await axiosapi.get("/post");
     console.log("回覆:", response.data);
     // 過濾不屬於論壇和刪除過後的帖子
-    const filteredPosts = response.data.filter(post => post.contentType === "forum" && !post.deletedAt && post.images && post.images.length > 0);
+    const filteredPosts = response.data.filter(post => 
+    post.contentType === "forum" && !post.deletedAt);
     // 獲取留言的數量，過濾掉已刪除的留言
     for (const post of filteredPosts) {
+      // post.avatar = post.userPhoto; //抓頭像
+      // console.log(post.avatar);
+      post.images = post.images.filter(image => !image.deletedAt); 
       post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0;
       post.collects = post.collections ? post.collections.length : 0;
       post.likes = post.likes ? post.likes.length : 0;

@@ -20,22 +20,17 @@
           </div>
           <div class="column user-actions">
             <div class="ts-wrap">
-              <RouterLink class="ts-text is-undecorated action-icon" to="/cart"
-                ><span
-                  class="ts-icon is-spinning is-cart-shopping-icon is-big"
-                ></span
-              ></RouterLink>
-              <button
-                class="ts-text is-undecorated action-icon width-30"
-                popovertarget="noti-popup"
-              >
+              <RouterLink class="ts-text is-undecorated action-icon width-30" to="/cart"><span
+                  class="ts-icon is-spinning is-cart-shopping-icon is-big"></span>
+                <span class="ts-badge is-negative is-small notification-badge" v-if="cartItemCount > 0">
+                  {{ cartItemCount }}
+                </span>
+              </RouterLink>
+              <button class="ts-text is-undecorated action-icon width-30" popovertarget="noti-popup">
                 <!-- @click="clearNotifications" -->
-                <span class="ts-icon is-spinning is-bell-icon is-big"></span
-                ><span
-                  class="ts-badge is-negative is-small notification-badge"
-                  v-if="unreadCount > 0"
-                  >{{ unreadCount }}</span
-                >
+                <span class="ts-icon is-spinning is-bell-icon is-big"></span><span
+                  class="ts-badge is-negative is-small notification-badge" v-if="unreadCount > 0">{{ unreadCount
+                  }}</span>
               </button>
               <div class="ts-popover ts-menu noti-popver" id="noti-popup" v-if="userStore.isLogedin" popover>
                 <div class="ts-content has-dark is-dense">
@@ -43,42 +38,25 @@
                 </div>
                 <div class="ts-divider"></div>
                 <!-- 如果沒有通知，顯示 "暫無通知" -->
-                <div
-                  v-if="notifications && notifications.length === 0"
-                  class="ts-content is-dense"
-                >
+                <div v-if="notifications && notifications.length === 0" class="ts-content is-dense">
                   <div class="ts-text is-secondary">暫無通知</div>
                   <div class="ts-divider"></div>
                 </div>
                 <!-- 有通知，顯示通知列表 -->
                 <div v-else>
-                  <template
-                    v-for="(notification, index) in notifications.slice(0, 5)"
-                    :key="index"
-                  >
-                    <div
-                      class="item"
-                      @click="readNotification(notification.Nid)"
-                    >
-                      <div
-                        class="ts-iconset is-outlined ts-grid is-middle-aligned is-spaced-between"
-                      >
-                        <span
-                          class="column"
-                          :class="{
-                            'ts-icon': true,
-                            'is-shop-icon': notification.type === 'shop',
-                            'is-heart-icon': notification.type === 'post',
-                          }"
-                        ></span>
+                  <template v-for="(notification, index) in notifications.slice(0, 5)" :key="index">
+                    <div class="item" @click="readNotification(notification.Nid)">
+                      <div class="ts-iconset is-outlined ts-grid is-middle-aligned is-spaced-between">
+                        <span class="column" :class="{
+                          'ts-icon': true,
+                          'is-shop-icon': notification.type === 'shop',
+                          'is-heart-icon': notification.type === 'post',
+                        }"></span>
                         <div class="column" style="width: 80%">
-                          <div
-                            class="ts-text"
-                            :class="{
-                              'is-heavy': notification.status === 0,
-                              'unread-notification': notification.status === 0,
-                            }"
-                          >
+                          <div class="ts-text" :class="{
+                            'is-heavy': notification.status === 0,
+                            'unread-notification': notification.status === 0,
+                          }">
                             {{ notification.message }}
                           </div>
                           <div class="ts-text is-tiny is-secondary">
@@ -90,9 +68,7 @@
                     <div class="ts-divider"></div>
                   </template>
                 </div>
-                <div
-                  class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
-                >
+                <div class="item ts-content is-secondary is-dense ts-wrap is-center-aligned">
                   <div @click="toNotificationList">前往通知列表</div>
                 </div>
               </div>
@@ -129,7 +105,7 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import Swal from "sweetalert2";
 
 const router = useRouter();
-const { cartItemCount, fetchCartCount ,updateCartCount} = useCart();
+const { cartItemCount, fetchCartCount, updateCartCount } = useCart();
 const userStore = useUserStore();
 const notifications = ref([]);
 const unreadCount = ref(0); //未讀通知數
@@ -142,6 +118,7 @@ async function logout() {
   axiosapi.post("/logout");
   userStore.logout();
   unreadCount.value = 0;
+  updateCartCount(0);
   notifications.value = [];
   if (intervalId) {
     clearInterval(intervalId);

@@ -8,7 +8,7 @@
             <label class="item">
                 <input type="radio" name="language" value="2" v-model="status" />
                 <div class="text">已審核</div>
-            </label>
+            </label>    
         </div>
     </div>
     <div class="ts-container">
@@ -130,8 +130,10 @@ const formatDate = (dateString) => {
     if (!dateString) return ''
     return dateString.replace('T', ' ').split('.')[0]
 }
+//把日期的T變成空白 UI
 
 
+//展開收起功能
 const toggleOrderDetails = orderId => {
     if (expandedOrderId.value === orderId) {
         expandedOrderId.value = null;
@@ -215,6 +217,7 @@ const rejectRefund = async (order) => {
     }
 };
 
+//根據訂單狀態顯示同意或拒絕
 const getStatusText = (status) => {
     switch (status) {
         case 1: return '拒絕退款';
