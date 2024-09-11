@@ -53,12 +53,12 @@
           <template #renderItem="{ item }">
             <a-list-item :key="item.postId">
               <template #actions>
-                <span @click.stop="likePost(item.postId)" style="cursor: pointer; margin-right: 8px;">
+                <span @click.stop="handleLike(item.postId)" style="cursor: pointer; margin-right: 8px;">
                   <heart-outlined v-if="!item.liked" style="color: #eb2f96;" />
                   <heart-filled v-else style="color: #eb2f96;" />
                   {{ item.likes }}
                 </span>
-                <span @click.stop="collectPost(item.postId)" style="cursor: pointer; margin-right: 8px;">
+                <span @click.stop="handleCollect(item.postId)" style="cursor: pointer; margin-right: 8px;">
                   <star-outlined v-if="!item.collected" style="color: #fadb14;" />
                   <star-filled v-else style="color: #fadb14;" />
                   {{ item.collects }}
@@ -100,10 +100,13 @@ import { ref, onMounted } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const userStore = useUserStore();
 const listData = ref([]);
 const path = import.meta.env.VITE_POST_IMAGE_URL; 
+const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 
 const pagination = ref({
   onChange: (page) => {
@@ -126,8 +129,7 @@ async function callFind() {
     post.contentType === "forum" && !post.deletedAt);
     // 獲取留言的數量，過濾掉已刪除的留言
     for (const post of filteredPosts) {
-      // post.avatar = post.userPhoto; //抓頭像
-      // console.log(post.avatar);
+      post.avatar = userPhotoPath + post.userPhoto; // 抓頭像
       post.images = post.images.filter(image => !image.deletedAt); 
       post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0;
       post.collects = post.collections ? post.collections.length : 0;
@@ -160,6 +162,23 @@ const checkIfUserCollected = async (postId) => {
   } catch (error) {
     return false; // 如果出現錯誤，表示用戶未收藏
   }
+};
+
+// 按讚沒登入邏輯
+const handleLike = async (id) => {
+  if (!userStore.isLoggedIn) {
+    router.push('/secure/login');
+    return;
+  }
+  await likePost(id);
+};
+// 收藏沒登入邏輯
+const handleCollect = async (id) => {
+  if (!userStore.isLoggedIn) {
+    router.push('/secure/login');
+    return;
+  }
+  await collectPost(id);
 };
 
 const likePost = async (id) => {

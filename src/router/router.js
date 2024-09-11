@@ -17,7 +17,7 @@ import post from "@/views/post/post.vue";
 import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
-// import reportPost from "@/views/post/reportPost.vue"
+import reportPost from "@/views/post/reportPost.vue"
 
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
@@ -46,11 +46,11 @@ const routes = [
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "profile-ling", path: "/secure/profile/:initialView?", component: profile ,  props: true, meta: { requiresAuth: true }},
   
-  { name: "comment-link", path: "/comment/:id", component: comment, meta: { requiresAuth: true }},
+  { name: "comment-link", path: "/comment/:id", component: comment},
   { name: "editPost-link", path: "/editPost/:id", component: editPost, meta: { requiresAuth: true }},
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post,meta: { requiresAuth: true }},
-  // { name: "reportPost-link", path: "/report", component: reportPost,meta: { requiresAuth: true }},
+  { name: "reportPost-link", path: "/report", component: reportPost,meta: { requiresAuth: true }},
   
   
   { name: "refund-link", path: "/refund/:orderId", component: refund},

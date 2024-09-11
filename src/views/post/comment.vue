@@ -8,7 +8,7 @@
     >
       <template #renderItem="{ item }">
         <a-list-item>
-          <a-comment :author="item.userDetail.userName || `用戶 ${item.userId}`" :avatar="item.avatar">
+          <a-comment :author="item.userDetail.userName || `${item.userId}`" :avatar="item.avatar">
             <template #content>
               <p v-if="!item.isEditing">{{ item.commentText }}</p>
               <a-textarea 
@@ -37,7 +37,7 @@
 
     <a-comment class="new-comment">
       <template #avatar>
-        <a-avatar src="/public/MDFK.png" alt="用戶" />
+        <a-avatar src="/public/MDFK.png" />
       </template>
       <template #content>
         <a-form-item>
@@ -68,6 +68,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-tw';
 import useUserStore from "@/stores/user.js";
 import Swal from 'sweetalert2';
+import { useRouter } from 'vue-router';
+// import { fetchUserProfile } from '@/stores/comment.js';
 
 dayjs.extend(relativeTime);// 使用相對時間插件
 dayjs.locale('zh-tw');// 設置語言為中文
@@ -84,6 +86,9 @@ const submitting = ref(false);
 const userStore = useUserStore();
 const userId = userStore.userId;
 const userName = userStore.userName;
+const router = useRouter();
+// const userPhoto = userStore.userPhoto || 'default-avatar.jpg';
+// const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 
 // 獲取留言數據
 const fetchComments = async () => {
@@ -98,14 +103,25 @@ const fetchComments = async () => {
         commentId: comment.commentId,
         postId: comment.postId,
         userId: comment.userId,
-        userDetail: { userName: comment.userName || `用戶${comment.userId}` },
+        userDetail: { userName: comment.userName },
         commentText: comment.commentText,
         createdAt: comment.createdAt,
         deletedAt: comment.deletedAt,
         isEditing: false,
         editContent: '',
-        userId: comment.userId
+        // avatar: ''
       }));
+
+      // // 取得使用者頭像
+      // for (const comment of commentsData) {
+      //   try {
+      //     const userProfile = await fetchUserProfile(comment.userId);
+      //     comment.avatar = userProfile.avatar; // 设置头像
+      //   } catch (error) {
+      //     console.error("取得使用者頭像失敗:", error);
+      //   }
+      // }
+      // comments.value = commentsData;
     } else {
       console.error("獲取的評論數據不是數組:", response.data);
       comments.value = []; // 如果不是數組，則重置為空數組
@@ -117,6 +133,17 @@ const fetchComments = async () => {
 
 // 新增評論
 const handleSubmit = async () => {
+  if (!userId) { 
+    Swal.fire({
+      icon: 'warning',
+      title: '請先登入!',
+      showConfirmButton: true
+    }).then(() => {
+      router.push('/secure/login');
+    });
+    return;
+  }
+
   submitting.value = true;
   try {
     const response = await axiosapi.post(`/comment`, {
@@ -135,8 +162,19 @@ const handleSubmit = async () => {
         createdAt: new Date().toISOString(),
         isEditing: false,
         editContent: '',
-        userId: userId
+        // avatar: ''
+        // avatar: `${userPhotoPath}${userPhoto}`,
+        // userId: userId
       });
+
+       // 更新頭像的新評論
+      // try {
+      //   const userProfile = await fetchUserProfile(userId);
+      //   comments.value[0].avatar = userProfile.avatar; //設定頭像
+      // } catch (error) {
+      //   console.error("取得使用者頭像失敗:", error);
+      // }
+
       newComment.value = ''; 
     } else {
       console.error("新增評論返回的數據格式不正確:", response.data);

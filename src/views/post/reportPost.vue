@@ -76,11 +76,9 @@ const submitReport = () => {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     min-height: 600px; /* 設置最小高度，根據需要進行調整 */
 }
-
 .ts.form {
     margin-bottom: 20px; /* 每個表單組的底部邊距 */
 }
-
 .ts.dropdown {
     width: 100%; 
     height: 40px; 
@@ -89,7 +87,6 @@ const submitReport = () => {
     border: 1px solid #d9d9d9; 
     border-radius: 4px; 
 }
-
 .ts.textarea {
     width: 100%; 
     height: 100px; /* 增加文本區域的高度 */
@@ -98,7 +95,6 @@ const submitReport = () => {
     border: 1px solid #d9d9d9; 
     border-radius: 4px; 
 }
-
 .ts.primary.button {
     background-color: #007bff; 
     color: white; 
@@ -107,7 +103,6 @@ const submitReport = () => {
     border-radius: 4px; 
     cursor: pointer; 
 }
-
 .ts.primary.button:hover {
     background-color: #0056b3; 
 }
