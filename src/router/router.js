@@ -81,7 +81,7 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.meta.requiresAuth
 
   if (requiresAuth && !isAuthenticated) {
-    next('/403')
+    next('/LoginSuccess')
   } else {
     next()
   }
