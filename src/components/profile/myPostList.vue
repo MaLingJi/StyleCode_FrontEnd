@@ -51,26 +51,27 @@
     </div>
     <!-------- 論 壇 主 要 頁 面 -------->
     <div v-if="postType === 'forum'">
-    <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
-      <div class="ts-image is-covered">
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" />
-      </div>
-      <div class="ts-content right-side">
-        <div class="ts-grid is-spaced-between">
-          <div class="ts-header column">
-            {{ post.postTitle }}
-          </div>
-          <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
-          <!-- ^編輯按鈕^ -->
+      <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
+        <div class="ts-image is-covered">
+          <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
+            width="150" height="100%" />
         </div>
-        <p>{{ post.contentText }}</p>
-        <div class="ts-grid icons">
-          <div class="column">
-            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+        <div class="ts-content right-side">
+          <div class="ts-grid is-spaced-between">
+            <div class="ts-header column">
+              {{ post.postTitle }}
+            </div>
+            <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
+            <!-- ^編輯按鈕^ -->
           </div>
-          <div class="column">
-            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
-          </div>
+          <p>{{ post.contentText }}</p>
+          <div class="ts-grid icons">
+            <div class="column">
+              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+            </div>
+            <div class="column">
+              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            </div>
           </div>
         </div>
       </div>
@@ -94,9 +95,9 @@ const router = useRouter();
 
 const viewPost = (post) => {
   if (post.contentType === 'share') {
-    router.push({ name: 'shareDetails-link', params: { postId: post.postId } }); 
+    router.push({ name: 'shareDetails-link', params: { postId: post.postId } });
   } else if (post.contentType === 'forum') {
-    router.push({ name: 'postContent-link', params: { id: post.postId } }); 
+    router.push({ name: 'postContent-link', params: { id: post.postId } });
   }
 };
 
@@ -104,7 +105,7 @@ const viewPost = (post) => {
 watch(
   postType,
   (newType) => {
-     // 清空數組不互相傳遞
+    // 清空數組不互相傳遞
     forumposts.value = [];
     shareposts.value = [];
 
@@ -202,39 +203,41 @@ watch(
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .ts-box {
   height: 150px;
 }
+
 .right-side {
   width: 100%;
 }
+
 .margin-right {
   margin-right: 10px;
 }
-.is-heart-icon {
-  color: pink;
-}
-.is-bookmark-icon {
-  color: cornflowerblue;
-}
+
 .edit-button:hover {
   cursor: pointer;
   color: #0050b3;
 }
+
 .share-edit-button:hover {
   cursor: pointer;
   color: cornflowerblue;
   background-color: #d6d6d6;
 }
+
 .share-edit-button {
   position: absolute;
   right: 10px;
   top: 10px;
   background-color: #f0f0f0;
 }
+
 .icons {
   font-size: 18px;
 }
+
 .share-icons {
   font-size: 16px;
 }

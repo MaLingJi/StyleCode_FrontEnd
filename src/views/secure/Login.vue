@@ -96,7 +96,9 @@ import axiosapi from "@/plugins/axios.js";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
 import useUserStore from "@/stores/user.js";
+import { useCart } from '@/services/cartService';
 
+const { fetchCartCount } = useCart();
 const userEmail = ref("");
 const password = ref("");
 const message = ref("");
@@ -193,7 +195,8 @@ function login() {
           userStore.setUserToken(response.data.token);
           userStore.setPermissions(response.data.permissions);
           userStore.setLogedin(true);
-
+          //購物車通知 使用者登出後再登入會再抓一次
+          fetchCartCount(userStore.userId)
           //跳轉首頁
           router.push({ path: "/" });
         });

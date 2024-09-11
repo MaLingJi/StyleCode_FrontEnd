@@ -286,8 +286,33 @@ function switchComps(comp) {
 
 ///////////////////////////// 顯示使用者資料 /////////////////////////////
 
-function showData(userId) {
+async function showData(userId) {
   console.log("userId", userId);
+  Swal.fire({
+    title: "讀取中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+  try {
+    const response = await axiosapi.get(`/member/profile/${userId}`);
+    Swal.close();
+    console.log("response.data", response.data);
+    if (response.data.success !== false) {
+      console.log("response.data.userDetail", response.data.userDetail);
+      userDetail.value = response.data.userDetail;
+      if (isUrl(response.data.userDetail.userPhoto)) {
+        userPhoto.value = response.data.userDetail.userPhoto;
+        photoPreview.value = response.data.userDetail.userPhoto;
+      } else {
+        userPhoto.value = photoPath + response.data.userDetail.userPhoto;
+        photoPreview.value = photoPath + response.data.userDetail.userPhoto;
+      }
+    } else {
+      console.error(response.data.message);
+    }
+  } catch (error) {}
   axiosapi
     .get(`/member/profile/${userId}`)
     .then(function (response) {
@@ -341,6 +366,14 @@ async function uploadPhoto() {
   formData.forEach((value, key) => {
     console.log(`${key}:`, value);
   });
+  document.querySelector("#updatePhotoModal").close();
+  Swal.fire({
+    title: "處理中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
   try {
     const response = await axiosapi.put(
       `/member/profile/photo/${userStore.userId}`,
@@ -351,12 +384,12 @@ async function uploadPhoto() {
         },
       }
     );
+    Swal.close();
 
     if (response.data.success) {
       userPhoto.value = photoPath + response.data.newPhotoName;
       photoPreview.value = userPhoto.value;
-      document.querySelector("#updatePhotoModal").close();
-      Swal.fire({
+      await Swal.fire({
         text: response.data.message,
         icon: "success",
         confirmButtonText: "確認",
@@ -364,17 +397,16 @@ async function uploadPhoto() {
         allowOutsideClick: false,
       });
     } else {
-      document.querySelector("#updatePhotoModal").close();
-      Swal.fire({
+      await Swal.fire({
         text: response.data.message,
         icon: "warning",
         confirmButtonText: "確認",
         confirmButtonColor: "rgb(35 40 44)",
         allowOutsideClick: false,
       });
+      document.querySelector("#updatePhotoModal").show();
     }
   } catch (error) {
-    document.querySelector("#updatePhotoModal").close();
     Swal.fire({
       text: "更新失敗，請稍後再試。" + error.message,
       icon: "error",
@@ -382,6 +414,7 @@ async function uploadPhoto() {
       confirmButtonColor: "rgb(35 40 44)",
       allowOutsideClick: false,
     });
+    document.querySelector("#updatePhotoModal").show();
   }
 }
 

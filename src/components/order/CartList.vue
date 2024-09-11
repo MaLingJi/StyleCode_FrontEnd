@@ -179,7 +179,7 @@ const removeItem = (item) => {
     }
     )
 }
-
+//設定狀態用來判斷庫存
 onMounted(async () => {
     props.cartItems.forEach(item => {
         stockStatus.value.set(item.productDetailsId, false);
