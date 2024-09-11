@@ -329,6 +329,7 @@ function deleteCard(cardId) {
               text: response.data.message,
               icon: "success",
               confirmButtonText: "確認",
+              confirmButtonColor: "rgb(35 40 44)",
               allowOutsideClick: false,
             });
           } else {
@@ -336,6 +337,7 @@ function deleteCard(cardId) {
               text: response.data.message,
               icon: "warning",
               confirmButtonText: "確認",
+              confirmButtonColor: "rgb(35 40 44)",
               allowOutsideClick: false,
             });
           }
