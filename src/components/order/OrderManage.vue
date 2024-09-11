@@ -1,23 +1,23 @@
 <template>
     <div class="dashboard ts-container is-padded">
         <div class="ts-grid">
-            <div class="stats column is-16-wide ts-box   ">
+            <div class="stats column is-8-wide ts-box   ">
                 <OrderManageStats :orders="orders"></OrderManageStats>
                 <div claa="pieChart">
                     <OrderManagePieChart :orders="orders"></OrderManagePieChart>
                 </div>
             </div>
-            <div class="headers column is-16-wide ts-box is-horizontal">
+            <div class="headers column is-8-wide ts-box is-horizontal">
                 <div class="header datePicker">
                     <DatePicker expanded v-model="range" mode="dateTime" is-range @input="fetchOrders" />
                 </div>
             </div>
         </div>
         <div class="charts ts-grid">
-            <div class="chart lineChart column is-16-wide ts-container ts-box is-horizontal">
+            <div class="chart lineChart column is-8-wide ts-container ts-box is-horizontal">
                 <OrderManageLineChart :orders="orders"></OrderManageLineChart>
             </div>
-            <div class="chart orderTable column is-16-wide ts-container ts-box is-horizontal">
+            <div class="chart orderTable column is-8-wide ts-container ts-box is-horizontal">
                 <!-- <OrderManageProChart :orders="orders"></OrderManageProChart> -->
                 <OrderManageTable :orders="orders"></OrderManageTable>
             </div>
@@ -130,9 +130,11 @@ watch(range, () => {
         gap: 0;
     }
 
-    .ts-grid .column {
+    /* 更新列宽度为16-wide */
+    .ts-grid .column.is-8-wide {
         width: 100% !important;
-        margin-bottom: 0.5rem;
+        max-width: none !important;
+        flex: 0 0 100% !important;
     }
 
     .ts-box {
