@@ -18,7 +18,6 @@
                 <OrderManageLineChart :orders="orders"></OrderManageLineChart>
             </div>
             <div class="chart orderTable column is-8-wide ts-container ts-box is-horizontal">
-                <!-- <OrderManageProChart :orders="orders"></OrderManageProChart> -->
                 <OrderManageTable :orders="orders"></OrderManageTable>
             </div>
         </div>
@@ -26,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed, ref, toRaw, watch } from 'vue';
+import {  ref, watch } from 'vue';
 import { DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import axiosapi from '@/plugins/axios.js';

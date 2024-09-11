@@ -72,7 +72,7 @@
 
   <div class="ts-box is-hollowed" v-else>
     <div class="ts-blankslate">
-      <div class="header ts-icon is-credit-card-icon"></div>
+      <div class="header ts-icon is-bell-slash-icon"></div>
       <div class="description">暫無通知</div>
     </div>
   </div>
@@ -212,8 +212,16 @@ function handlePageChange(page) {
   callFindNotification(page);
 }
 
-onMounted(() => {
-  callFindNotification();
+onMounted(async () => {
+  Swal.fire({
+    title: "讀取中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+  await callFindNotification();
+  Swal.close();
 });
 </script>
 

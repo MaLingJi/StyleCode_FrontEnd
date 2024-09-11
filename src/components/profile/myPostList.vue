@@ -16,61 +16,60 @@
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
   <div class="ts-container has-top-spaced">
-    <div
-  class="ts-grid is-3-columns is-relaxed is-stretched"
-  v-if="postType === 'share'"
->
-  <div class="column" v-for="post in shareposts" :key="post.postId">
-    <div class="share-card" @click="viewPost (post)">
-      <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost (post)"></div>
-      <!-- ^編輯按鈕^ -->
-      <div class="share-image">
-        <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
-      </div>
-      <div class="share-info">
-        <!-- 動態綁定用戶名稱 -->
-        <h3>{{ post.userName }}</h3>
-        <div class="ts-grid is-spaced-between">
-          <!-- 動態綁定文章標題 -->
-          <p class="column">{{ post.postTitle }}</p>
-          <div class="ts-grid share-icons column">
-            <div class="column">
-              <!-- 動態顯示喜歡數量 -->
-              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
-            </div>
-            <div class="column">
-              <!-- 動態顯示收藏數量 -->
-              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
-            </div>
+    <div class="ts-grid is-3-columns is-relaxed is-stretched" v-if="postType === 'share'">
+      <div class="column" v-for="post in shareposts" :key="post.postId">
+        <div class="share-card" @click="viewPost(post)">
+          <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost(post)"></div>
+          <!-- ^編輯按鈕^ -->
+          <div class="share-image">
+            <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
+            <img
+              :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
+          </div>
+          <div class="share-info">
+            <!-- 動態綁定用戶名稱 -->
+            <h3>{{ post.userName }}</h3>
+            <!-- <div class="ts-grid is-spaced-between"> -->
+            <!-- 動態綁定文章標題 -->
+            <p>{{ post.postTitle }}</p>
+            <div class="ts-grid share-icons column">
+              <div class="column">
+                <!-- 動態顯示喜歡數量 -->
+                <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+              </div>
+              <div class="column">
+                <!-- 動態顯示收藏數量 -->
+                <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
               </div>
             </div>
+            <!-- </div> -->
           </div>
         </div>
       </div>
     </div>
     <!-------- 論 壇 主 要 頁 面 -------->
     <div v-if="postType === 'forum'">
-    <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
-      <div class="ts-image is-covered">
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" />
-      </div>
-      <div class="ts-content right-side">
-        <div class="ts-grid is-spaced-between">
-          <div class="ts-header column">
-            {{ post.postTitle }}
-          </div>
-          <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
-          <!-- ^編輯按鈕^ -->
+      <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
+        <div class="ts-image is-covered">
+          <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
+            width="150" height="100%" />
         </div>
-        <p>{{ post.contentText }}</p>
-        <div class="ts-grid icons">
-          <div class="column">
-            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+        <div class="ts-content right-side">
+          <div class="ts-grid is-spaced-between">
+            <div class="ts-header column">
+              {{ post.postTitle }}
+            </div>
+            <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
+            <!-- ^編輯按鈕^ -->
           </div>
-          <div class="column">
-            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
-          </div>
+          <p>{{ post.contentText }}</p>
+          <div class="ts-grid icons">
+            <div class="column">
+              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+            </div>
+            <div class="column">
+              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            </div>
           </div>
         </div>
       </div>
@@ -94,9 +93,9 @@ const router = useRouter();
 
 const viewPost = (post) => {
   if (post.contentType === 'share') {
-    router.push({ name: 'shareDetails-link', params: { postId: post.postId } }); 
+    router.push({ name: 'shareDetails-link', params: { postId: post.postId } });
   } else if (post.contentType === 'forum') {
-    router.push({ name: 'postContent-link', params: { id: post.postId } }); 
+    router.push({ name: 'postContent-link', params: { id: post.postId } });
   }
 };
 
@@ -104,7 +103,7 @@ const viewPost = (post) => {
 watch(
   postType,
   (newType) => {
-     // 清空數組不互相傳遞
+    // 清空數組不互相傳遞
     forumposts.value = [];
     shareposts.value = [];
 
@@ -134,7 +133,8 @@ watch(
 
 <style scoped>
 .share-card {
-  width: 250px; /* 設置固定寬度 */
+  width: 250px;
+  /* 設置固定寬度 */
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -150,14 +150,16 @@ watch(
 
 .share-image {
   width: 100%;
-  height: 300px; /* 設置固定高度 */
+  height: 300px;
+  /* 設置固定高度 */
   overflow: hidden;
 }
 
 .share-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+  object-fit: cover;
+  /* 確保圖片填滿容器並保持比例 */
 }
 
 .share-info {
@@ -183,40 +185,43 @@ watch(
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .ts-box {
   height: 150px;
 }
+
 .right-side {
   width: 100%;
 }
+
 .margin-right {
   margin-right: 10px;
 }
-.is-heart-icon {
-  color: pink;
-}
-.is-bookmark-icon {
-  color: cornflowerblue;
-}
+
 .edit-button:hover {
   cursor: pointer;
   color: #0050b3;
 }
+
 .share-edit-button:hover {
   cursor: pointer;
   color: cornflowerblue;
   background-color: #d6d6d6;
 }
+
 .share-edit-button {
   position: absolute;
   right: 10px;
   top: 10px;
   background-color: #f0f0f0;
 }
+
 .icons {
   font-size: 18px;
 }
+
 .share-icons {
   font-size: 16px;
+  margin-top: 10px;
 }
 </style>

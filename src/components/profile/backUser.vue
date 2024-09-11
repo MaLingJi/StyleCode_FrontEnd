@@ -301,9 +301,22 @@ function handlePageChange(page) {
   callFindUsers(page);
 }
 
-onMounted(function () {
-  callFindUsers();
-  fetchTodayRegistrations();
+onMounted(async function () {
+  Swal.fire({
+    title: "讀取中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  try {
+    await Promise.all([callFindUsers(), fetchTodayRegistrations()]);
+  } catch (error) {
+    console.error("Error during initialization:", error);
+  } finally {
+    Swal.close();
+  }
 });
 </script>
 
