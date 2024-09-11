@@ -114,8 +114,16 @@ const userInput = reactive({
   phone: "",
 });
 onMounted(function () {
+  Swal.fire({
+    title: "讀取中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
   // axiosapi.defaults.headers.authorization = `Bearer ${userStore.userToken}`;
   Object.assign(userInput, props.userDetail);
+  Swal.close();
 });
 
 const updateFields = () => {
@@ -125,55 +133,63 @@ const updateFields = () => {
   userInput.phone = "0933530123";
 };
 
-function callUpdate() {
-  // 將空字符串轉換為 null
+async function callUpdate() {
+  // 將空字串轉換為 null
   Object.keys(userInput).forEach((key) => {
     if (userInput[key as keyof typeof userInput] === "") {
       userInput[key as keyof typeof userInput] = null;
     }
   });
-
-  axiosapi
-    .put(`/member/profile/${userStore.userId}`, userInput)
-    .then(function (response) {
-      if (response.data.success) {
-        Object.assign(props.userDetail, userInput);
-        (
-          document.getElementById("updateProfileModal") as HTMLDialogElement
-        ).close();
-        Swal.fire({
-          text: response.data.message,
-          icon: "success",
-          confirmButtonText: "確認",
-          allowOutsideClick: false,
-          customClass: {
-            container: "my-swal",
-          },
-        });
-        emit("update", userInput);
-      } else {
-        (
-          document.getElementById("updateProfileModal") as HTMLDialogElement
-        ).close();
-        Swal.fire({
-          text: response.data.message,
-          icon: "warning",
-          confirmButtonText: "確認",
-          allowOutsideClick: false,
-          customClass: {
-            container: "my-swal",
-          },
-        });
-      }
-    })
-    .catch(function (error) {
-      Swal.fire({
-        text: "更新失敗，請稍後再試。" + error.message,
-        icon: "error",
+  (document.getElementById("updateProfileModal") as HTMLDialogElement).close();
+  Swal.fire({
+    title: "處理中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+  try {
+    const response = await axiosapi.put(
+      `/member/profile/${userStore.userId}`,
+      userInput
+    );
+    Swal.close();
+    if (response.data.success) {
+      Object.assign(props.userDetail, userInput);
+      await Swal.fire({
+        text: response.data.message,
+        icon: "success",
         confirmButtonText: "確認",
         allowOutsideClick: false,
+        customClass: {
+          container: "my-swal",
+        },
       });
+      emit("update", userInput);
+    } else {
+      (
+        document.getElementById("updateProfileModal") as HTMLDialogElement
+      ).show();
+      await Swal.fire({
+        text: response.data.message,
+        icon: "warning",
+        confirmButtonText: "確認",
+        allowOutsideClick: false,
+        customClass: {
+          container: "my-swal",
+        },
+      });
+    }
+  } catch (error) {
+    Swal.close();
+    await Swal.fire({
+      text: "更新失敗，請稍後再試。" + error.message,
+      icon: "error",
+      confirmButtonText: "確認",
+      allowOutsideClick: false,
     });
+    (document.getElementById("updateProfileModal") as HTMLDialogElement).show();
+  }
 }
 </script>
 
