@@ -320,9 +320,17 @@ function deleteCard(cardId) {
     cancelButtonColor: "#9e9e9e",
   }).then((result) => {
     if (result.isConfirmed) {
+      Swal.fire({
+        title: "處理中...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
       axiosapi
         .delete(`/member/creditCard/${userStore.userId}/${cardId}`)
         .then(function (response) {
+          Swal.close();
           if (response.data.success) {
             cards.value = cards.value.filter((card) => card.cardId !== cardId);
             Swal.fire({
