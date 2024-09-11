@@ -95,7 +95,7 @@ import Swal from 'sweetalert2';
 
 const status = ref(1);
 const orders = ref([]);
-const expandedOrderId = ref(null);
+const expandedOrderId = ref(null);//用來展開收起
 const orderDetails = ref([]);
 const user = useUserStore().userId;
 const router = useRouter()
@@ -118,16 +118,18 @@ watch(status, () => {
         });
 }, { immediate: true }); // 確保加載時執行一次
 
+//加工金額
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
 
+//加工日期 把T換成空白
 const formatDate = (dateString) => {
     if (!dateString) return ''
     return dateString.replace('T', ' ').split('.')[0]
 }
 
-
+//取得od判斷展開收起
 const toggleOrderDetails = orderId => {
     if (expandedOrderId.value === orderId) {
         expandedOrderId.value = null;
