@@ -314,4 +314,84 @@ img {
   padding-top: 10px;
   border-top: 1px solid #e0e0e0;
 }
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .content {
+    padding: 12px;
+  }
+
+  .rule-box {
+    padding: 1px 12px;
+  }
+
+  :deep(.ant-list-item-meta-title) {
+    font-size: 16px;
+  }
+
+  :deep(.ant-list-item-meta-description) {
+    font-size: 14px;
+  }
+
+  :deep(.ant-typography-title) {
+    font-size: 20px !important;
+  }
+
+  :deep(.ant-typography-paragraph) {
+    font-size: 14px !important;
+  }
+
+  :deep(.ant-list-item-action) {
+    margin-top: 8px;
+  }
+
+  :deep(.ant-list-item-extra) {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  :deep(.ant-list-item) {
+    flex-direction: column;
+  }
+
+  :deep(.ant-list-item-main) {
+    width: 100%;
+  }
+
+  :deep(.ant-avatar) {
+    width: 32px;
+    height: 32px;
+  }
+
+  .buttons {
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .buttons .ant-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  :deep(.ant-list-item-meta-title) {
+    font-size: 14px;
+  }
+
+  :deep(.ant-list-item-meta-description) {
+    font-size: 12px;
+  }
+
+  :deep(.ant-typography-title) {
+    font-size: 18px !important;
+  }
+
+  :deep(.ant-typography-paragraph) {
+    font-size: 12px !important;
+  }
+}
 </style>
