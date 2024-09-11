@@ -88,10 +88,10 @@
     </div>
   </header>
   <div class="nav-placeholder"></div>
-  <nav class="mobile-nav" :class="{ 'is-active': isMobileMenuOpen }">
-    <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
-    <RouterLink to="/forum" class="nav-link">論壇</RouterLink>
-    <RouterLink to="/shop" class="nav-link">商城</RouterLink>
+  <nav class="mobile-nav" :class="{ 'is-active': isMobileMenuOpen }" @click.stop>
+    <RouterLink to="/share" class="nav-link" @click="closeMobileMenu">穿搭</RouterLink>
+    <RouterLink to="/forum" class="nav-link" @click="closeMobileMenu">論壇</RouterLink>
+    <RouterLink to="/shop" class="nav-link" @click="closeMobileMenu">商城</RouterLink>
   </nav>
 </template>
 
@@ -220,20 +220,35 @@ onUnmounted(function () {
     //卸載時清除，通知計時
     clearInterval(intervalId);
   }
+  document.removeEventListener('click', handleOutsideClick);
 });
 
-// 新增：控制移動端選單的狀態
+// 控制移動端選單的狀態
 const isMobileMenuOpen = ref(false);
 
-// 新增：切換移動端選單的函數
+// 切換移動端選單的函數
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
+  if (isMobileMenuOpen.value) {
+    document.addEventListener('click', handleOutsideClick);
+  } else {
+    document.removeEventListener('click', handleOutsideClick);
+  }
 };
 
-// 新增：關閉移動端選單的函數
+// 關閉移動端選單的函數
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
+  document.removeEventListener('click', handleOutsideClick);
 };
+
+// 處理點擊外部區域的函數
+const handleOutsideClick = (event) => {
+  if (isMobileMenuOpen.value && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-menu-toggle')) {
+    closeMobileMenu();
+  }
+};
+
 
 // 監聽使用者登入狀態變化，當登入後調用 `callFindNotification`
 watch(
@@ -369,7 +384,7 @@ watch(
   .user-actions {
     margin-left: auto;
   }
-  
+
   .mobile-nav {
     top: 70px; /* 調整為與 nav-placeholder 相同的高度 */
   }

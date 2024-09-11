@@ -1,8 +1,5 @@
 <template>
-  <div class="ts-app-layout is-fullscreen responsive-layout">
-    <div class="sidebar-toggle" @click="toggleSidebar">
-      <span class="ts-icon is-bars-icon"></span>
-    </div>
+ <div class="ts-app-layout is-fullscreen responsive-layout">
     <div class="cell sidebar" :class="{ 'is-active': isSidebarOpen }">
       <div class="ts-content is-center-aligned">
         <div class="ts-wrap is-vertical is-compact is-middle-aligned">
@@ -73,7 +70,7 @@
     <div class="sidebar-hint" :class="{ 'is-hidden': isSidebarOpen }" @click="toggleSidebar">
       <span class="ts-icon is-chevron-right-icon"></span>
     </div>
-    <div class="cell is-fluid is-scrollable is-secondary main-content">
+    <div class="cell is-fluid is-scrollable is-secondary main-content" @click="closeSidebarOnMobile">
       <div class="ts-container is-narrow has-vertically-padded-large">
         <component
           v-if="userDetail"
@@ -599,6 +596,15 @@ const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 };
 
+const closeSidebarOnMobile = (event) => {
+  if (window.innerWidth <= 768 && isSidebarOpen.value) {
+    // 确保点击的不是侧边栏本身
+    if (!event.target.closest('.sidebar')) {
+      isSidebarOpen.value = false;
+    }
+  }
+};
+
 
 // 監聽窗口大小變化
 const handleResize = () => {
@@ -640,25 +646,13 @@ const handleResize = () => {
   transition: margin-left 0.3s ease;
 }
 
-.sidebar-toggle {
-  display: none;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1001;
-  background-color: var(--ts-primary);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
 .sidebar-hint {
   display: none;
   position: fixed;
   top: 50%;
   left: 0;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-100%);
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
   padding: 15px 10px;
@@ -669,6 +663,7 @@ const handleResize = () => {
   transition: opacity 0.3s ease, transform 0.3s ease;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
 }
+
 
 .sidebar-hint .ts-icon {
   font-size: 24px;
