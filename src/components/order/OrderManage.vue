@@ -1,15 +1,15 @@
 <template>
     <div class="dashboard ts-container is-padded">
         <div class="ts-grid">
+            <div class="headers column is-8-wide ts-box is-horizontal">
+                <div class="header datePicker">
+                    <DatePicker expanded v-model="range" mode="dateTime" is-range @input="fetchOrders" />
+                </div>
+            </div>
             <div class="stats column is-8-wide ts-box   ">
                 <OrderManageStats :orders="orders"></OrderManageStats>
                 <div claa="pieChart">
                     <OrderManagePieChart :orders="orders"></OrderManagePieChart>
-                </div>
-            </div>
-            <div class="headers column is-8-wide ts-box is-horizontal">
-                <div class="header datePicker">
-                    <DatePicker expanded v-model="range" mode="dateTime" is-range @input="fetchOrders" />
                 </div>
             </div>
         </div>
