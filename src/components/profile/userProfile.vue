@@ -213,30 +213,49 @@ async function callUpdate() {
 @media (max-width: 768px) {
   .ts-grid.header-title {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 
   .ts-header.is-huge {
-    font-size: 1.5rem; /* 减小标题字体大小 */
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
   }
 
   .ts-button {
     font-size: 0.9rem;
     padding: 0.5rem;
+    width: 100%;
+    margin-top: 0.5rem;
   }
 
   .ts-box {
     padding: 0.5rem;
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .ts-control {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
   }
 
   .ts-control .label {
     font-size: 0.9rem;
+    font-weight: bold;
+    width: 30%;
+    text-align: right;
+    padding-right: 1rem;
   }
 
   .ts-control .content {
-    font-size: 1rem;
-    word-break: break-word; /* 允许长文本换行 */
+    font-size: 0.9rem;
+    width: 70%;
+    text-align: left;
+    word-break: break-word;
   }
 
   /* 模态框样式调整 */
@@ -257,12 +276,24 @@ async function callUpdate() {
 /* 更小屏幕的额外调整 */
 @media (max-width: 480px) {
   .ts-grid.is-2-columns {
-    grid-template-columns: 1fr; /* 在小屏幕上改为单列布局 */
+    grid-template-columns: 1fr;
   }
 
   .ts-modal.is-big {
-    width: 95%; /* 让模态框占据更多屏幕宽度 */
+    width: 95%;
     max-width: none;
+  }
+
+  .ts-box {
+    width: 100%;
+  }
+
+  .ts-control .label {
+    font-size: 0.8rem;
+  }
+
+  .ts-control .content {
+    font-size: 0.8rem;
   }
 }
 </style>

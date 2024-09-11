@@ -38,6 +38,7 @@
 
 // stores/user.js
 import { defineStore } from 'pinia'
+import Swal from "sweetalert2";
 
 export const user = defineStore('user', {
     state: () => ({
@@ -46,17 +47,12 @@ export const user = defineStore('user', {
         permissions: "",
         isLogedin: false,
         expirationTime: null,
-        isThirdPartyLogin: false
+        isThirdPartyLogin: false,
+        sessionCheckInterval: null, // 定時器
     }),
     getters: {
         isAdmin: (state) => state.permissions === "Admin",
-        isSessionExpired: (state) => {
-            const curentime = new Date()
-            const expirationTime = new Date(state.expirationTime);
-            console.log("Current time:", curentime);
-            console.log("Expiration time:", expirationTime);
-
-            return state.expirationTime && new Date() > new Date(state.expirationTime)}
+        
     },
     actions: {
         setUserId(userId) {
@@ -77,11 +73,43 @@ export const user = defineStore('user', {
         setThirdPartyLogin(isThirdPartyLogin) {
             this.isThirdPartyLogin = isThirdPartyLogin
         },
+        isSessionExpired () {
+            const curentime = new Date()
+            const expirationTime = new Date(this.expirationTime);
+            console.log("Current time:", curentime);
+            console.log("Expiration time:", expirationTime);
+
+            return this.expirationTime && curentime > expirationTime
+        },
         checkSession() {
-            if (this.isSessionExpired) {
+            if (this.isSessionExpired()) {
                 this.logout()
+                Swal.fire({
+                    icon: "warning",
+                    title: "登入逾時",
+                    text: "將返回首頁",
+                    confirmButtonColor: "rgb(35 40 44)",
+                    confirmButtonText: "確認",
+                    allowOutsideClick: false,
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      // 按下確認後跳轉到首頁
+                      window.location.href = "/";
+                    }
+                  });
             }else {
                 console.log("Session is still valid.");
+            }
+        },
+        startSessionCheck() {
+            if (!this.sessionCheckInterval) {
+              this.sessionCheckInterval = setInterval(() => this.checkSession(), 5 * 60 * 1000);
+            }
+          },
+          stopSessionCheck() {
+            if (this.sessionCheckInterval) {
+              clearInterval(this.sessionCheckInterval);
+              this.sessionCheckInterval = null;
             }
         },
         logout() {
@@ -100,6 +128,7 @@ export const user = defineStore('user', {
             localStorage.removeItem('isLogedin');
             localStorage.removeItem('expirationTime');
             localStorage.removeItem('isThirdPartyLogin');
+            this.stopSessionCheck();
         }
 },
 persist: {
