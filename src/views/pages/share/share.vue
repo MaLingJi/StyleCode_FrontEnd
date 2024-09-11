@@ -7,13 +7,13 @@
             </div>
         </div>
     </div>
-    <div class="ts-divider"></div>
+    <!-- <div class="ts-divider"></div> -->
     <div class="ts-container" >
         <div class="ts-grid is-3-columns is-relaxed is-stretched"  >
             <div 
                 v-for="post in filteredPosts"
                 :key="post.postId"
-                class="column"
+                class="column is-center-aligned"
                style="margin: 0px 0px 10px 0px ;"
             >
                 <ShareCard :post="post" style="cursor: pointer"/>
@@ -42,11 +42,6 @@ const filteredPosts = computed(() => {
 
 function callFind() {
     console.log("callFind");
-    Swal.fire({
-        text: "Loading......",
-        showConfirmButton: false,
-        allowOutsideClick: false,
-    });
     axiosapi.get("/post").then(function (response) {
         // console.log("response: ", response);
 

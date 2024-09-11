@@ -186,6 +186,7 @@ function register() {
       text: response.data,
       icon: "success",
       confirmButtonText: "確認",
+      confirmButtonColor: "rgb(35 40 44)",
       allowOutsideClick: false,
     }).then(function (result) {
       router.push({ path: "/secure/login" });

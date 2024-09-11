@@ -15,10 +15,10 @@
           <td>{{ card.cardNumber }}</td>
           <td class="is-end-aligned">
             <button
-              class="ts-button is-end-aligned is-negative"
+              class="ts-button is-end-aligned is-wide is-outlined"
               @click="deleteCard(card.cardId)"
             >
-              刪除
+              <span class="ts-icon is-trash-can-icon"></span>
             </button>
           </td>
         </tr>

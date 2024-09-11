@@ -218,7 +218,7 @@ onMounted(async () => {
   margin-top: 20px;
 }
 .edit-button {
-  background-color: #1890ff; /* 藍色背景 */
+  background-color: #0a0a0a; /* 藍色背景 */
   color: #fff; 
   border: none; 
   padding: 6px 12px; 

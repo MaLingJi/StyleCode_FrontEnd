@@ -44,7 +44,7 @@
         </div>
       </div>
     </template>
-    <div class="ts-content page-bar">
+    <div class="ts-content page-bar is-center-aligned">
       <div class="ts-pagination is-center-aligned">
         <Paginate
           :page-count="pageCount"

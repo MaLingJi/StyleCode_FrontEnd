@@ -87,13 +87,13 @@ const handleSearch = async () => {
 
 onMounted(async () => {
 
-  Swal.fire({
-    title: '讀取中...',
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    }
-  });
+  // Swal.fire({
+  //   title: '讀取中...',
+  //   allowOutsideClick: false,
+  //   didOpen: () => {
+  //     Swal.showLoading();
+  //   }
+  // });
 
   try {
     // 從 API 獲取所有分類數據
