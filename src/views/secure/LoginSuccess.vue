@@ -2,7 +2,7 @@
   <div class="ts-container ts-wrap is-middle-aligned" style="height: 70vh">
     <div class="ts-content is-very-padded is-tertiary is-middle-aligned" style="width: 100%">
       <div class="ts-header is-huge is-heavy is-center-aligned">
-        登入成功！！
+        Google 登入成功！！
       </div>
       <div class="ts-text is-secondary is-center-aligned">
         歡迎來到 Modern Fashion King 網站！3秒後跳轉回首頁
