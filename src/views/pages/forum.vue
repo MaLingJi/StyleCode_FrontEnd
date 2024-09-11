@@ -100,10 +100,14 @@ import { ref, onMounted } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
+const router = useRouter();
 const userStore = useUserStore();
 const listData = ref([]);
 const path = import.meta.env.VITE_POST_IMAGE_URL; 
+const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 
 const pagination = ref({
   onChange: (page) => {
@@ -126,8 +130,7 @@ async function callFind() {
     post.contentType === "forum" && !post.deletedAt);
     // 獲取留言的數量，過濾掉已刪除的留言
     for (const post of filteredPosts) {
-      // post.avatar = post.userPhoto; //抓頭像
-      // console.log(post.avatar);
+      post.avatar = userPhotoPath + post.userPhoto; // 抓頭像
       post.images = post.images.filter(image => !image.deletedAt); 
       post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0;
       post.collects = post.collections ? post.collections.length : 0;
@@ -163,6 +166,20 @@ const checkIfUserCollected = async (postId) => {
 };
 
 const likePost = async (id) => {
+  if (!userStore.userId) {
+    Swal.fire({
+      title: '請先登入',
+      text: '您需要登入才能進行此操作。',
+      icon: 'warning',
+      confirmButtonText: '請去登入',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/secure/login'); 
+      }
+    });
+    return;
+  }
+
   try {
     const post = listData.value.find(item => item.postId === id);
     if (post) {
@@ -187,6 +204,19 @@ const likePost = async (id) => {
 };
 
 const collectPost = async (id) => {
+  if (!userStore.userId) {
+    Swal.fire({
+      title: '請先登入',
+      text: '您需要登入才能進行此操作。',
+      icon: 'warning',
+      confirmButtonText: '請去登入',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/secure/login'); 
+      }
+    });
+    return;
+  }
   try {
     const post = listData.value.find(item => item.postId === id);
     if (post) {
@@ -218,11 +248,11 @@ const commentPost = (id) => {
 
 <style scoped>
 img {
-  max-width: 100%; 
-  max-height: 250px; /* 最大高度限制 */
-  height: auto; 
-  width: auto; 
-  border-radius: 8px; 
+  width: 250px;
+  height: 250px; /* 最大高度限制 */
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px; 
 }
 .forum-page {
   display: flex;

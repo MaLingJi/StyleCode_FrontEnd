@@ -27,10 +27,10 @@
           <span key="comment-basic-like">
             <a-tooltip title="Like">
               <template v-if="post.isLiked">
-                <heart-filled @click="toggleLike" style="color: #eb2f96;" />
+                <heart-filled @click="handleLikeClick" style="color: #eb2f96;" />
               </template>
               <template v-else>
-                <heart-outlined @click="toggleLike" style="color: #eb2f96;" />
+                <heart-outlined @click="handleLikeClick" style="color: #eb2f96;" />
               </template>
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ likes }}</span>
@@ -38,10 +38,10 @@
           <span key="comment-basic-collect">
             <a-tooltip title="Collect">
               <template v-if="post.isCollected">
-                <star-filled @click="toggleCollect" style="color: #fadb14;" />
+                <star-filled @click="handleCollectClick" style="color: #fadb14;" />
               </template>
               <template v-else>
-                <star-outlined @click="toggleCollect" style="color: #fadb14;" />
+                <star-outlined @click="handleCollectClick" style="color: #fadb14;" />
               </template>
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ collects }}</span>
@@ -60,17 +60,17 @@
         </div>
 
         <!-- 檢舉按鈕 -->
-        <a-float-button shape="square" description="檢舉"
+        <!-- <a-float-button shape="square" description="檢舉"
             :style="{ right: '24px', bottom: '96px',}">
             <template #icon>
-              <a-tooltip title="檢舉">
+              <a-tooltip title="檢舉"> -->
                 <!-- 檢舉按鈕圖示 -->
-                <warning-outlined 
+                <!-- <warning-outlined 
                   @click="goToReport(post.postId)" 
                   style="color: red; font-size: 20px;" />
               </a-tooltip>
             </template>
-          </a-float-button>
+          </a-float-button> -->
 
         <!-- 編輯按鈕 -->
         <a-button v-if="post.userId === userId" type="primary" 
@@ -153,6 +153,23 @@ const goToReport = (postId) => {
 //   target.src = 'https://via.placeholder.com/500'; // 替換為佔位符圖片 URL
 // };
 
+// 按讚沒登入邏輯
+const handleLikeClick = () => {
+  if (!userId) {
+    router.push('/secure/login');
+    return;
+  }
+  toggleLike();
+};
+// 收藏沒登入邏輯
+const handleCollectClick = () => {
+  if (!userId) {
+    router.push('/secure/login'); 
+    return;
+  }
+  toggleCollect(); 
+};
+
 // 點擊喜歡
 const toggleLike = async () => {
   try {
@@ -216,6 +233,7 @@ const toggleCollect = async () => {
 watch(() => route.params.id, async (newId) => {
   if (newId) {
     loading.value = true; // 開始載入
+    userId.value = newValue;
     await fetchPostData();
     loading.value = false; // 完成載入
   }
