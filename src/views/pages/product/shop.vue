@@ -229,22 +229,5 @@ const sortProducts = () => {
 }
 
 
-/* 為手機端設置響應式布局 */
-@media (max-width: 768px) {
-  .ts-grid {
-    flex-direction: column;
-    /* 將列改為垂直排列 */
-  }
 
-  .sidebar,
-  .product-list {
-    width: 100%;
-    /* 調整寬度為 100% */
-  }
-
-  .sort-select,
-  .search-input {
-    width: 100%;
-  }
-}
 </style>
