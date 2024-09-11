@@ -8,7 +8,7 @@
             <img :src="getImageUrl(post)" :alt="post.userName" />
             <div class="carousel-caption">
               <h3>{{ post.userName || 'Unknown User' }}</h3>
-              <p>{{ post.postTitle }}</p>
+              <p class="post-title">{{ post.postTitle }}</p>
             </div>
           </div>
         </div>
@@ -31,7 +31,7 @@
       <img :src="getImageUrl(post)" :alt="post.userName" />
       <div class="mosaic-caption">
         <h3>{{ post.userName || 'Unknown User' }}</h3>
-        <p>{{ post.postTitle }}</p>
+        <p class="post-title">{{ post.postTitle }}</p>
       </div>
     </div>
   </div>
@@ -283,42 +283,41 @@ onMounted(async () => {
 }
 
 /* 響應式設計 */
-@media (max-width: 1024px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 768px) {
-  .full-width-carousel {
-    height: 50vh;
-  }
-
   .mosaic-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .carousel-caption h3, .mosaic-caption h3 {
-    font-size: 1em;
+  .item-1, .item-2, .item-3, .item-4, .item-5, .item-6, .item-7, .item-8, .item-9, .item-10,
+  .item-11, .item-12, .item-13, .item-14, .item-15, .item-16, .item-17, .item-18, .item-19, .item-20,
+  .item-21, .item-22, .item-23, .item-24, .item-25, .item-26, .item-27, .item-28, .item-29 {
+    grid-column: span 1;
+    grid-row: span 1;
   }
 
-  .carousel-caption p, .mosaic-caption p {
-    font-size: 0.8em;
+  .post-title {
+    display: none;
+  }
+
+  .carousel-caption h3,
+  .mosaic-caption h3 {
+    font-size: 0.9em;
+    margin-bottom: 0;
+  }
+
+  .carousel-caption,
+  .mosaic-caption {
+    padding: 5px;
   }
 }
 
 @media (max-width: 480px) {
-  .full-width-carousel {
-    height: 40vh;
-  }
-
   .mosaic-grid {
     grid-template-columns: 1fr;
   }
 
-  .mosaic-item {
-    grid-column: span 1 !important;
-    grid-row: span 1 !important;
+  .full-width-carousel {
+    height: calc(100vh - 70px);
   }
 
   .site-philosophy h2 {
@@ -326,7 +325,8 @@ onMounted(async () => {
   }
 
   .site-philosophy p {
-    font-size: 0.9em;
+    font-size: 1em;
   }
 }
+
 </style>

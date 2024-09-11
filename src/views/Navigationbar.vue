@@ -92,7 +92,6 @@
     <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
     <RouterLink to="/forum" class="nav-link">論壇</RouterLink>
     <RouterLink to="/shop" class="nav-link">商城</RouterLink>
-    <RouterLink v-if="userStore.isAdmin" to="/backstage" class="nav-link">後台</RouterLink>
   </nav>
 </template>
 
@@ -223,8 +222,17 @@ onUnmounted(function () {
   }
 });
 
+// 新增：控制移動端選單的狀態
+const isMobileMenuOpen = ref(false);
+
+// 新增：切換移動端選單的函數
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+// 新增：關閉移動端選單的函數
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false;
 };
 
 // 監聽使用者登入狀態變化，當登入後調用 `callFindNotification`
@@ -360,6 +368,10 @@ watch(
 
   .user-actions {
     margin-left: auto;
+  }
+  
+  .mobile-nav {
+    top: 70px; /* 調整為與 nav-placeholder 相同的高度 */
   }
 }
 

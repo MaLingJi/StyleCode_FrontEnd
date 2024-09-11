@@ -318,11 +318,5 @@ function handleApiError(error, defaultMessage) {
   resize: vertical; /* 允許用戶垂直調整大小 */
 }
 
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .product-description-container {
-    max-width: 100%;
-  }
-}
 
 </style>
