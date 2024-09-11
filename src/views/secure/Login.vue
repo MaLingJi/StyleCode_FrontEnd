@@ -193,7 +193,7 @@ function login() {
           userStore.setUserToken(response.data.token);
           userStore.setPermissions(response.data.permissions);
           userStore.setLogedin(true);
-
+          userStore.startSessionCheck();
           //跳轉首頁
           router.push({ path: "/" });
         });

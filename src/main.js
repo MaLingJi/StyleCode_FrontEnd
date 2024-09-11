@@ -19,15 +19,3 @@ createApp(App)
     .use(Antd)
     .use(setupCalendar, {})
     .mount('#app')
-
-
-//定時清除userStore的紀錄
-const userStore = useUserStore();
-
-const checkSession = () => {
-  console.log("Checking session...");
-  userStore.checkSession();
-};
-
-// 全局定时器
-setInterval(checkSession, 5 * 60 * 1000);

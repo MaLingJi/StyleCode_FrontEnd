@@ -5,7 +5,7 @@
       style="width: 100%"
     >
       <div class="ts-header is-huge is-heavy is-center-aligned">
-        登入成功！！
+        Google 登入成功！！
       </div>
       <div class="ts-text is-secondary is-center-aligned">
         歡迎來到 Modern Fashion King 網站！3秒後跳轉回首頁
@@ -37,6 +37,7 @@ onMounted(async () => {
     userStore.setPermissions(response.data.permissions);
     userStore.setLogedin(true);
     userStore.setThirdPartyLogin(true);
+    userStore.startSessionCheck();
 
     //跳轉首頁
     setTimeout(() => {
