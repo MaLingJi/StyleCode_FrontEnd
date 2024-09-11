@@ -60,17 +60,17 @@
         </div>
 
         <!-- 檢舉按鈕 -->
-        <a-float-button shape="square" description="檢舉"
+        <!-- <a-float-button shape="square" description="檢舉"
             :style="{ right: '24px', bottom: '96px',}">
             <template #icon>
-              <a-tooltip title="檢舉">
+              <a-tooltip title="檢舉"> -->
                 <!-- 檢舉按鈕圖示 -->
-                <warning-outlined 
+                <!-- <warning-outlined 
                   @click="goToReport(post.postId)" 
                   style="color: red; font-size: 20px;" />
               </a-tooltip>
             </template>
-          </a-float-button>
+          </a-float-button> -->
 
         <!-- 編輯按鈕 -->
         <a-button v-if="post.userId === userId" type="primary" 

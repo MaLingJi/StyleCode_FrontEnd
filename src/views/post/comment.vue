@@ -8,7 +8,7 @@
     >
       <template #renderItem="{ item }">
         <a-list-item>
-          <a-comment :author="item.userDetail.userName || `${item.userId}`" :avatar="item.avatar">
+          <a-comment :author="item.userDetail.userName || `${item.userId}`"  :avatar="item.userDetail.userPhoto">
             <template #content>
               <p v-if="!item.isEditing">{{ item.commentText }}</p>
               <a-textarea 
@@ -69,7 +69,6 @@ import 'dayjs/locale/zh-tw';
 import useUserStore from "@/stores/user.js";
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
-// import { fetchUserProfile } from '@/stores/comment.js';
 
 dayjs.extend(relativeTime);// 使用相對時間插件
 dayjs.locale('zh-tw');// 設置語言為中文
@@ -87,8 +86,7 @@ const userStore = useUserStore();
 const userId = userStore.userId;
 const userName = userStore.userName;
 const router = useRouter();
-// const userPhoto = userStore.userPhoto || 'default-avatar.jpg';
-// const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
+const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 
 // 獲取留言數據
 const fetchComments = async () => {
@@ -98,30 +96,20 @@ const fetchComments = async () => {
     
     // 確保 response.data 是數組
     if (Array.isArray(response.data)) {
-      
+      console.log("評論數據:", comments.value);
+      console.log("回應數據",response.data);
       comments.value = response.data.filter(comment => !comment.deletedAt) .map(comment => ({
         commentId: comment.commentId,
         postId: comment.postId,
         userId: comment.userId,
-        userDetail: { userName: comment.userName },
+        userDetail: { userName: comment.userName,userPhoto: `${userPhotoPath}${comment.userPhoto}` },
         commentText: comment.commentText,
         createdAt: comment.createdAt,
         deletedAt: comment.deletedAt,
         isEditing: false,
         editContent: '',
-        // avatar: ''
+        avatar: `${userPhotoPath}${comment.userPhoto}` 
       }));
-
-      // // 取得使用者頭像
-      // for (const comment of commentsData) {
-      //   try {
-      //     const userProfile = await fetchUserProfile(comment.userId);
-      //     comment.avatar = userProfile.avatar; // 设置头像
-      //   } catch (error) {
-      //     console.error("取得使用者頭像失敗:", error);
-      //   }
-      // }
-      // comments.value = commentsData;
     } else {
       console.error("獲取的評論數據不是數組:", response.data);
       comments.value = []; // 如果不是數組，則重置為空數組
@@ -153,7 +141,8 @@ const handleSubmit = async () => {
     });
 
     if (response.data) {
-      console.log("response.data",response.data);
+      console.log("回應數據",response.data);
+      console.log("comments", comments.value);
       comments.value.unshift({ //留言跑 push最下面 unshift最上面
         commentId: response.data.commentId,
         commentText: newComment.value, //確保命名是commentText
@@ -162,18 +151,7 @@ const handleSubmit = async () => {
         createdAt: new Date().toISOString(),
         isEditing: false,
         editContent: '',
-        // avatar: ''
-        // avatar: `${userPhotoPath}${userPhoto}`,
-        // userId: userId
       });
-
-       // 更新頭像的新評論
-      // try {
-      //   const userProfile = await fetchUserProfile(userId);
-      //   comments.value[0].avatar = userProfile.avatar; //設定頭像
-      // } catch (error) {
-      //   console.error("取得使用者頭像失敗:", error);
-      // }
 
       newComment.value = ''; 
     } else {
@@ -184,6 +162,7 @@ const handleSubmit = async () => {
   } finally {
     submitting.value = false;
   }
+  fetchComments(); //暫時替代方案，此用法要另外找出
 };
 
 // 編輯留言

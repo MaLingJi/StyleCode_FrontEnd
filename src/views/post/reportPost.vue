@@ -31,11 +31,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
+const postId = ref('');
 const violationType = ref('');
 const description = ref('');
 const submitted = ref(false);
+
+onMounted(() => {
+    postId.value = route.params.id; 
+    console.log('讀取到的文章 ID:', postId.value);
+});
 
 const submitReport = () => {
     console.log('選擇的違反類型:', violationType.value); 
@@ -48,6 +56,7 @@ const submitReport = () => {
 
     // 準備要存儲的檢舉數據
     const reportData = {
+        postId: postId.value,
         violationType: violationType.value,
         description: description.value,
     };
