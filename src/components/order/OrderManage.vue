@@ -1,23 +1,23 @@
 <template>
     <div class="dashboard ts-container is-padded">
         <div class="ts-grid">
-            <div class="stats column is-8-wide ts-box   ">
+            <div class="stats column is-16-wide ts-box   ">
                 <OrderManageStats :orders="orders"></OrderManageStats>
                 <div claa="pieChart">
                     <OrderManagePieChart :orders="orders"></OrderManagePieChart>
                 </div>
             </div>
-            <div class="headers column is-8-wide ts-box is-horizontal">
+            <div class="headers column is-16-wide ts-box is-horizontal">
                 <div class="header datePicker">
                     <DatePicker expanded v-model="range" mode="dateTime" is-range @input="fetchOrders" />
                 </div>
             </div>
         </div>
         <div class="charts ts-grid">
-            <div class="chart lineChart column is-8-wide ts-container ts-box is-horizontal">
+            <div class="chart lineChart column is-16-wide ts-container ts-box is-horizontal">
                 <OrderManageLineChart :orders="orders"></OrderManageLineChart>
             </div>
-            <div class="chart orderTable column is-8-wide ts-container ts-box is-horizontal">
+            <div class="chart orderTable column is-16-wide ts-container ts-box is-horizontal">
                 <!-- <OrderManageProChart :orders="orders"></OrderManageProChart> -->
                 <OrderManageTable :orders="orders"></OrderManageTable>
             </div>
@@ -87,9 +87,7 @@ watch(range, () => {
 </script>
 
 <style scoped>
-
 .dashboard {
-    padding: 1.5rem;
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -104,12 +102,9 @@ watch(range, () => {
     gap: 1rem;
 }
 
-
 .datePicker {
-    margin-top: 1rem;
     width: 100%;
 }
-
 
 .charts {
     min-height: 500px;
@@ -117,8 +112,107 @@ watch(range, () => {
 
 .chart.orderTable {
     display: flex;
-    justify-content:center
+    justify-content: center;
 }
 
+/* 移动端样式 */
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 0;
+        width: 100%;
+        max-width: none;
+        overflow-x: hidden;
+    }
 
+    .ts-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .ts-grid .column {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .ts-box {
+        border-radius: 0;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        box-shadow: none;
+    }
+
+    .charts {
+        min-height: auto;
+    }
+
+    .chart {
+        margin-bottom: 0.5rem;
+    }
+
+    .pieChart {
+        display: flex;
+        justify-content: center;
+    }
+
+    .datePicker {
+        margin: 0;
+        width: 100%;
+    }
+
+    /* 确保DatePicker在移动端也能正常显示并占满宽度 */
+    :deep(.vc-container) {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    :deep(.vc-pane-container) {
+        width: 100% !important;
+    }
+
+    :deep(.vc-weeks) {
+        width: 100% !important;
+    }
+
+    /* 调整图表大小 */
+    :deep(.echarts) {
+        height: 50vh !important;
+        width: 100% !important;
+    }
+
+    /* 确保所有内容都占满宽度 */
+    .stats,
+    .headers,
+    .charts,
+    .chart,
+    .lineChart,
+    .orderTable {
+        width: 100% !important;
+    }
+}
+
+/* 针对更小的屏幕做进一步调整 */
+@media (max-width: 480px) {
+    .ts-box {
+        padding: 0.25rem;
+    }
+
+    :deep(.echarts) {
+        height: 40vh !important;
+    }
+
+    /* 进一步缩小日期选择器的内部间距 */
+    :deep(.vc-pane) {
+        padding: 0 !important;
+    }
+
+    :deep(.vc-weeks) {
+        padding: 0 !important;
+    }
+
+    :deep(.vc-day) {
+        padding: 0 !important;
+        min-height: 30px !important;
+    }
+}
 </style>

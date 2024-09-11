@@ -1,9 +1,5 @@
 <template>
   <div class="backstage-container">
-    <div class="sidebar-toggle" @click="toggleSidebar">
-      <span class="ts-icon is-bars-icon"></span>
-    </div>
-    
     <div class="backstage-layout">
       <!-- 側邊欄 -->
       <div class="sidebar" :class="{ 'is-active': isSidebarOpen }">
@@ -82,14 +78,14 @@
           </div>
         </div>
       </div>
-      
-       <!-- 側邊欄提示 -->
+
+      <!-- 側邊欄提示 -->
       <div class="sidebar-hint" :class="{ 'is-hidden': isSidebarOpen }" @click="toggleSidebar">
         <span class="ts-icon is-chevron-right-icon"></span>
       </div>
 
       <!-- 主要內容區域 -->
-      <div class="main-content">
+      <div class="main-content" @click="closeSidebarOnMobile">
         <div class="ts-divider"></div>
         <div class="ts-container has-vertically-padded-big">
           <div class="ts-box has-bottom-spaced-large">
@@ -118,7 +114,7 @@ const userStore = useUserStore();
 console.log(userStore.userId);
 
 const currentComp = ref(OrderManagement);
-const isSidebarOpen = ref(true);
+const isSidebarOpen = ref(false); // 默认在移动端关闭侧边栏
 
 function switchComp(comp) {
   currentComp.value = comp;
@@ -129,6 +125,15 @@ function switchComp(comp) {
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
+}
+
+function closeSidebarOnMobile(event) {
+  if (window.innerWidth <= 768 && isSidebarOpen.value) {
+    // 确保点击的不是侧边栏本身
+    if (!event.target.closest('.sidebar')) {
+      isSidebarOpen.value = false;
+    }
+  }
 }
 
 // 新增商品
@@ -215,18 +220,6 @@ onUnmounted(() => {
   box-shadow: none; /* 移除 ts-box 的陰影 */
 }
 
-.sidebar-toggle {
-  display: none;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1001;
-  background-color: var(--ts-primary);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
 /* 新增：側邊欄提示樣式 */
 .sidebar-hint {

@@ -15,19 +15,19 @@
     </div>
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
-  <div class="ts-container has-top-spaced">
+ <div class="ts-container has-top-spaced">
     <div
-  class="ts-grid is-3-columns is-relaxed is-stretched"
-  v-if="postType === 'share'"
->
-  <div class="column" v-for="post in shareposts" :key="post.postId">
-    <div class="share-card" @click="viewPost (post)">
-      <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost (post)"></div>
+      class="share-grid"
+      v-if="postType === 'share'"
+    >
+    <div class="share-grid-item" v-for="post in shareposts" :key="post.postId">
+      <div class="share-card" @click="viewPost(post)">
+        <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost(post)"></div>
       <!-- ^編輯按鈕^ -->
       <div class="share-image">
         <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
         <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
-      </div>
+          </div>
       <div class="share-info">
         <!-- 動態綁定用戶名稱 -->
         <h3>{{ post.userName }}</h3>
@@ -133,8 +133,27 @@ watch(
 </script>
 
 <style scoped>
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.share-grid-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.share-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .share-card {
-  width: 250px; /* 設置固定寬度 */
+  width: 100%;
+  max-width: 250px;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -143,21 +162,21 @@ watch(
   position: relative;
 }
 
-.share-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
 .share-image {
   width: 100%;
-  height: 300px; /* 設置固定高度 */
+  height: 0;
+  padding-bottom: 100%; /* 创建一个正方形的容器 */
+  position: relative;
   overflow: hidden;
 }
 
 .share-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+  object-fit: cover;
 }
 
 .share-info {
@@ -219,4 +238,41 @@ watch(
 .share-icons {
   font-size: 16px;
 }
+
+@media (max-width: 768px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .share-card {
+    max-width: none;
+  }
+
+  .share-info h3 {
+    font-size: 0.9em;
+  }
+
+  .share-info p {
+    font-size: 0.8em;
+  }
+
+  .share-icons {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .share-info {
+    padding: 8px;
+  }
+}
+
 </style>
