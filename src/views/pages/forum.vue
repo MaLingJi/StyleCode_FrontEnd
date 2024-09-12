@@ -80,26 +80,21 @@
                 </div>
               </template>
               <router-link :to="`/post/${item.postId}`">
-                <a-list-item-meta :description="item.contentText">
-                  <template #avatar>
-                    <div style="display: flex; align-items: center;">
-                      <a-avatar :src="item.avatar" style="margin-right: 8px;" />
-                      <span style="font-weight: bold;">{{ item.userName }}</span> 
-                    </div>
-                  </template>
-                  <template #title>
-                    {{ item.postTitle }}
-                  </template>
-                  <template #description>
-                    <div v-if="item.contentText.length <= 20">
-                      {{ item.contentText }}
-                    </div>
-                    <div v-else>
-                      {{ item.contentText.slice(0, 20) + '...' }}
-                    </div>
-                  </template>
-                </a-list-item-meta>
-              </router-link>
+              <a-list-item-meta>
+                <template #avatar>
+                  <div style="display: flex; align-items: center;">
+                    <a-avatar :src="item.avatar" style="margin-right: 8px;" />
+                    <span style="font-weight: bold;">{{ item.userName }}</span> 
+                  </div>
+                </template>
+                <template #title>
+                  {{ item.postTitle }}
+                </template>
+                <template #description>
+                  {{ item.contentText.length > 30 ? item.contentText.slice(0, 30) + '...' : item.contentText }}
+                </template>
+              </a-list-item-meta>
+            </router-link>
             </a-list-item>
           </template>
         </a-list>

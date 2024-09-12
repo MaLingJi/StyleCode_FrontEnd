@@ -80,7 +80,7 @@
                             <div class="ts-header column">{{ post.postTitle }}</div>
                             <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
                         </div>
-                        <p>{{ post.contentText }}</p>
+                        <p>{{ post.contentText.slice(0, 30) }}...</p> 
                         <div class="ts-grid icons">
                             <div class="column">
                                 <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
