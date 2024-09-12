@@ -18,7 +18,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     <tr>
                         <td>{{ orderData.orderId }}</td>
                         <td>{{ formatDate(orderData.orderDate) }}</td>
@@ -63,11 +62,11 @@
                     </tr>
                 </tbody>
             </table>
-            <form class="ts-form" @submit="sendRefundApply" style="margin-top: 1.5rem;">
-                <div class="field"      >
+            <form class="ts-form refund-form" @submit="sendRefundApply">
+                <div class="field">
                     <div class="control">
-                        <div class="ts-select is-fluid" style="margin-top: 1rem;">
-                            <select v-model="selectedReason" required >
+                        <div class="ts-select is-fluid reason-select">
+                            <select v-model="selectedReason" required>
                                 <option value="" disabled selected>請選擇退款理由</option>
                                 <option value="quality">商品品質問題</option>
                                 <option value="wrongItem">收到錯誤商品</option>
@@ -78,25 +77,14 @@
                         </div>
                     </div>
                 </div>
-                <label class="label">說明欄</label>
-                <div class="field" style="margin-top: 1rem;">
-                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
+                <div class="field" style="margin: 5px;">
+                    <textarea class="ts-textarea " v-model="refundReason" style="padding: 5px;" placeholder="請輸入退款理由..." rows="6"
                         required></textarea>
                     <button class="ts-button is-primary" type="submit">提交退款申請</button>
                 </div>
             </form>
-
         </div>
     </div>
-
-    <!-- <form class="ts-form" @submit="sendRefundApply">
-                <div class="field">
-                    <label class="label">退款理由</label>
-                    <textarea class="ts-textarea" v-model="refundReason" placeholder="請輸入退款理由" rows="4"
-                        required></textarea>
-                </div>
-                <button class="ts-button is-primary" type="submit">提交退款申請</button>
-            </form> -->
 </template>
 
 <script setup>
@@ -130,7 +118,7 @@ onMounted(async () => {
 });
 
 const sendRefundApply = async (event) => {
-    event.preventDefault(); // 阻止表單的默認提交行為
+    event.preventDefault(); 
     try {
         const response = await axiosapi.post('/order/addRefund', {
             orderId: orderId,
@@ -148,9 +136,12 @@ const sendRefundApply = async (event) => {
                 cancelButtonText: '取消'
             })
                 .then((result) => {
-                    // 確保 SweetAlert 的計時器結束後才執行路由跳轉
+                    // 確保 SweetAlert 結束後再跳轉
                     if (result.isConfirmed) {
-                        router.push('/secure/profile');
+                        router.push({
+                            name: 'profile-ling',
+                            params: { initialView: 'order' }
+                        });
                     }
                 })
         } else {
@@ -197,7 +188,7 @@ const getOrderDetails = async (orderId) => {
 
 </script>
 
-<style>
+<style scoped>
 .ts-box {
     border-radius: 8px;
 }

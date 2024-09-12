@@ -8,7 +8,7 @@
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <div class="te-text">{{ products }}</div>
+                        <!-- <div class="te-text">{{ productTags }}</div> -->
                     </div>
                     <div class="ts-divider"></div>
                     <div class="ts-text is-heavy is-big">標題</div>
@@ -38,6 +38,7 @@
                     <br>
                     <button class="ts-button" @click="submitPost">送出文章</button>
                 </div>
+                <!-- <div>{{ categories }}</div> -->
             </div>
             <div class="column is-3-wide">
                 <div class="cell is-vertical">
@@ -48,9 +49,30 @@
                         <div class="ts-input is-underlined">
                             <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
                         </div>
-                        <div class="ts-input is-underlined">
-                            <input type="text" v-model="newProduct.subcategory" placeholder="單品分類" />
+
+                        <!-- 分類選擇 -->
+                        <div class="ts-select is-underlined">
+                            <select v-model="selectedCategoryId" @change="updateSubcategories">
+                                <option value="">請選擇分類</option>
+                                <option v-for="category in categories" :key="category.categoryId"
+                                    :value="category.categoryId">
+                                    {{ category.categoryName }}
+                                </option>
+                            </select>
+
                         </div>
+
+                        <!-- 子分類選擇 -->
+                        <div class="ts-select is-underlined" v-if="subcategories.length > 0">
+                            <select v-model="newProduct.subcategoryId">
+                                <option value="">請選擇子分類</option>
+                                <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId"
+                                    :value="subcategory.subcategoryId">
+                                    {{ subcategory.subcategoryName }}
+                                </option>
+                            </select>
+                        </div>
+
                         <div class="ts-wrap is-center-aligned">
                             <button class="ts-button is-primary" @click="isEditing ? updateProduct() : addProduct()">
                                 {{ isEditing ? '更新' : '新增' }}
@@ -60,12 +82,12 @@
                     </div>
 
                     <!-- 顯示已新增的單品 -->
-                    <div class="product-list" v-if="products.length">
-                        <div class="ts-card" v-for="(product, index) in products" :key="index"
+                    <div class="product-list" v-if="productTags.length">
+                        <div class="ts-card" v-for="(product, index) in productTags" :key="index"
                             @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
                             <div class="ts-content is-center-aligned">
                                 <p>商品: {{ product.productName }}</p>
-                                <p>分類: {{ product.subcategory }}</p>
+                                <p>分類: {{ product.subcategoryName }}</p>
 
                                 <!-- 編輯與刪除按鈕 -->
                                 <div class="product-controls" v-if="hoverIndexImages === index">
@@ -134,28 +156,49 @@ const editingIndex = ref(null);
 const showProductForm = ref(false);
 
 // 存儲單品資料
-const products = ref([]);
+const productTags = ref([]);
+
+const categories = ref([]);
+const subcategories = ref([]);
+const selectedCategoryId = ref(null);
 
 // 新增的單品資料
 const newProduct = ref({
     productName: '',
-    subcategory: ''
+    categoryId: null,
+    categoryName: '',
+    subcategoryId: null,
+    subcategoryName: ''
 });
+
+function updateSubcategories() {
+    const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
+    subcategories.value = selectedCategory ? selectedCategory.subcategories : [];
+
+    // 更新 newProduct 中的 categoryId 和 categoryName
+    if (selectedCategory) {
+        newProduct.value.categoryId = selectedCategory.categoryId;
+        newProduct.value.categoryName = selectedCategory.categoryName;
+    } else {
+        newProduct.value.categoryId = null;
+        newProduct.value.categoryName = '';
+    }
+}
+
 
 // 編輯單品
 function editProduct(index) {
     isEditing.value = true;
     showProductForm.value = true;
     editingIndex.value = index;
-    newProduct.value.productName = products.value[index].productName;
-    newProduct.value.subcategory = products.value[index].subcategory;
+    newProduct.value = { ...productTags.value[index] };
 }
 
 // 更新單品
 function updateProduct() {
     if (editingIndex.value !== null) {
-        products.value[editingIndex.value].productName = newProduct.value.productName;
-        products.value[editingIndex.value].subcategory = newProduct.value.subcategory;
+        productTags.value[editingIndex.value].productName = newProduct.value.productName;
+        productTags.value[editingIndex.value].subcategoryName = newProduct.value.subcategoryName;
     }
     resetForm();
 }
@@ -170,13 +213,18 @@ function resetForm() {
     isEditing.value = false;
     showProductForm.value = false;
     editingIndex.value = null;
-    newProduct.value.productName = '';
-    newProduct.value.subcategory = '';
+    newProduct.value = {
+        productName: '',
+        categoryId: null,
+        categoryName: '',
+        subcategoryId: null,
+        subcategoryName: ''
+    };
 }
 
 // 刪除單品
 function deleteProduct(index) {
-    products.value.splice(index, 1);
+    productTags.value.splice(index, 1);
 }
 
 // 開始新增單品
@@ -186,11 +234,15 @@ function startAddProduct() {
     editingIndex.value = null;
 }
 
-// 添加單品到列表
 function addProduct() {
-    if (newProduct.value.productName && newProduct.value.subcategory) {
-        products.value.push({ ...newProduct.value });
+    if (newProduct.value.productName && newProduct.value.subcategoryId) {
+        productTags.value.push({
+            ...newProduct.value,
+            subcategoryName: subcategories.value.find(sub => sub.subcategoryId === newProduct.value.subcategoryId)?.subcategoryName
+        });
         resetForm();
+    } else {
+        console.warn('Product name or subcategory is missing');
     }
 }
 
@@ -216,10 +268,19 @@ onMounted(() => {
         .then(response => {
             userName.value = response.data.userDetail.userName;
             userPhoto.value = userPhotoPath + response.data.userDetail.userPhoto;
-            console.log("userId: ", userPhoto.value);
+            // console.log("userId: ", userPhoto.value);
         })
         .catch(error => {
             console.error('Error fetching URL:', error);
+        });
+
+    axiosapi.get('/categories')
+        .then(catagoryResponse => {
+            categories.value = catagoryResponse.data;
+            console.log("Categories:", categories.value);
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
         });
 });
 
@@ -261,6 +322,7 @@ function submitPost() {
         Swal.fire({
             text: '標題和內容不能為空',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
         return;
@@ -270,6 +332,7 @@ function submitPost() {
         Swal.fire({
             text: '至少上傳一張圖片',
             icon: 'warning',
+            confirmButtonColor: 'rgb(35 40 44)',
             confirmButtonText: '確認',
         });
         return;
@@ -286,14 +349,23 @@ function submitPost() {
             postTitle: postTitle.value,
             contentText: contentText.value,
             contentType: 'share',
-            userId: userStore.userId
-        },
-        tagNames: tags.value
+            userId: userStore.userId,
+            productTags: productTags.value,
+            postTags: tags.value.map(tag => ({
+                tagId: null, // 如果是新標籤，tagId 可以設為 null，後端會自動生成
+                postId: null, // 這裡 postId 也可以設為 null 或後端自行生成
+                tagName: tag
+            }))
+        }
+        
     };
+
+    console.log("postData", postData);
 
     // 1. 先發送發文請求
     axiosapi.post("/post/postwithtags", postData)
         .then(postResponse => {
+            console.log("postResponse.data: ", postResponse.data)
             const postId = postResponse.data.postId;
             console.log('User ID: ', userStore.userId);
             console.log('Post ID: ', postId);
@@ -317,6 +389,7 @@ function submitPost() {
             Swal.fire({
                 text: '發文成功',
                 icon: 'success',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             }).then(() => {
                 router.push('/share'); // 跳轉到文章列表頁面或其他頁面
@@ -327,6 +400,7 @@ function submitPost() {
             Swal.fire({
                 text: '發文失敗：' + error.message,
                 icon: 'error',
+                confirmButtonColor: 'rgb(35 40 44)',
                 confirmButtonText: '確認',
             });
         });

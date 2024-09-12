@@ -1,5 +1,3 @@
-<!-- LabeledProgressIndicator.vue -->
-<!-- AlignedProgressIndicator.vue -->
 <template>
     <div class="progress-bar">
         <div class="step">
@@ -22,7 +20,7 @@
         </div>
     </div>
 </template>
-
+<!-- 依照頁面傳來的數字決定圈圈顏色要不要變 -->
 <script setup>
 const props = defineProps({
     currentStep: {
@@ -47,7 +45,6 @@ const props = defineProps({
     flex-direction: column;
     align-items: center;
     width: 80px;
-    /* 固定寬度確保對齊 */
 }
 
 .circle {

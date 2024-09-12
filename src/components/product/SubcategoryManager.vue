@@ -262,7 +262,7 @@ function cancelEdit() {
 }
   </script>
 
-<style>
+<style scoped>
     .ts-pagination {
   margin-top: 20px;
   display: flex;

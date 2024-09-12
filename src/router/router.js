@@ -18,6 +18,7 @@ import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
 import reportPost from "@/views/post/reportPost.vue"
+import LoginSuccess from "@/views/secure/LoginSuccess.vue";
 
 import checkPaying from "@/views/pages/checkPaying.vue";
 import profile from "@/views/secure/profile.vue";
@@ -49,8 +50,9 @@ const routes = [
   { name: "comment-link", path: "/comment/:id", component: comment},
   { name: "editPost-link", path: "/editPost/:id", component: editPost, meta: { requiresAuth: true }},
   { name: "postContent-link", path: "/post/:id", component: postContent },
-  { name: "post-link", path: "/post", component: post,meta: { requiresAuth: true }},
-  { name: "reportPost-link", path: "/report", component: reportPost,meta: { requiresAuth: true }},
+  { name: "post-link", path: "/post", component: post },
+  { name: "reportPost-link", path: "/report/;id", component: reportPost },
+  { name: "LoginSuccess-link", path: "/LoginSuccess", component: LoginSuccess },
   
   
   { name: "refund-link", path: "/refund/:orderId", component: refund},
@@ -60,7 +62,7 @@ const routes = [
   { name: "paymentPage-link", path: "/payment", component: paymentPage },
   { name: "checkPaying-link", path: "/checkPaying", component: checkPaying },
   
-  { name: "shop-link", path: "/shop", component: Shop },
+  { name: "shop-link", path: "/shop/:categoryId?/:subcategoryId?", component: Shop },
   { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
   { name: 'addProduct', path: '/addproduct',component: addProduct},
 ];

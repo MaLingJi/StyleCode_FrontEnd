@@ -3,7 +3,7 @@
     <html class="is-secondary">
 
     <div class="ts-container">
-        <div class="ts-content" style="display: flex;justify-content: space-between; align-items: center;">
+        <div class="ts-content circle-container">
             <Circle :current-step="2" />
         </div>
     </div>
@@ -23,10 +23,7 @@
             <PaymentPageList :cart-items="cartItems" @update:car-items="updateCartItems"></PaymentPageList>
         </div>
 
-
-        <div style="text-align: right; margin-top: 10PX;">
-            <!-- <h3>合計:{{ formatCurrency(totalAmount) }}</h3> -->
-            <!-- <button class="ts-button" @click="proceedPayment">Submit</button> -->
+        <div class="action-buttons">
             <button class="ts-button" @click="lpPayment">LinePay</button>
         </div>
 
@@ -77,7 +74,7 @@ const lpPayment = async () => {
         console.log('Payment initiation response:', response.data);
 
         if (response.data) {
-            // 重定向到 LINE Pay 支付頁面
+            // 重新導向 LINE Pay 支付頁面
             Swal.fire({
                 title: '確認付款',
                 text: '您確定要進行付款嗎？',
@@ -88,12 +85,14 @@ const lpPayment = async () => {
                 confirmButtonText: '確認付款',
                 cancelButtonText: '取消'
             })
-            .then((result) => {
-                // 確保 SweetAlert 的計時器結束後才執行路由跳轉
-                if (result.isConfirmed) {
-                    window.location.href = response.data
-                }
-            })
+                .then((result) => {
+                    // 確保 SweetAlert 結束後跳轉
+                    if (result.isConfirmed) {
+                        
+                        window.location.href = response.data
+                        
+                    }
+                })
         } else {
             console.error('Failed to get payment URL');
         }
@@ -127,7 +126,13 @@ const formatCurrency = (amount) => {
 
 </script>
 
-<style>
+<style scoped>
+.circle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .ts-box2 {
     display: flex;
     flex-direction: column;
@@ -149,5 +154,10 @@ const formatCurrency = (amount) => {
 .summary-item.total {
     font-size: 24px;
     font-weight: bold;
+}
+
+.action-buttons {
+    text-align: right;
+    margin-top: 10px;
 }
 </style>

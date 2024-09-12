@@ -24,7 +24,7 @@
         <!-- 發文按鈕 -->
         <div class="search-button-container" style="display: flex; align-items: center;">
           <router-link :to="{ name: 'post-link' }">
-            <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 47px; font-size: 23px;" size="large">
+            <a-button type="primary" style="background-color: #000000; border-color: #000000; height: 47px; font-size: 20px;" size="large">
               <span class="icon">
                 <i class="fas fa-edit"></i>
               </span>
@@ -60,16 +60,16 @@
             <a-list-item :key="item.postId">
               <template #actions>
                 <span @click.stop="likePost(item.postId)" style="cursor: pointer; margin-right: 8px;">
-                  <heart-outlined v-if="!item.liked" style="color: #eb2f96;" />
-                  <heart-filled v-else style="color: #eb2f96;" />
+                  <heart-outlined v-if="!item.liked" style="color: #000000;" />
+                  <heart-filled v-else style="color: #000000;" />
                   {{ item.likes }}
                 </span>
                 <span @click.stop="collectPost(item.postId)" style="cursor: pointer; margin-right: 8px;">
-                  <star-outlined v-if="!item.collected" style="color: #fadb14;" />
-                  <star-filled v-else style="color: #fadb14;" />
+                  <star-outlined v-if="!item.collected" style="color: #000000;" />
+                  <star-filled v-else style="color: #000000;" />
                   {{ item.collects }}
                 </span>
-                <span @click.stop="commentPost(item.postId)" style="cursor: pointer; color: #1890ff;">
+                <span @click.stop="commentPost(item.postId)" style="cursor: pointer; color: #000000;">
                   <message-outlined />
                   {{ item.comments }}
                 </span>
@@ -79,20 +79,27 @@
                   <img v-if="item.images && item.images.length > 0" width="272" alt="Post Image" :src="`${path}${item.images[0].imgUrl}`" />
                 </div>
               </template>
-              <a-list-item-meta :description="item.contentText">
-                <template #title>
-                  <router-link :to="`/post/${item.postId}`" tag="a">{{ item.postTitle }}</router-link>
-                </template>
-                <template #avatar><a-avatar :src="item.avatar" /></template>
-                <template #description>
-                  <div v-if="item.contentText.length <= 50">
-                    {{ item.contentText }}
-                  </div>
-                  <div v-else>
-                    {{ item.contentText.slice(0, 50) + '...' }}
-                  </div>
-                </template>
-              </a-list-item-meta>
+              <router-link :to="`/post/${item.postId}`">
+                <a-list-item-meta :description="item.contentText">
+                  <template #avatar>
+                    <div style="display: flex; align-items: center;">
+                      <a-avatar :src="item.avatar" style="margin-right: 8px;" />
+                      <span style="font-weight: bold;">{{ item.userName }}</span> 
+                    </div>
+                  </template>
+                  <template #title>
+                    {{ item.postTitle }}
+                  </template>
+                  <template #description>
+                    <div v-if="item.contentText.length <= 20">
+                      {{ item.contentText }}
+                    </div>
+                    <div v-else>
+                      {{ item.contentText.slice(0, 20) + '...' }}
+                    </div>
+                  </template>
+                </a-list-item-meta>
+              </router-link>
             </a-list-item>
           </template>
         </a-list>
@@ -137,7 +144,9 @@ async function callFind() {
     post.contentType === "forum" && !post.deletedAt);
     // 獲取留言的數量，過濾掉已刪除的留言
     for (const post of filteredPosts) {
+      console.log(post);
       post.avatar = userPhotoPath + post.userPhoto; // 抓頭像
+      post.userName = post.userName;
       post.images = post.images.filter(image => !image.deletedAt); 
       post.comments = post.comments ? post.comments.filter(comment => !comment.deletedAt).length : 0;
       post.collects = post.collections ? post.collections.length : 0;
@@ -306,7 +315,7 @@ img {
 }
 .rule-box {
   background-color: #f0f0f0;
-  padding: 1px 24px; /* 內邊距 */
+  padding: 10px 24px; /* 內邊距 */
   border-radius: 8px;
 }
 
@@ -335,5 +344,84 @@ img {
   padding-top: 10px;
   border-top: 1px solid #e0e0e0;
 }
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
 
+  .content {
+    padding: 12px;
+  }
+
+  .rule-box {
+    padding: 1px 12px;
+  }
+
+  :deep(.ant-list-item-meta-title) {
+    font-size: 16px;
+  }
+
+  :deep(.ant-list-item-meta-description) {
+    font-size: 14px;
+  }
+
+  :deep(.ant-typography-title) {
+    font-size: 20px !important;
+  }
+
+  :deep(.ant-typography-paragraph) {
+    font-size: 14px !important;
+  }
+
+  :deep(.ant-list-item-action) {
+    margin-top: 8px;
+  }
+
+  :deep(.ant-list-item-extra) {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  :deep(.ant-list-item) {
+    flex-direction: column;
+  }
+
+  :deep(.ant-list-item-main) {
+    width: 100%;
+  }
+
+  :deep(.ant-avatar) {
+    width: 32px;
+    height: 32px;
+  }
+
+  .buttons {
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .buttons .ant-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  :deep(.ant-list-item-meta-title) {
+    font-size: 14px;
+  }
+
+  :deep(.ant-list-item-meta-description) {
+    font-size: 12px;
+  }
+
+  :deep(.ant-typography-title) {
+    font-size: 18px !important;
+  }
+
+  :deep(.ant-typography-paragraph) {
+    font-size: 12px !important;
+  }
+}
 </style>

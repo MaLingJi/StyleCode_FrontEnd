@@ -15,19 +15,19 @@
     </div>
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
-  <div class="ts-container has-top-spaced">
+ <div class="ts-container has-top-spaced">
     <div
-  class="ts-grid is-3-columns is-relaxed is-stretched"
-  v-if="postType === 'share'"
->
-  <div class="column" v-for="post in shareposts" :key="post.postId">
-    <div class="share-card" @click="viewPost (post)">
-      <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost (post)"></div>
+      class="share-grid"
+      v-if="postType === 'share'"
+    >
+    <div class="share-grid-item" v-for="post in shareposts" :key="post.postId">
+      <div class="share-card" @click="viewPost(post)">
+        <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost(post)"></div>
       <!-- ^編輯按鈕^ -->
       <div class="share-image">
         <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
         <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
-      </div>
+          </div>
       <div class="share-info">
         <!-- 動態綁定用戶名稱 -->
         <h3>{{ post.userName }}</h3>
@@ -51,26 +51,27 @@
     </div>
     <!-------- 論 壇 主 要 頁 面 -------->
     <div v-if="postType === 'forum'">
-    <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
-      <div class="ts-image is-covered">
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" />
-      </div>
-      <div class="ts-content right-side">
-        <div class="ts-grid is-spaced-between">
-          <div class="ts-header column">
-            {{ post.postTitle }}
-          </div>
-          <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
-          <!-- ^編輯按鈕^ -->
+      <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
+        <div class="ts-image is-covered">
+          <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
+            width="150" height="100%" />
         </div>
-        <p>{{ post.contentText }}</p>
-        <div class="ts-grid icons">
-          <div class="column">
-            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+        <div class="ts-content right-side">
+          <div class="ts-grid is-spaced-between">
+            <div class="ts-header column">
+              {{ post.postTitle }}
+            </div>
+            <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
+            <!-- ^編輯按鈕^ -->
           </div>
-          <div class="column">
-            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
-          </div>
+          <p>{{ post.contentText }}</p>
+          <div class="ts-grid icons">
+            <div class="column">
+              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+            </div>
+            <div class="column">
+              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            </div>
           </div>
         </div>
       </div>
@@ -94,9 +95,9 @@ const router = useRouter();
 
 const viewPost = (post) => {
   if (post.contentType === 'share') {
-    router.push({ name: 'shareDetails-link', params: { postId: post.postId } }); 
+    router.push({ name: 'shareDetails-link', params: { postId: post.postId } });
   } else if (post.contentType === 'forum') {
-    router.push({ name: 'postContent-link', params: { id: post.postId } }); 
+    router.push({ name: 'postContent-link', params: { id: post.postId } });
   }
 };
 
@@ -104,7 +105,7 @@ const viewPost = (post) => {
 watch(
   postType,
   (newType) => {
-     // 清空數組不互相傳遞
+    // 清空數組不互相傳遞
     forumposts.value = [];
     shareposts.value = [];
 
@@ -133,8 +134,27 @@ watch(
 </script>
 
 <style scoped>
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.share-grid-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.share-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .share-card {
-  width: 250px; /* 設置固定寬度 */
+  width: 100%;
+  max-width: 250px;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -143,21 +163,21 @@ watch(
   position: relative;
 }
 
-.share-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
 .share-image {
   width: 100%;
-  height: 300px; /* 設置固定高度 */
+  height: 0;
+  padding-bottom: 100%; /* 创建一个正方形的容器 */
+  position: relative;
   overflow: hidden;
 }
 
 .share-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+  object-fit: cover;
 }
 
 .share-info {
@@ -183,40 +203,79 @@ watch(
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .ts-box {
   height: 150px;
 }
+
 .right-side {
   width: 100%;
 }
+
 .margin-right {
   margin-right: 10px;
 }
-.is-heart-icon {
-  color: pink;
-}
-.is-bookmark-icon {
-  color: cornflowerblue;
-}
+
 .edit-button:hover {
   cursor: pointer;
   color: #0050b3;
 }
+
 .share-edit-button:hover {
   cursor: pointer;
   color: cornflowerblue;
   background-color: #d6d6d6;
 }
+
 .share-edit-button {
   position: absolute;
   right: 10px;
   top: 10px;
   background-color: #f0f0f0;
 }
+
 .icons {
   font-size: 18px;
 }
+
 .share-icons {
   font-size: 16px;
 }
+
+@media (max-width: 768px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .share-card {
+    max-width: none;
+  }
+
+  .share-info h3 {
+    font-size: 0.9em;
+  }
+
+  .share-info p {
+    font-size: 0.8em;
+  }
+
+  .share-icons {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .share-info {
+    padding: 8px;
+  }
+}
+
 </style>

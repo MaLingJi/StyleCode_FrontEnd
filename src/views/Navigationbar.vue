@@ -20,107 +20,67 @@
           </div>
           <div class="column user-actions">
             <div class="ts-wrap">
-              <RouterLink class="ts-text is-undecorated action-icon" to="/cart"
-                ><span
-                  class="ts-icon is-spinning is-cart-shopping-icon is-big"
-                ></span
-              ></RouterLink>
-              <button
-                class="ts-text is-undecorated action-icon width-30"
-                popovertarget="noti-popup"
-                @click="clearNotifications"
-              >
-                <span class="ts-icon is-spinning is-bell-icon is-big"></span
-                ><span
-                  class="ts-badge is-negative is-small notification-badge"
-                  v-if="unreadCount > 0"
-                  >{{ unreadCount }}</span
-                >
+              <RouterLink class="ts-text is-undecorated action-icon width-30" to="/cart"><span
+                  class="ts-icon is-spinning is-cart-shopping-icon is-big"></span>
+                <span class="ts-badge is-negative is-small notification-badge" v-if="cartItemCount > 0">
+                  {{ cartItemCount }}
+                </span>
+              </RouterLink>
+              <button class="ts-text is-undecorated action-icon width-30" popovertarget="noti-popup">
+                <!-- @click="clearNotifications" -->
+                <span class="ts-icon is-spinning is-bell-icon is-big"></span><span
+                  class="ts-badge is-negative is-small notification-badge" v-if="unreadCount > 0">{{ unreadCount
+                  }}</span>
               </button>
-              <div
-                class="ts-popover ts-menu noti-popver"
-                id="noti-popup"
-                v-if="userStore.isLogedin"
-                popover
-              >
+              <div class="ts-popover ts-menu noti-popver" id="noti-popup" v-if="userStore.isLogedin" popover>
                 <div class="ts-content has-dark is-dense">
                   <div class="">通知</div>
                 </div>
                 <div class="ts-divider"></div>
                 <!-- 如果沒有通知，顯示 "暫無通知" -->
-                <div
-                  v-if="notifications.length === 0"
-                  class="ts-content is-dense"
-                >
+                <div v-if="notifications && notifications.length === 0" class="ts-content is-dense">
                   <div class="ts-text is-secondary">暫無通知</div>
+                  <div class="ts-divider"></div>
                 </div>
-                <template
-                  v-for="(notification, index) in notifications.slice(0, 5)"
-                  :key="index"
-                >
-                  <div class="item" @click="readNotification(notification.Nid)">
-                    <div
-                      class="ts-iconset is-outlined ts-wrap is-middle-aligned flaxbox"
-                    >
-                      <span
-                        :class="{
+                <!-- 有通知，顯示通知列表 -->
+                <div v-else>
+                  <template v-for="(notification, index) in notifications.slice(0, 5)" :key="index">
+                    <div class="item" @click="readNotification(notification.Nid)">
+                      <div class="ts-iconset is-outlined ts-grid is-middle-aligned is-spaced-between">
+                        <span class="column" :class="{
                           'ts-icon': true,
                           'is-shop-icon': notification.type === 'shop',
                           'is-heart-icon': notification.type === 'post',
-                        }"
-                      ></span>
-                      <div class="column">
-                        <div
-                          class="ts-text"
-                          :class="{
+                        }"></span>
+                        <div class="column" style="width: 80%">
+                          <div class="ts-text" :class="{
                             'is-heavy': notification.status === 0,
                             'unread-notification': notification.status === 0,
-                          }"
-                        >
-                          {{ notification.message }}
-                        </div>
-                        <div class="ts-text is-tiny is-secondary">
-                          {{ getRelativeTime(notification.createdTime) }}
+                          }">
+                            {{ notification.message }}
+                          </div>
+                          <div class="ts-text is-tiny is-secondary">
+                            {{ getRelativeTime(notification.createdTime) }}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="ts-divider"></div>
-                </template>
-                <div
-                  class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
-                >
+                    <div class="ts-divider"></div>
+                  </template>
+                </div>
+                <div class="item ts-content is-secondary is-dense ts-wrap is-center-aligned">
                   <div @click="toNotificationList">前往通知列表</div>
                 </div>
               </div>
-              <a
-                class="ts-text is-undecorated action-icon"
-                data-dropdown="user-dropdown"
-                v-if="userStore.isLogedin"
-                ><span class="ts-icon is-spinning is-user-icon is-big"></span
-              ></a>
-              <div
-                class="ts-dropdown"
-                id="user-dropdown"
-                v-if="userStore.isLogedin"
-              >
-                <RouterLink to="/secure/profile" class="item"
-                  >個人頁面</RouterLink
-                >
-                <RouterLink
-                  to="/backstage"
-                  class="item"
-                  v-if="userStore.permissions == 'Admin'"
-                  >後台</RouterLink
-                >
+              <a class="ts-text is-undecorated action-icon" data-dropdown="user-dropdown"
+                v-if="userStore.isLogedin"><span class="ts-icon is-spinning is-user-icon is-big"></span></a>
+              <div class="ts-dropdown" id="user-dropdown" v-if="userStore.isLogedin">
+                <RouterLink to="/secure/profile" class="item">個人頁面</RouterLink>
+                <RouterLink to="/backstage" class="item" v-if="userStore.permissions == 'Admin'">後台</RouterLink>
                 <button class="item" @click="logout">登出</button>
               </div>
-              <RouterLink
-                to="/secure/login"
-                v-if="!userStore.isLogedin"
-                class="action-icon"
-                ><span class="ts-icon is-regular is-user-icon is-big"></span
-              ></RouterLink>
+              <RouterLink to="/secure/login" v-if="!userStore.isLogedin" class="action-icon"><span
+                  class="ts-icon is-regular is-user-icon is-big"></span></RouterLink>
             </div>
           </div>
         </div>
@@ -128,13 +88,10 @@
     </div>
   </header>
   <div class="nav-placeholder"></div>
-  <nav class="mobile-nav" :class="{ 'is-active': isMobileMenuOpen }">
-    <RouterLink to="/share" class="nav-link">穿搭</RouterLink>
-    <RouterLink to="/forum" class="nav-link">論壇</RouterLink>
-    <RouterLink to="/shop" class="nav-link">商城</RouterLink>
-    <RouterLink v-if="userStore.isAdmin" to="/backstage" class="nav-link"
-      >後台</RouterLink
-    >
+  <nav class="mobile-nav" :class="{ 'is-active': isMobileMenuOpen }" @click.stop>
+    <RouterLink to="/share" class="nav-link" @click="closeMobileMenu">穿搭</RouterLink>
+    <RouterLink to="/forum" class="nav-link" @click="closeMobileMenu">論壇</RouterLink>
+    <RouterLink to="/shop" class="nav-link" @click="closeMobileMenu">商城</RouterLink>
   </nav>
 </template>
 
@@ -142,11 +99,12 @@
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 import { useRouter } from "vue-router";
-
+import { useCart } from '@/services/cartService';
 import { onMounted, onUnmounted, ref, watch } from "vue";
+import Swal from "sweetalert2";
 
 const router = useRouter();
-
+const { cartItemCount, fetchCartCount, updateCartCount } = useCart();
 const userStore = useUserStore();
 const notifications = ref([]);
 const unreadCount = ref(0); //未讀通知數
@@ -154,30 +112,51 @@ const intervalTime = 10000; //每隔10秒
 let intervalId; //儲存 setInterval 的 ID
 
 ///////////////////////////// 登出 /////////////////////////////
-function logout() {
+async function logout() {
   axiosapi.defaults.headers.authorization = "";
+  axiosapi.post("/logout");
   userStore.logout();
   unreadCount.value = 0;
+  updateCartCount(0);
   notifications.value = [];
   if (intervalId) {
     clearInterval(intervalId);
     intervalId = null;
   }
+
+  await Swal.fire({
+    icon: "success",
+    title: "登出成功",
+    text: "您已成功登出。",
+    timer: 2000,
+    showConfirmButton: false,
+  });
   router.push("/");
 }
 
 ///////////////////////////// 通知 /////////////////////////////
 
-function callFindNotification() {
-  axiosapi
-    .get(`/member/notifications/${userStore.userId}`)
-    .then(function (response) {
-      if (response.data.success) {
-        console.log(response.data.notificationList);
-        notifications.value = response.data.notificationList;
-        unreadCount.value = response.data.unreadCount;
-      }
-    });
+async function callFindNotification() {
+  try {
+    if (!userStore.userId) {
+      console.error("User ID is not defined");
+      return;
+    }
+
+    const response = await axiosapi.get(
+      `/member/notifications/${userStore.userId}`
+    );
+
+    if (response.data.success) {
+      // console.log(response.data.notificationList);
+      notifications.value = response.data.notificationList || [];
+      unreadCount.value = response.data.unreadCount || 0;
+    } else {
+      console.error("Failed to fetch notifications:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+  }
 }
 
 function getRelativeTime(dateString) {
@@ -205,6 +184,7 @@ function readNotification(noid) {
         );
         if (notification) {
           notification.status = 1; // 更新狀態為已讀
+          unreadCount.value = unreadCount.value - 1;
         }
       } else {
         console.error("無法將通知標記為已讀:", response.data.message);
@@ -215,16 +195,13 @@ function readNotification(noid) {
     });
 }
 
-//打開鈴鐺通知歸0
-function clearNotifications() {
-  unreadCount.value = 0;
-}
-
+//前往通知列表
 function toNotificationList() {
   router.push({
     name: "profile-ling",
     params: { initialView: "notificationList" },
   });
+  document.querySelector("#noti-popup").hidePopover();
 }
 
 onMounted(function () {
@@ -234,6 +211,7 @@ onMounted(function () {
 
     //每隔一段時間呼叫一次
     intervalId = setInterval(callFindNotification, intervalTime);
+    fetchCartCount(userStore.userId);
   }
 });
 
@@ -242,11 +220,54 @@ onUnmounted(function () {
     //卸載時清除，通知計時
     clearInterval(intervalId);
   }
+  document.removeEventListener('click', handleOutsideClick);
 });
 
+// 控制移動端選單的狀態
+const isMobileMenuOpen = ref(false);
+
+// 切換移動端選單的函數
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
+  if (isMobileMenuOpen.value) {
+    document.addEventListener('click', handleOutsideClick);
+  } else {
+    document.removeEventListener('click', handleOutsideClick);
+  }
 };
+
+// 關閉移動端選單的函數
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false;
+  document.removeEventListener('click', handleOutsideClick);
+};
+
+// 處理點擊外部區域的函數
+const handleOutsideClick = (event) => {
+  if (isMobileMenuOpen.value && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-menu-toggle')) {
+    closeMobileMenu();
+  }
+};
+
+
+// 監聽使用者登入狀態變化，當登入後調用 `callFindNotification`
+watch(
+  () => userStore.isLogedin,
+  (newValue) => {
+    if (newValue) {
+      callFindNotification(); // 登入後立即呼叫
+      if (!intervalId) {
+        intervalId = setInterval(callFindNotification, intervalTime);
+      }
+    } else {
+      // 如果使用者登出，清除間隔
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+  }
+);
 </script>
 
 <style scoped>
@@ -275,12 +296,15 @@ const toggleMobileMenu = () => {
 }
 
 .logo-link {
-  margin-right: 30px; /* 增加logo和第一個導航項目之間的間距 */
+  margin-right: 30px;
+  /* 增加logo和第一個導航項目之間的間距 */
 }
 
 .nav-link {
-  padding: 10px 20px; /* 增加內邊距 */
-  margin: 0 10px; /* 增加外邊距 */
+  padding: 10px 20px;
+  /* 增加內邊距 */
+  margin: 0 10px;
+  /* 增加外邊距 */
   text-decoration: none;
   color: #333;
   font-size: 1.1em;
@@ -293,7 +317,8 @@ const toggleMobileMenu = () => {
 }
 
 .action-icon {
-  margin: 0 10px; /* 為用戶操作圖標添加間距 */
+  margin: 0 10px;
+  /* 為用戶操作圖標添加間距 */
 }
 
 .mobile-menu-toggle {
@@ -342,6 +367,7 @@ const toggleMobileMenu = () => {
 }
 
 @media (max-width: 768px) {
+
   .desktop-nav,
   .search-column {
     display: none;
@@ -357,6 +383,10 @@ const toggleMobileMenu = () => {
 
   .user-actions {
     margin-left: auto;
+  }
+
+  .mobile-nav {
+    top: 70px; /* 調整為與 nav-placeholder 相同的高度 */
   }
 }
 
@@ -386,13 +416,12 @@ const toggleMobileMenu = () => {
   top: 0;
   right: -10px;
 }
+
 .noti-popver {
   width: 400px;
 }
+
 .unread-notification {
   color: rgb(48, 103, 205);
-}
-.flaxbox {
-  display: flex;
 }
 </style>

@@ -32,9 +32,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const postId = ref('');
 const violationType = ref('');
 const description = ref('');
@@ -46,20 +47,15 @@ onMounted(() => {
 });
 
 const submitReport = () => {
-    console.log('選擇的違反類型:', violationType.value); 
-
-    // 檢查是否選擇了違反類型
-    if (!violationType.value) {
-        alert('請選擇違反類型'); 
-        return; 
-    }
-
-    // 準備要存儲的檢舉數據
+    console.log('提交報告時的 postId:', postId.value, typeof postId.value);
+    
     const reportData = {
-        postId: postId.value,
+        postId: Number(postId.value),
         violationType: violationType.value,
         description: description.value,
     };
+    
+    console.log('準備存儲的報告數據:', reportData);
 
     // 將數據存儲到 Local Storage
     let reports = JSON.parse(localStorage.getItem('reports')) || [];
@@ -67,6 +63,9 @@ const submitReport = () => {
     localStorage.setItem('reports', JSON.stringify(reports));
 
     alert(`您已檢舉貼文，違反類型: ${violationType.value}, 補充說明: ${description.value}`);
+    
+    // 將 postId 作為查詢參數推送到檢舉列表路由
+    router.push({ name: 'reportPost-link', params: { id: postId.value.toString() } });
     
     // 清空表單
     violationType.value = '';

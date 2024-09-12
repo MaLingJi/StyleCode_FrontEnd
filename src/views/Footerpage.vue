@@ -3,7 +3,7 @@
     <div class="footer-section">
       <h3>Follow us</h3>
       <a href="#"><i class="fab fa-facebook"></i></a>
-      <a href="https://www.instagram.com/ole_niccc/"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
     </div>
     <div class="footer-section">
       <h3>We accept</h3>
