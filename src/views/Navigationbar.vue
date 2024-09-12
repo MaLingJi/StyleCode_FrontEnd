@@ -364,6 +364,19 @@ watch(
   .logo-link {
     margin-right: 20px;
   }
+
+  .mobile-nav {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 90px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
 }
 
 @media (max-width: 768px) {
@@ -388,6 +401,19 @@ watch(
   .mobile-nav {
     top: 70px; /* 調整為與 nav-placeholder 相同的高度 */
   }
+
+  .mobile-nav {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 90px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
 }
 
 @media (max-width: 480px) {
@@ -402,6 +428,19 @@ watch(
   .action-icon {
     margin: 0 5px;
   }
+
+  .mobile-nav {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 90px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
 }
 
 /* ---------------- 通知相關的CSS ---------------- */
