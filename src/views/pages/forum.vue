@@ -22,7 +22,7 @@
           </a-typography-paragraph>
         </a-typography>
         <!-- 發文按鈕 -->
-        <div class="buttons">
+        <div class="search-button-container" style="display: flex; align-items: center;">
           <router-link :to="{ name: 'post-link' }">
             <a-button type="primary" style="background-color: #ff8f00; border-color: #ff8f00; height: 47px; font-size: 23px;" size="large">
               <span class="icon">
@@ -31,6 +31,12 @@
               <span>發文</span>
             </a-button>
           </router-link>
+          <a-input-search
+            v-model:value="searchValue"
+            placeholder="輸入關鍵字搜索"
+            style="width: 200px; margin-left: 20px;"
+            @search="onSearch"
+          />
         </div>
       </div>
       <!-- 浮動式至頂效果 -->
@@ -108,6 +114,7 @@ const userStore = useUserStore();
 const listData = ref([]);
 const path = import.meta.env.VITE_POST_IMAGE_URL; 
 const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
+const searchValue = ref('');
 
 const pagination = ref({
   onChange: (page) => {
@@ -146,6 +153,20 @@ async function callFind() {
     console.error("發現錯誤:", error.response ? error.response.data : error.message);
   }
 }
+
+const onSearch = async () => {
+  try {
+    const response = await axiosapi.get('/post/type', {
+      params: {
+        contentType: 'forum',
+        keyword: searchValue.value,
+      },
+    });
+    listData.value = response.data;
+  } catch (error) {
+    console.error('搜索失敗:', error.response ? error.response.data : error.message);
+  }
+};
 
 const checkIfUserLiked = async (postId) => {
   try {
@@ -314,4 +335,5 @@ img {
   padding-top: 10px;
   border-top: 1px solid #e0e0e0;
 }
+
 </style>
