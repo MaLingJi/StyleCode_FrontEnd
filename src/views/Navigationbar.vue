@@ -34,82 +34,83 @@
                 </span>
               </RouterLink>
               <div class="notification-container">
-              <button
-                class="ts-text is-undecorated action-icon width-30"
-                @click="toggleNotifications"
-              >
-                <span class="ts-icon is-spinning is-bell-icon is-big"></span>
-                <span
-                  class="ts-badge is-negative is-small notification-badge"
-                  v-if="unreadCount > 0"
-                  >{{ unreadCount }}</span
+                <button
+                  class="ts-text is-undecorated action-icon width-30"
+                  @click="toggleNotifications"
                 >
-              </button>
-
-              <div
-                class="ts-popover ts-menu noti-popover"
-                :class="{ 'is-active': isNotificationOpen }"
-                v-if="userStore.isLogedin"
-              >
-                <div class="ts-content has-dark is-dense">
-                  <div class="">通知</div>
-                </div>
-                <div class="ts-divider"></div>
-                <!-- 如果沒有通知，顯示 "暫無通知" -->
-                <div
-                  v-if="notifications && notifications.length === 0"
-                  class="ts-content is-dense"
-                >
-                  <div class="ts-text is-secondary">暫無通知</div>
-                  <div class="ts-divider"></div>
-                </div>
-                <!-- 有通知，顯示通知列表 -->
-                <div v-else>
-                  <template
-                    v-for="notification in notifications.slice(0, 5)"
-                    :key="notification.id"
+                  <span class="ts-icon is-spinning is-bell-icon is-big"></span>
+                  <span
+                    class="ts-badge is-negative is-small notification-badge"
+                    v-if="unreadCount > 0"
+                    >{{ unreadCount }}</span
                   >
-                    <div
-                      class="item"
-                      @click="readNotification(notification.Nid)"
+                </button>
+
+                <div
+                  class="ts-popover ts-menu noti-popover"
+                  :class="{ 'is-active': isNotificationOpen }"
+                  v-if="userStore.isLogedin"
+                >
+                  <div class="ts-content has-dark is-dense">
+                    <div class="">通知</div>
+                  </div>
+                  <div class="ts-divider"></div>
+                  <!-- 如果沒有通知，顯示 "暫無通知" -->
+                  <div
+                    v-if="notifications && notifications.length === 0"
+                    class="ts-content is-dense"
+                  >
+                    <div class="ts-text is-secondary">暫無通知</div>
+                    <div class="ts-divider"></div>
+                  </div>
+                  <!-- 有通知，顯示通知列表 -->
+                  <div v-else>
+                    <template
+                      v-for="notification in notifications.slice(0, 5)"
+                      :key="notification.id"
                     >
                       <div
-                        class="ts-iconset is-outlined ts-grid is-middle-aligned is-spaced-between"
+                        class="item"
+                        @click="readNotification(notification.Nid)"
                       >
-                        <span
-                          class="column"
-                          :class="{
-                            'ts-icon': true,
-                            'is-shop-icon': notification.type === 'shop',
-                            'is-heart-icon': notification.type === 'post',
-                          }"
-                        ></span>
-                        <div class="column" style="width: 80%">
-                          <div
-                            class="ts-text"
+                        <div
+                          class="ts-iconset is-outlined ts-grid is-middle-aligned is-spaced-between"
+                        >
+                          <span
+                            class="column"
                             :class="{
-                              'is-heavy': notification.status === 0,
-                              'unread-notification': notification.status === 0,
+                              'ts-icon': true,
+                              'is-shop-icon': notification.type === 'shop',
+                              'is-heart-icon': notification.type === 'post',
                             }"
-                          >
-                            {{ notification.message }}
-                          </div>
-                          <div class="ts-text is-tiny is-secondary">
-                            {{ dayjs(notification.createdTime).fromNow() }}
+                          ></span>
+                          <div class="column" style="width: 80%">
+                            <div
+                              class="ts-text"
+                              :class="{
+                                'is-heavy': notification.status === 0,
+                                'unread-notification':
+                                  notification.status === 0,
+                              }"
+                            >
+                              {{ notification.message }}
+                            </div>
+                            <div class="ts-text is-tiny is-secondary">
+                              {{ dayjs(notification.createdTime).fromNow() }}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="ts-divider"></div>
-                  </template>
-                </div>
-                <div
-                  class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
-                >
-                  <div @click="toNotificationList">前往通知列表</div>
+                      <div class="ts-divider"></div>
+                    </template>
+                  </div>
+                  <div
+                    class="item ts-content is-secondary is-dense ts-wrap is-center-aligned"
+                  >
+                    <div @click="toNotificationList">前往通知列表</div>
+                  </div>
                 </div>
               </div>
-            </div>
               <a
                 class="ts-text is-undecorated action-icon"
                 data-dropdown="user-dropdown"
@@ -260,7 +261,7 @@ function toNotificationList() {
     name: "profile-ling",
     params: { initialView: "notificationList" },
   });
-  document.querySelector("#noti-popup").hidePopover();
+  isNotificationOpen.value = false;
 }
 
 onMounted(function () {
@@ -279,7 +280,7 @@ onUnmounted(function () {
     //卸載時清除，通知計時
     clearInterval(intervalId);
   }
-  document.removeEventListener('click', closeNotificationsOutside);
+  document.removeEventListener("click", closeNotificationsOutside);
 });
 
 // 控制移動端選單的狀態
@@ -338,16 +339,19 @@ const isNotificationOpen = ref(false);
 function toggleNotifications() {
   isNotificationOpen.value = !isNotificationOpen.value;
   if (isNotificationOpen.value) {
-    document.addEventListener('click', closeNotificationsOutside);
+    document.addEventListener("click", closeNotificationsOutside);
   } else {
-    document.removeEventListener('click', closeNotificationsOutside);
+    document.removeEventListener("click", closeNotificationsOutside);
   }
 }
 
 function closeNotificationsOutside(event) {
-  if (!event.target.closest('.noti-popover') && !event.target.closest('.action-icon')) {
+  if (
+    !event.target.closest(".noti-popover") &&
+    !event.target.closest(".action-icon")
+  ) {
     isNotificationOpen.value = false;
-    document.removeEventListener('click', closeNotificationsOutside);
+    document.removeEventListener("click", closeNotificationsOutside);
   }
 }
 </script>
@@ -446,7 +450,6 @@ function closeNotificationsOutside(event) {
   .logo-link {
     margin-right: 20px;
   }
-  
 }
 
 @media (max-width: 768px) {
@@ -492,7 +495,20 @@ function closeNotificationsOutside(event) {
     margin: 0 5px;
   }
 }
-
+@media (min-width: 1536px) {
+  /* 你的 CSS 規則 */
+  .noti-popover {
+    display: none;
+    position: fixed;
+    top: 70px;
+    right: 70px;
+    width: calc(100% - 20px);
+    max-width: 400px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+}
 /* ---------------- 通知相關的CSS ---------------- */
 .width-30 {
   position: relative;
