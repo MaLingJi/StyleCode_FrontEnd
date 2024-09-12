@@ -55,7 +55,7 @@ const routes = [
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post, meta: { requiresAuth: true } },
   { name: "reportPost-link", path: "/report/;id", component: reportPost },
-  { name: "LoginSuccess-link", path: "/LoginSuccess", component: LoginSuccess,meta: { requiresAuth: true } },
+  { name: "LoginSuccess-link", path: "/LoginSuccess", component: LoginSuccess},
   
   
   { name: "refund-link", path: "/refund/:orderId", component: refund},
