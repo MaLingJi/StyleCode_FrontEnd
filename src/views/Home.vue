@@ -67,7 +67,7 @@ async function loadImages() {
   const allPosts = [...carouselPosts.value, ...mosaicPosts.value];
   for (const post of allPosts) {
     if (post.imageUrls && post.imageUrls.length > 0) {
-      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${validImages[0].imgUrl}`;
+      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${post.imageUrls[0]}`;
     } else {
       imageUrls.value[post.postId] = '/No_image.png';
     }
