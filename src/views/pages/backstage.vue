@@ -65,7 +65,8 @@
             </div>
           </div>
           <div class="ts-menu is-dense is-small has-bottom-spaced-small">
-            <a href="#!" class="item" @click="switchComp(postwebset)">網站設定</a>
+            <a href="#!" class="item" @click="switchComp(postset)">管理貼文</a>
+            <!-- <a href="#!" class="item" @click="switchComp(postwebset)">網站設定</a> -->
             <!-- <a href="#!" class="item">付款方式</a> -->
           </div>
         </div>
@@ -100,6 +101,7 @@ import OrderManagement from "@/components/order/OrderManage.vue";
 import refundReview from "./refundReview.vue";
 import backUser from "@/components/profile/backUser.vue";
 import postwebset from "@/components/profile/postwebset.vue";
+import postset from "@/components/profile/postset.vue"
 
 import useUserStore from "@/stores/user.js";
 const userStore = useUserStore();
