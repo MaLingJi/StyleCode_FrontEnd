@@ -1,6 +1,6 @@
 <template>
   <div class="ts-container product-details">
-    <div class="ts-grid">
+    <div class="ts-grid desktop-layout">
       <div class="column is-7-wide">
         <!-- 照片輪播 -->
         <div class="carousel-container">
@@ -34,30 +34,26 @@
         </p>
         <div class="ts-divider"></div>
         <!-- 顏色和尺寸選擇 -->
-        <div class="ts-grid">
-          <div class="column is-8-wide">
-            <div class="ts-select is-fluid">
-              <select v-model="selectedColor" @change="updateSelectedDetail">
-                <!-- 顏色選擇 -->
-                <option value="">請選擇顏色</option>
-                <option v-for="color in availableColors" :key="color" :value="color">
-                  {{ color }}
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="column is-8-wide">
-            <div class="ts-select is-fluid">
-              <select v-model="selectedSize" @change="updateSelectedDetail">
-                <!-- 尺寸選擇 -->
-                <option value="">請選擇尺寸</option>
-                <option v-for="size in availableSizes" :key="size" :value="size">
-                  {{ size }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
+    <div class="full-width-container">
+      <div class="ts-select is-fluid" style="margin: 0px 0px 15px 0px ;">
+        <select v-model="selectedColor" @change="updateSelectedDetail">
+          <option value="">請選擇顏色</option>
+          <option v-for="color in availableColors" :key="color" :value="color">
+            {{ color }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="full-width-container">
+      <div class="ts-select is-fluid">
+        <select v-model="selectedSize" @change="updateSelectedDetail">
+          <option value="">請選擇尺寸</option>
+          <option v-for="size in availableSizes" :key="size" :value="size">
+            {{ size }}
+          </option>
+        </select>
+      </div>
+    </div>
         <!-- 想購買的數量 & 檢查庫存是否足夠 -->
         <div class="ts-grid has-top-spaced">
           <div class="column is-8-wide">
@@ -92,6 +88,83 @@
         </div>
       </div>
     </div>
+
+
+   <!-- 移動版佈局 -->
+   <div class="mobile-layout">
+      <!-- 照片輪播 -->
+      <div class="carousel-container" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+        <div class="ts-image main-image" @click="openLightbox(currentImageIndex)">
+          <img :src="getImageUrl(currentImage)" :alt="product.productName" />
+        </div>
+        <!-- 移除箭頭按鈕 -->
+      </div>
+
+      <!-- 照片導航點 -->
+      <div class="carousel-dots">
+        <span v-for="(image, index) in product.pimages" :key="index" 
+              :class="['dot', { active: currentImageIndex === index }]"
+              @click="setCurrentImage(index)">
+        </span>
+      </div>
+
+      <h1 class="ts-header is-large">{{ product.productName }}</h1>
+      <p class="ts-text is-large price">
+        NT$ {{ selectedDetail ? selectedDetail.price : " " }}
+      </p>
+
+       <!-- 顏色和尺寸選擇 -->
+    <div class="ts-grid full-width-grid">
+      <div class="column is-full">
+        <div class="ts-select is-fluid">
+          <select v-model="selectedColor" @change="updateSelectedDetail">
+            <option value="">請選擇顏色</option>
+            <option v-for="color in availableColors" :key="color" :value="color">
+              {{ color }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="column is-full">
+        <div class="ts-select is-fluid">
+          <select v-model="selectedSize" @change="updateSelectedDetail">
+            <option value="">請選擇尺寸</option>
+            <option v-for="size in availableSizes" :key="size" :value="size">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品描述 -->
+    <div class="ts-box is-segment">
+      <div class="ts-content">
+        <h3 class="ts-header">商品說明</h3>
+        <p class="ts-text">
+          {{ selectedDetail ? selectedDetail.productDescription : product.productDescription }}
+        </p>
+      </div>
+    </div>
+
+    <!-- 數量選擇和加入購物車 -->
+    <div class="full-width-container">
+      <div class="quantity-input">
+        <button @click="decreaseQuantity" :disabled="quantity <= 1 || !isProductAvailable" class="quantity-btn">-</button>
+        <input type="number" v-model.number="quantity" :min="1" :max="selectedDetail ? selectedDetail.stock : 0"
+          :disabled="!isProductAvailable" readonly />
+        <button @click="increaseQuantity" :disabled="quantity >= (selectedDetail ? selectedDetail.stock : 0) || !isProductAvailable" class="quantity-btn">+</button>
+      </div>
+    </div>
+    <div class="full-width-container">
+      <button class="ts-button is-fluid" :class="{
+        'is-positive': isProductAvailable,
+        'is-gray': !isProductAvailable,
+      }" @click="addToCart" :disabled="!isProductAvailable || !selectedDetail">
+        {{ buttonText }}
+      </button>
+    </div>
+  </div>
 
     <!-- Lightbox 組件，顯示點擊的圖片 -->
     <div v-if="lightboxVisible" class="lightbox" @click="closeLightbox">
@@ -354,6 +427,42 @@ const currentLightboxImage = computed(() => {
   return product.value.pimages?.[currentLightboxIndex.value]?.imgUrl;
 });
 
+//響應式
+let touchStartX = 0;
+let touchEndX = 0;
+
+const touchStart = (e) => {
+  touchStartX = e.touches[0].clientX;
+};
+
+const touchMove = (e) => {
+  touchEndX = e.touches[0].clientX;
+};
+
+const touchEnd = () => {
+  if (touchStartX - touchEndX > 50) {
+    // 向左滑動
+    nextImage();
+  } else if (touchEndX - touchStartX > 50) {
+    // 向右滑動
+    prevImage();
+  }
+};
+
+// 添加數量增減函數
+const decreaseQuantity = () => {
+  if (quantity.value > 1) {
+    quantity.value--;
+  }
+};
+
+const increaseQuantity = () => {
+  if (selectedDetail.value && quantity.value < selectedDetail.value.stock) {
+    quantity.value++;
+  }
+};
+
+
 
 </script>
 
@@ -387,6 +496,85 @@ const currentLightboxImage = computed(() => {
   height: 100%;
   object-fit: cover;
   /* 圖片覆蓋容器，保持比例 */
+}
+
+/* 桌面版佈局 */
+.desktop-layout {
+  display: flex;
+}
+
+/* 移動版佈局 */
+.mobile-layout {
+  display: none;
+}
+
+/* 添加新的樣式 */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  margin: 0 4px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.dot.active {
+  background-color: #717171;
+}
+
+/* 修改數量輸入框樣式 */
+.quantity-input input {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: none;
+  margin: 0;
+  text-align: center;
+  width: 50px;
+  border: none;
+  background: transparent;
+}
+
+
+.quantity-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-input input::-webkit-inner-spin-button, 
+.quantity-input input::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+  margin: 0; 
+}
+
+.quantity-btn {
+  background-color: #f0f0f0;
+  border: none;
+  color: #333;
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.quantity-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 
@@ -543,5 +731,91 @@ const currentLightboxImage = computed(() => {
 /* 使主圖片可點擊 */
 .main-image {
   cursor: pointer;
+}
+
+
+/* 更新移動版樣式 */
+@media (max-width: 768px) {
+  .desktop-layout {
+    display: none;
+  }
+
+  .mobile-layout {
+    display: block;
+    padding: 0 1rem;
+  }
+
+  .full-width-container {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    width: calc(100% + 2rem);
+    padding: 0.5rem 1rem;
+  }
+
+  .ts-select,
+  .ts-button {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .quantity-input {
+    display: flex;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .quantity-btn {
+    flex: 1;
+    height: 40px;
+    font-size: 20px;
+    background-color: #f0f0f0;
+    border: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .quantity-btn:hover {
+    background-color: #e0e0e0;
+  }
+
+  .quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .quantity-input input {
+    flex: 2;
+    text-align: center;
+    font-size: 18px;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+    margin: 0;
+    border: none;
+    background: transparent;
+  }
+
+  .quantity-input input::-webkit-inner-spin-button, 
+  .quantity-input input::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0; 
+  }
+
+  .ts-button {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .ts-box.is-segment {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    width: calc(100% + 2rem);
+    border-left: none;
+    border-right: none;
+  }
 }
 </style>
