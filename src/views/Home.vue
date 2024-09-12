@@ -23,18 +23,18 @@
       </div>
     </div>
 
-     <!-- 照片拼接牆 -->
-     <div class="mosaic-grid">
-    <div v-for="(post, index) in mosaicPosts" :key="post.postId" 
-         :class="['mosaic-item', `item-${index + 1}`]"
-         @click="navigateToShareDetails(post.postId)">
-      <img :src="getImageUrl(post)" :alt="post.userName" />
-      <div class="mosaic-caption">
-        <h3>{{ post.userName || 'Unknown User' }}</h3>
-        <p class="post-title">{{ post.postTitle }}</p>
+    <!-- 照片拼接牆 -->
+    <div class="mosaic-grid">
+      <div v-for="(post, index) in mosaicPosts" :key="post.postId" 
+           :class="['mosaic-item', `item-${index + 1}`]"
+           @click="navigateToShareDetails(post.postId)">
+        <img :src="getImageUrl(post)" :alt="post.userName" />
+        <div class="mosaic-caption">
+          <h3>{{ post.userName || 'Unknown User' }}</h3>
+          <p class="post-title">{{ post.postTitle }}</p>
+        </div>
       </div>
     </div>
-  </div>
 
     <!-- 網站理念 -->
     <div class="site-philosophy">
@@ -45,31 +45,73 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed ,onUnmounted} from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 
 const router = useRouter();
-const posts = ref([]);
+const carouselPosts = ref([]);
+const mosaicPosts = ref([]);
 const currentPage = ref(0);
 const imageUrls = ref({});
 
 const carouselPages = computed(() => {
   const pages = [];
-  for (let i = 0; i < Math.min(posts.value.length, 9); i += 3) {
-    pages.push(posts.value.slice(i, i + 3));
+  for (let i = 0; i < carouselPosts.value.length; i += 3) {
+    pages.push(carouselPosts.value.slice(i, i + 3));
   }
   return pages;
 });
 
-const mosaicPosts = computed(() => {
-  return posts.value.slice(9, 26); // 使用第10到第25張照片作為拼接牆（16張）
-});
+async function loadImages() {
+  const allPosts = [...carouselPosts.value, ...mosaicPosts.value];
+  for (const post of allPosts) {
+    if (post.imageUrls && post.imageUrls.length > 0) {
+      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${post.imageUrls[0]}`;
+    } else {
+      imageUrls.value[post.postId] = '/No_image.png';
+    }
+  }
+}
+
+function getImageUrl(post) {
+  return imageUrls.value[post.postId] || '/No_image.png';
+}
+
+function navigateToShareDetails(postId) {
+  router.push({ name: 'shareDetails-link', params: { postId } });
+}
+
+function prevPage() {
+  currentPage.value = (currentPage.value - 1 + carouselPages.value.length) % carouselPages.value.length;
+}
+
+function nextPage() {
+  currentPage.value = (currentPage.value + 1) % carouselPages.value.length;
+}
+
+function goToPage(index) {
+  currentPage.value = index;
+}
+
+let autoSlideInterval;
+
+function startAutoSlide() {
+  autoSlideInterval = setInterval(() => {
+    nextPage();
+  }, 5000); // 每5秒自動切換一次
+}
 
 onMounted(async () => {
   try {
-    const response = await axiosapi.get('/post/latest?limit=38'); // 獲取25張照片
-    posts.value = response.data;
+    // 獲取最多讚的9篇文章作為輪播
+    const carouselResponse = await axiosapi.get('/post/most-liked?limit=9');
+    carouselPosts.value = carouselResponse.data;
+
+    // 獲取最新的17篇分享文章作為照片牆
+    const mosaicResponse = await axiosapi.get('/post/latest-share?limit=17');
+    mosaicPosts.value = mosaicResponse.data;
+
     await loadImages();
     startAutoSlide();
   } catch (error) {
@@ -77,77 +119,16 @@ onMounted(async () => {
   }
 });
 
-async function loadImages() {
-  for (const post of posts.value) {
-    if (post.imageUrls && post.imageUrls.length > 0) {
-      imageUrls.value[post.postId] = `${import.meta.env.VITE_POST_IMAGE_URL}${post.imageUrls[0]}`;
-    } else {
-      imageUrls.value[post.postId] = '../../../public/No_image.png';
-    }
-  }
-}
-
-const limitedSharedPosts = computed(() => {
-  return sharedPosts.value.slice(0, 15); // 限制為15個帖子（3行x5列）
+// 在組件卸載時清除定時器
+onUnmounted(() => {
+  clearInterval(autoSlideInterval);
 });
+</script>
 
-const sharedPosts = ref([]);
-
-onMounted(async () => {
-  try {
-    const response = await axiosapi.get('/post/latest?limit=9');
-    posts.value = response.data;
-    await loadImages();
-    startAutoSlide();
-
-    // 獲取分享文章
-    const sharedResponse = await axiosapi.get('/post?contentType=分享&limit=20'); // 根據您的API調整
-    // sharedPosts.value = sharedResponse.data;
-    sharedPosts.value = sharedResponse.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-});
-  
-  function getImageUrl(post) {
-    return imageUrls.value[post.postId] || '../../../public/No_image.png';
-  }
-  
-  function navigateToShareDetails(postId) {
-    router.push({ name: 'shareDetails-link', params: { postId } });
-  }
-  
-  function prevPage() {
-    currentPage.value = (currentPage.value - 1 + carouselPages.value.length) % carouselPages.value.length;
-  }
-  
-  function nextPage() {
-    currentPage.value = (currentPage.value + 1) % carouselPages.value.length;
-  }
-  
-  function goToPage(index) {
-    currentPage.value = index;
-  }
-  
-  let autoSlideInterval;
-  
-  function startAutoSlide() {
-    autoSlideInterval = setInterval(() => {
-      nextPage();
-    }, 5000); // 每5秒自動切換一次
-  }
-  
-  // 在組件卸載時清除定時器
-  onUnmounted(() => {
-    clearInterval(autoSlideInterval);
-  });
-  </script>
-  
-  <style scoped>
+<style scoped>
 .home-page {
   width: 100%;
-  background-color: #f0f0f0; /* 淺灰色背景 */
+  background-color: #f0f0f0;
 }
 
 .full-width-carousel {
@@ -213,14 +194,13 @@ onMounted(async () => {
   background: white;
 }
 
-/* 照片拼接牆樣式 */
 .mosaic-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-auto-rows: minmax(100px, auto);
   gap: 10px;
   padding: 20px;
-  background-color: #e0e0e0; /* 中灰色背景 */
+  background-color: #e0e0e0;
 }
 
 .mosaic-item {
@@ -251,20 +231,15 @@ onMounted(async () => {
   object-fit: cover;
 }
 
-
 /* 定義每個項目的大小 */
 .item-1, .item-2 { grid-column: span 2; grid-row: span 2; }
 .item-3, .item-4, .item-5 { grid-column: span 1; grid-row: span 2; }
 .item-6, .item-7, .item-8, .item-9, .item-10, .item-11, .item-12 { grid-column: span 1; grid-row: span 1; }
 .item-13, .item-14 { grid-column: span 2; grid-row: span 2; }
 .item-15, .item-16, .item-17 { grid-column: span 1; grid-row: span 2; }
-.item-18, .item-19, .item-20, .item-21, .item-22, .item-23, .item-24 { grid-column: span 1; grid-row: span 1; }
-.item-25, .item-26 { grid-column: span 2; grid-row: span 2; }
-.item-27, .item-28, .item-29 { grid-column: span 1; grid-row: span 2; }
 
-/* 網站理念樣式 */
 .site-philosophy {
-  background-color: #d0d0d0; /* 深灰色背景 */
+  background-color: #d0d0d0;
   padding: 40px 20px;
   text-align: center;
   color: #333333;
@@ -282,51 +257,75 @@ onMounted(async () => {
   font-size: 1.2em;
 }
 
-/* 響應式設計 */
 @media (max-width: 768px) {
   .mosaic-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    padding: 10px;
   }
 
-  .item-1, .item-2, .item-3, .item-4, .item-5, .item-6, .item-7, .item-8, .item-9, .item-10,
-  .item-11, .item-12, .item-13, .item-14, .item-15, .item-16, .item-17, .item-18, .item-19, .item-20,
-  .item-21, .item-22, .item-23, .item-24, .item-25, .item-26, .item-27, .item-28, .item-29 {
-    grid-column: span 1;
-    grid-row: span 1;
+  .item-1, .item-2 { grid-column: span 2; grid-row: span 2; }
+  .item-3, .item-4, .item-5 { grid-column: span 2; grid-row: span 1; }
+  .item-6, .item-7, .item-8, .item-9 { grid-column: span 1; grid-row: span 1; }
+  .item-10, .item-11 { grid-column: span 2; grid-row: span 2; }
+  .item-12, .item-13, .item-14 { grid-column: span 2; grid-row: span 1; }
+  .item-15, .item-16, .item-17 { grid-column: span 1; grid-row: span 1; }
+
+  .mosaic-caption {
+    padding: 3px;
+  }
+
+  .mosaic-caption h3 {
+    font-size: 0.7em;
+    margin: 0;
   }
 
   .post-title {
     display: none;
   }
 
-  .carousel-caption h3,
-  .mosaic-caption h3 {
-    font-size: 0.9em;
+  .full-width-carousel {
+    height: 50vh;
+  }
+
+  .carousel-caption h3 {
+    font-size: 0.8em;
     margin-bottom: 0;
   }
 
-  .carousel-caption,
-  .mosaic-caption {
+  .carousel-caption {
     padding: 5px;
   }
 }
 
 @media (max-width: 480px) {
   .mosaic-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    padding: 5px;
+  }
+
+  .item-1, .item-2 { grid-column: span 3; grid-row: span 2; }
+  .item-3, .item-4, .item-5 { grid-column: span 1; grid-row: span 2; }
+  .item-6, .item-7, .item-8, .item-9, .item-10, .item-11 { grid-column: span 1; grid-row: span 1; }
+  .item-12, .item-13 { grid-column: span 3; grid-row: span 2; }
+  .item-14, .item-15, .item-16 { grid-column: span 1; grid-row: span 2; }
+  .item-17 { grid-column: span 3; grid-row: span 1; }
+
+  .mosaic-caption h3 {
+    font-size: 0.6em;
   }
 
   .full-width-carousel {
-    height: calc(100vh - 70px);
+    height: 40vh;
   }
 
   .site-philosophy h2 {
-    font-size: 1.5em;
+    font-size: 1.2em;
   }
 
   .site-philosophy p {
-    font-size: 1em;
+    font-size: 0.9em;
   }
 }
-
 </style>

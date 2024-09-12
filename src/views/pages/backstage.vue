@@ -21,60 +21,52 @@
               <a class="item" @click="switchComp(refundReview)">退款申請</a>
             </div>
           </div>
-
-          <!-- 商品貨物部分 -->
-          <div class="sidebar-section">
-            <div class="ts-content is-dense">
-              <div class="ts-grid">
-                <div class="column is-fluid">
-                  <div class="ts-header">商品貨物</div>
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-clipboard-icon"></span>
-                </div>
+          <div class="ts-divider has-top-spaced-small"></div>
+          <div class="ts-content is-dense">
+            <div class="ts-grid">
+              <div class="column is-fluid">
+                <div class="ts-header">商品貨物</div>
               </div>
-            </div>
-            <div class="ts-menu is-dense is-small">
-              <a class="item" @click="handleEditCategories">分類管理</a>
-              <a class="item" @click="handleEditSubcategories">子分類管理</a>
-              <a class="item" @click="addNewProduct">新增商品</a>
-              <a class="item" @click="handleEditProduct">商品管理</a>
-              <a class="item" @click="handleEditProductDetail">商品庫存管理</a>
+              <div class="column">
+                <span class="ts-icon is-clipboard-icon"></span>
+              </div>
             </div>
           </div>
-          
-          <!-- 會員部分 -->
-          <div class="sidebar-section">
-            <div class="ts-content is-dense">
-              <div class="ts-grid">
-                <div class="column is-fluid">
-                  <div class="ts-header">會員</div>
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-gears-icon"></span>
-                </div>
+          <div class="ts-menu is-dense is-small">
+            <a class="item" @click="handleEditCategories">分類管理</a>
+            <a class="item" @click="handleEditSubcategories">子分類管理</a>
+            <a class="item" @click="addNewProduct">新增商品</a>
+            <a class="item" @click="handleEditProduct">商品管理</a>
+            <a class="item" @click="handleEditProductDetail">商品庫存管理</a>
+          </div>
+          <div class="ts-divider has-top-spaced-small"></div>
+          <div class="ts-content is-dense">
+            <div class="ts-grid">
+              <div class="column is-fluid">
+                <div class="ts-header">會員</div>
               </div>
-            </div>
-            <div class="ts-menu is-dense is-small has-bottom-spaced-small">
-              <a href="#!" class="item" @click="switchComp(backUser)">會員管理</a>
+              <div class="column">
+                <span class="ts-icon is-gears-icon"></span>
+              </div>
             </div>
           </div>
-          
-          <!-- 文章管理部分 -->
-          <div class="sidebar-section">
-            <div class="ts-content is-dense">
-              <div class="ts-grid">
-                <div class="column is-fluid">
-                  <div class="ts-header">文章管理</div>
-                </div>
-                <div class="column">
-                  <span class="ts-icon is-gears-icon"></span>
-                </div>
+          <div class="ts-menu is-dense is-small has-bottom-spaced-small">
+            <a href="#!" class="item" @click="switchComp(backUser)">會員管理</a>
+          </div>
+          <div class="ts-divider has-top-spaced-small"></div>
+          <div class="ts-content is-dense">
+            <div class="ts-grid">
+              <div class="column is-fluid">
+                <div class="ts-header">文章管理</div>
+              </div>
+              <div class="column">
+                <span class="ts-icon is-gears-icon"></span>
               </div>
             </div>
-            <div class="ts-menu is-dense is-small has-bottom-spaced-small">
-              <a href="#!" class="item" @click="switchComp(postwebset)">網站設定</a>
-            </div>
+          </div>
+          <div class="ts-menu is-dense is-small has-bottom-spaced-small">
+            <a href="#!" class="item" @click="switchComp(postwebset)">網站設定</a>
+            <!-- <a href="#!" class="item">付款方式</a> -->
           </div>
         </div>
       </div>
@@ -99,7 +91,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import AddProduct from "@/components/product/AddProduct.vue";
+import AddProduct from "@/components/product/addProduct.vue";
 import CategoryManager from "@/components/product/CategoryManager.vue";
 import SubcategoryManager from "@/components/product/SubcategoryManager.vue";
 import ProductManager from "@/components/product/ProductManager.vue";
@@ -107,7 +99,7 @@ import ProductDetailManager from "@/components/product/ProductDetailManager.vue"
 import OrderManagement from "@/components/order/OrderManage.vue";
 import refundReview from "./refundReview.vue";
 import backUser from "@/components/profile/backUser.vue";
-import postwebset from "@/components/profile/postwebset.vue"
+import postwebset from "@/components/profile/postwebset.vue";
 
 import useUserStore from "@/stores/user.js";
 const userStore = useUserStore();

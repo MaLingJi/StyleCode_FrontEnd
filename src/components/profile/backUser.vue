@@ -1,7 +1,7 @@
 <template>
   <div class="ts-content">
     <h3 class="ts-header">會員管理</h3>
-    <div class="ts-grid is-relaxed is-3-columns has-top-spaced-large">
+    <div class="ts-grid is-relaxed is-2-columns has-top-spaced-large">
       <div class="column">
         <div class="ts-box">
           <div class="ts-content">
@@ -36,7 +36,7 @@
       <div class="ts-content is-dense">
         <div class="ts-grid is-spaced-between">
           <div class="ts-header is-heavy">會員清單</div>
-          <div class="ts-input is-solid">
+          <div class="ts-input is-solid search-input">
             <input
               type="text"
               placeholder="搜尋Email"
@@ -47,6 +47,7 @@
         </div>
       </div>
       <div class="ts-divider"></div>
+      <div class="table-container">
       <table class="ts-table is-basic">
         <thead>
           <tr>
@@ -82,6 +83,7 @@
           </tr>
         </tbody>
       </table>
+    </div>
       <div class="ts-divider"></div>
       <div class="ts-content page-bar is-center-aligned">
         <div class="ts-pagination is-center-aligned">
@@ -337,5 +339,66 @@ ul {
 }
 .ts-input {
   width: 50%;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .ts-grid.is-relaxed.is-3-columns {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .column {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ts-table {
+    width: 100%;
+    min-width: 600px; /* 设置一个最小宽度，确保所有列都能显示 */
+  }
+
+  .search-input {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .ts-pagination {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+  }
+
+  .ts-pagination .item {
+    display: inline-block;
+  }
+}
+
+/* 更小屏幕的额外调整 */
+@media (max-width: 480px) {
+  .ts-header {
+    font-size: 1.2rem;
+  }
+
+  .ts-box {
+    padding: 0.5rem;
+  }
+
+  .ts-table th,
+  .ts-table td {
+    padding: 0.5rem;
+  }
+
+  select {
+    width: 80px;
+    font-size: 0.8rem;
+  }
 }
 </style>

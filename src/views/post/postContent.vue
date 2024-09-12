@@ -3,14 +3,22 @@
     <section class="post-content">
       <div v-if="loading">載入中...</div>
       <div v-else>
+        <!-- 添加作者資訊 -->
+        <a-comment>
+          <template #author>
+            <div class="author-info" style="display: flex; align-items: center;">
+              <a-avatar :size="64" :src="post.userDetail.userPhoto" /> 
+              <span class="author-name" style="margin-left: 8px;">{{ post.userDetail.userName }}</span>
+              <span class="post-timestamp" style="margin-left: 10px;">
+                <a-tooltip :title="dayjs(post.createdAt).format('YYYY-MM-DD HH:mm:ss')">
+                  <span>{{ dayjs(post.createdAt).fromNow() }}</span>
+                </a-tooltip>
+              </span>
+            </div>
+          </template>
+        </a-comment>
         <h1 style="display: inline-block;">{{ post.postTitle }}</h1>
-        <span class="post-timestamp" style="margin-left: 10px;">
-          <a-tooltip :title="dayjs(post.createdAt).format('YYYY-MM-DD HH:mm:ss')">
-            <span>{{ dayjs(post.createdAt).fromNow() }}</span>
-          </a-tooltip>
-        </span>
         <p>{{ post.contentText }}</p>
-
         <!-- 顯示圖片 -->
         <div v-if="Array.isArray(post.images) && post.images.length > 0" class="post-images">
           <a-image 
@@ -27,21 +35,21 @@
           <span key="comment-basic-like">
             <a-tooltip title="Like">
               <template v-if="post.isLiked">
-                <heart-filled @click="handleLikeClick" style="color: #eb2f96;" />
+                <heart-filled @click="handleLikeClick" style="color: #000000;" />
               </template>
               <template v-else>
-                <heart-outlined @click="handleLikeClick" style="color: #eb2f96;" />
+                <heart-outlined @click="handleLikeClick" style="color: #000000;" />
               </template>
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ likes }}</span>
           </span>
-          <span key="comment-basic-collect">
+          <span key="comment-basic-collect" class="collect-action">
             <a-tooltip title="Collect">
               <template v-if="post.isCollected">
-                <star-filled @click="handleCollectClick" style="color: #fadb14;" />
+                <star-filled @click="handleCollectClick" style="color: #000000;" />
               </template>
               <template v-else>
-                <star-outlined @click="handleCollectClick" style="color: #fadb14;" />
+                <star-outlined @click="handleCollectClick" style="color: #000000;" />
               </template>
             </a-tooltip>
             <span style="padding-left: 8px; cursor: auto">{{ collects }}</span>
@@ -63,9 +71,8 @@
         <!-- <a-float-button shape="square" description="檢舉"
             :style="{ right: '24px', bottom: '96px',}">
             <template #icon>
-              <a-tooltip title="檢舉"> -->
-                <!-- 檢舉按鈕圖示 -->
-                <!-- <warning-outlined 
+              <a-tooltip title="檢舉">
+                <warning-outlined 
                   @click="goToReport(post.postId)" 
                   style="color: red; font-size: 20px;" />
               </a-tooltip>
@@ -73,8 +80,8 @@
           </a-float-button> -->
 
         <!-- 編輯按鈕 -->
-        <a-button v-if="post.userId === userId" type="primary" 
-          @click="() => goToEditPage(post.postId)">編輯</a-button>
+        <a-button v-if="post.userId === userId" type="primary" style="background-color: #000000; color: #ffffff;" 
+          @click="() => goToEditPage(post.postId)"><EditOutlined/>編輯</a-button>
         <!-- 鑲入留言列表和新增留言區 -->
         <comment :post-id="postId"></comment>
       </div>
@@ -86,7 +93,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
-import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined, WarningOutlined } from '@ant-design/icons-vue';
+import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined, WarningOutlined,EditOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
 import comment from './comment.vue';
 import dayjs from 'dayjs';
@@ -95,13 +102,14 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 dayjs.locale('zh-tw'); 
 
-const post = ref({});
+const post = ref([]);
 const likes = ref(0);
 const collects = ref(0);
 const shares = ref(0);
 const loading = ref(true);
 const isLoading = ref(false); // 新增的變量，控制載入狀態
 const path = import.meta.env.VITE_POST_IMAGE_URL;
+const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 
 const userStore = useUserStore();
 const userId = Number(userStore.userId);
@@ -115,7 +123,11 @@ const fetchPostData = async () => {
     const response = await axiosapi.get(`/post/${postId}`);
     console.log("文章数据:",response.data); 
     post.value = response.data;
-
+    // 設置 userDetail
+    post.value.userDetail = {
+      userPhoto: `${userPhotoPath}${response.data.userPhoto}`,
+      userName: response.data.userName
+    };
     likes.value = post.value.likes.length;
     post.value.isLiked = post.value.likes.some(like => like.userId === userId); 
     collects.value = post.value.collections.length; 
@@ -258,19 +270,39 @@ onMounted(async () => {
 }
 .post-images {
   display: flex; 
-  flex-wrap: wrap; /* 允许换行 */
-  justify-content: center; /*图片在容器中水平居中*/
+  justify-content: center; /*圖片在貨櫃中水平居中*/
   gap: 10px;
-  margin: auto; /* 容器在页面上居中 */
+  margin: auto; /* 容器在頁面上居中 */
   max-width: 80%; 
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 .post-image {
   width: 100%;
   max-width: 100%; 
-  height: auto; /* auto高度自动调整 */
-  object-fit: cover; /* 确保图片在容器中覆盖并保持比例 */
+  height: auto; /* auto高度自動調整 */
+  object-fit: cover; /* 保證圖片在容器中的覆蓋並保持比例 */
   border-radius: 8px; 
   width: calc(33.333% - 10px); 
+}
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.collect-action {
+  margin-left: 16px; /* 增加間距 */
+}
+.author-info {
+  display: flex;
+  align-items: center;
+}
+.author-name {
+  margin-left: 8px;
+  color: #000000;
+  font-weight: bold; 
+}
+.post-timestamp {
+  margin-left: 10px;
+  color: #666666; 
 }
 </style>
