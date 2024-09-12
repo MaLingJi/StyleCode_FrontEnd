@@ -7,7 +7,7 @@
     </button>
   </div>
   <div v-if="notifications.length > 0">
-    <template v-for="(notification, index) in notifications" :key="index">
+    <template v-for="notification in notifications" :key="notification.id">
       <div
         class="ts-box is-horizontal"
         @click="readNotification(notification.id)"
@@ -39,7 +39,7 @@
             </div>
           </div>
           <p class="ts-text is-tiny is-secondary">
-            {{ getRelativeTime(notification.createdTime) }}
+            {{ dayjs(notification.createdTime).fromNow() }}
           </p>
         </div>
       </div>
@@ -84,6 +84,11 @@ import useUserStore from "@/stores/user.js";
 import { onMounted, ref, computed } from "vue";
 import Swal from "sweetalert2";
 import Paginate from "vuejs-paginate-next";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
+dayjs.locale("zh-tw");
 
 const userStore = useUserStore();
 const notifications = ref([]);
@@ -133,19 +138,19 @@ async function callFindNotification(page = 1) {
   }
 }
 
-function getRelativeTime(dateString) {
-  const date = new Date(dateString.replace(" ", "T"));
-  const now = new Date();
-  const difinSeconds = Math.floor((now - date) / 1000);
+// function getRelativeTime(dateString) {
+//   const date = new Date(dateString.replace(" ", "T"));
+//   const now = new Date();
+//   const difinSeconds = Math.floor((now - date) / 1000);
 
-  if (difinSeconds < 60) return "剛剛";
-  if (difinSeconds < 3600) return `${Math.floor(difinSeconds / 60)} 分鐘前`;
-  if (difinSeconds < 86400) return `${Math.floor(difinSeconds / 3600)} 小時前`;
-  if (difinSeconds < 2592000) return `${Math.floor(difinSeconds / 86400)} 天前`;
-  if (difinSeconds < 3153600)
-    return `${Math.floor(difinSeconds / 2592000)} 個月前`;
-  return `${Math.floor(difinSeconds / 3153600)} 年前`;
-}
+//   if (difinSeconds < 60) return "剛剛";
+//   if (difinSeconds < 3600) return `${Math.floor(difinSeconds / 60)} 分鐘前`;
+//   if (difinSeconds < 86400) return `${Math.floor(difinSeconds / 3600)} 小時前`;
+//   if (difinSeconds < 2592000) return `${Math.floor(difinSeconds / 86400)} 天前`;
+//   if (difinSeconds < 3153600)
+//     return `${Math.floor(difinSeconds / 2592000)} 個月前`;
+//   return `${Math.floor(difinSeconds / 3153600)} 年前`;
+// }
 
 function readNotification(noid) {
   console.log("已讀");
@@ -172,10 +177,18 @@ function readNotification(noid) {
 
 //////// 一鍵已讀 ////////
 async function allRead() {
+  Swal.fire({
+    title: "處理中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
   try {
     const response = await axiosapi.put(
       `/member/notifications/allread/${userStore.userId}`
     );
+    Swal.close();
     if (response.status === 200) {
       notifications.value.forEach((notification) => {
         if (notification.status === 0) {
@@ -213,6 +226,7 @@ function handlePageChange(page) {
 }
 
 onMounted(async () => {
+  window.scrollTo(0, 0);
   Swal.fire({
     title: "讀取中...",
     allowOutsideClick: false,

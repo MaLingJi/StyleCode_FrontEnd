@@ -371,6 +371,7 @@ function getCardType(cardNumber) {
   }
 }
 onMounted(function () {
+  window.scrollTo(0, 0);
   if (userStore.isLogedin) {
     callFindcard();
   }

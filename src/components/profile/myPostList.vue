@@ -15,34 +15,46 @@
     </div>
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
- <div class="ts-container has-top-spaced">
-    <div
-      class="share-grid"
-      v-if="postType === 'share'"
-    >
-    <div class="share-grid-item" v-for="post in shareposts" :key="post.postId">
-      <div class="share-card" @click="viewPost(post)">
-        <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost(post)"></div>
-      <!-- ^編輯按鈕^ -->
-      <div class="share-image">
-        <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
+  <div class="ts-container has-top-spaced">
+    <div class="share-grid" v-if="postType === 'share'">
+      <div
+        class="share-grid-item"
+        v-for="post in shareposts"
+        :key="post.postId"
+      >
+        <div class="share-card" @click="viewPost(post)">
+          <div
+            class="ts-icon is-circular is-pen-icon is-large share-edit-button"
+            @click.stop="viewPost(post)"
+          ></div>
+          <!-- ^編輯按鈕^ -->
+          <div class="share-image">
+            <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
+            <img
+              :src="
+                post.images && post.images.length > 0
+                  ? `${path}/${post.images[0].imgUrl}`
+                  : '/default-image.png'
+              "
+            />
           </div>
-      <div class="share-info">
-        <!-- 動態綁定用戶名稱 -->
-        <h3>{{ post.userName }}</h3>
-        <div class="ts-grid is-spaced-between">
-          <!-- 動態綁定文章標題 -->
-          <p class="column">{{ post.postTitle }}</p>
-          <div class="ts-grid share-icons column">
-            <div class="column">
-              <!-- 動態顯示喜歡數量 -->
-              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
-            </div>
-            <div class="column">
-              <!-- 動態顯示收藏數量 -->
-              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
-            </div>
+          <div class="share-info">
+            <!-- 動態綁定用戶名稱 -->
+            <h3>{{ post.userName }}</h3>
+            <div class="ts-grid is-spaced-between">
+              <!-- 動態綁定文章標題 -->
+              <p class="column">{{ post.postTitle }}</p>
+              <div class="ts-grid share-icons column">
+                <div class="column">
+                  <!-- 動態顯示喜歡數量 -->
+                  <span class="ts-icon is-heart-icon margin-right"></span
+                  >{{ post.likes.length }}
+                </div>
+                <div class="column">
+                  <!-- 動態顯示收藏數量 -->
+                  <span class="ts-icon is-bookmark-icon margin-right"></span
+                  >{{ post.collections.length }}
+                </div>
               </div>
             </div>
           </div>
@@ -51,26 +63,42 @@
     </div>
     <!-------- 論 壇 主 要 頁 面 -------->
     <div v-if="postType === 'forum'">
-      <div class="ts-box is-horizontal" v-for="post in forumposts" :key="post.postId">
+      <div
+        class="ts-box is-horizontal"
+        v-for="post in forumposts"
+        :key="post.postId"
+      >
         <div class="ts-image is-covered">
-          <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
-            width="150" height="100%" />
+          <img
+            :src="
+              post.images && post.images.length > 0
+                ? `${path}/${post.images[0].imgUrl}`
+                : '/default-image.png'
+            "
+            width="150"
+            height="100%"
+          />
         </div>
         <div class="ts-content right-side">
           <div class="ts-grid is-spaced-between">
             <div class="ts-header column">
               {{ post.postTitle }}
             </div>
-            <div class="ts-icon is-pen-icon is-large column edit-button" @click.stop="viewPost(post)"></div>
+            <div
+              class="ts-icon is-pen-icon is-large column edit-button"
+              @click.stop="viewPost(post)"
+            ></div>
             <!-- ^編輯按鈕^ -->
           </div>
           <p>{{ post.contentText }}</p>
           <div class="ts-grid icons">
             <div class="column">
-              <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+              <span class="ts-icon is-heart-icon margin-right"></span
+              >{{ post.likes.length }}
             </div>
             <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+              <span class="ts-icon is-bookmark-icon margin-right"></span
+              >{{ post.collections.length }}
             </div>
           </div>
         </div>
@@ -83,7 +111,7 @@
 import axiosapi from "@/plugins/axios.js";
 import { ref, watch } from "vue";
 import useUserStore from "@/stores/user.js";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const userId = useUserStore().userId;
 const postType = ref("share");
@@ -94,10 +122,10 @@ const path = import.meta.env.VITE_POST_IMAGE_URL;
 const router = useRouter();
 
 const viewPost = (post) => {
-  if (post.contentType === 'share') {
-    router.push({ name: 'shareDetails-link', params: { postId: post.postId } });
-  } else if (post.contentType === 'forum') {
-    router.push({ name: 'postContent-link', params: { id: post.postId } });
+  if (post.contentType === "share") {
+    router.push({ name: "shareDetails-link", params: { postId: post.postId } });
+  } else if (post.contentType === "forum") {
+    router.push({ name: "postContent-link", params: { id: post.postId } });
   }
 };
 
@@ -112,25 +140,28 @@ watch(
     axiosapi
       .get(`/post/user/${userId}?type=${newType}`)
       .then((response) => {
-        posts.value = response.data
-        console.log('Posts:', posts.value); // 打印所有的帖子数据
+        posts.value = response.data;
+        console.log("Posts:", posts.value); // 打印所有的帖子数据
         // 遍歷所有文章
-        response.data.forEach(post => {
-          if (post.contentType === 'forum') {
+        response.data.forEach((post) => {
+          if (post.contentType === "forum") {
             forumposts.value.push(post);
-          } else if (post.contentType === 'share') {
+          } else if (post.contentType === "share") {
             shareposts.value.push(post);
           }
         });
-        console.log('論壇文章:', forumposts.value); // 打印論壇文章
-        console.log('分享文章:', shareposts.value); // 打印分享文
+        console.log("論壇文章:", forumposts.value); // 打印論壇文章
+        console.log("分享文章:", shareposts.value); // 打印分享文
       })
       .catch((error) => {
-        console.error('取得貼文時出錯:', error);
+        console.error("取得貼文時出錯:", error);
       });
   },
   { immediate: true } // 確保元件加載時也會執行一次
 );
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 </script>
 
 <style scoped>
@@ -277,5 +308,4 @@ watch(
     padding: 8px;
   }
 }
-
 </style>

@@ -114,6 +114,7 @@ const userInput = reactive({
   phone: "",
 });
 onMounted(function () {
+  window.scrollTo(0, 0);
   Swal.fire({
     title: "讀取中...",
     allowOutsideClick: false,

@@ -16,26 +16,40 @@
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
   <div class="ts-container has-top-spaced">
-    <div class="ts-grid is-3-columns is-relaxed is-stretched" v-if="postType === 'share'">
+    <div
+      class="ts-grid is-3-columns is-relaxed is-stretched"
+      v-if="postType === 'share'"
+    >
       <div class="column" v-for="(post, index) in sharePosts" :key="index">
         <div class="share-card">
-          <div class="ts-icon is-bookmark-icon is-huge bookmark" @click.stop="removeBookmark(post.postId)"></div>
+          <div
+            class="ts-icon is-bookmark-icon is-huge bookmark"
+            @click.stop="removeBookmark(post.postId)"
+          ></div>
           <!-- ^書籤按鈕^ -->
           <div class="share-image" @click="navigateToPost(post.postId)">
             <img
-              :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
-              alt="Share Image" /> />
+              :src="
+                post.images && post.images.length > 0
+                  ? `${path}/${post.images[0].imgUrl}`
+                  : '/default-image.png'
+              "
+              alt="Share Image"
+            />
+            />
           </div>
           <div class="share-info">
             <h3>{{ post.userName }}</h3>
             <!-- <div class="ts-grid is-spaced-between"> -->
             <p>{{ post.postTitle }}</p>
-            <div class="ts-grid share-icons column ">
+            <div class="ts-grid share-icons column">
               <div class="column">
-                <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+                <span class="ts-icon is-heart-icon margin-right"></span
+                >{{ post.likes.length }}
               </div>
               <div class="column">
-                <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+                <span class="ts-icon is-bookmark-icon margin-right"></span
+                >{{ post.collections.length }}
               </div>
             </div>
             <!-- </div> -->
@@ -46,11 +60,26 @@
   </div>
   <!-------- 論 壇 主 要 頁 面 -------->
   <div v-if="postType === 'forum'">
-    <div class="ts-box is-horizontal" v-for="(post, index) in forumPosts" :key="index">
-      <div class="ts-icon is-bookmark-icon is-huge column bookmark" @click="removeBookmark(post.postId)"></div>
+    <div
+      class="ts-box is-horizontal"
+      v-for="(post, index) in forumPosts"
+      :key="index"
+    >
+      <div
+        class="ts-icon is-bookmark-icon is-huge column bookmark"
+        @click="removeBookmark(post.postId)"
+      ></div>
       <div class="ts-image is-covered" @click="navigateToPost(post.postId)">
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
-          width="150" height="100%" alt="Post Image" />
+        <img
+          :src="
+            post.images && post.images.length > 0
+              ? `${path}/${post.images[0].imgUrl}`
+              : '/default-image.png'
+          "
+          width="150"
+          height="100%"
+          alt="Post Image"
+        />
       </div>
       <div class="ts-content right-side">
         <div class="ts-grid is-spaced-between">
@@ -59,10 +88,12 @@
         <p>{{ post.contentText }}</p>
         <div class="ts-grid icons">
           <div class="column">
-            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
+            <span class="ts-icon is-heart-icon margin-right"></span
+            >{{ post.likes.length }}
           </div>
           <div class="column">
-            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            <span class="ts-icon is-bookmark-icon margin-right"></span
+            >{{ post.collections.length }}
           </div>
         </div>
       </div>
@@ -74,20 +105,20 @@
 import axiosapi from "@/plugins/axios.js";
 import { ref, watch } from "vue";
 import useUserStore from "@/stores/user.js";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const userId = Number(useUserStore().userId);
 const postType = ref("share");
-const sharePosts = ref([]);  // 存儲分享區文章
-const forumPosts = ref([]);  // 存儲論壇文章
+const sharePosts = ref([]); // 存儲分享區文章
+const forumPosts = ref([]); // 存儲論壇文章
 const path = import.meta.env.VITE_POST_IMAGE_URL;
 const router = useRouter();
 
 const navigateToPost = (postId) => {
-  if (postType.value === 'share') {
-    router.push({ name: 'shareDetails-link', params: { postId } });
-  } else if (postType.value === 'forum') {
-    router.push({ name: 'postContent-link', params: { id: postId } });
+  if (postType.value === "share") {
+    router.push({ name: "shareDetails-link", params: { postId } });
+  } else if (postType.value === "forum") {
+    router.push({ name: "postContent-link", params: { id: postId } });
   }
 };
 
@@ -102,23 +133,26 @@ watch(
       .get(`/collections/post/${userId}`)
       .then((response) => {
         const posts = response.data;
-        // console.log('獲取的貼文:', posts); 
-        posts.forEach(post => {
-          if (post.contentType === 'forum') {
+        // console.log('獲取的貼文:', posts);
+        posts.forEach((post) => {
+          if (post.contentType === "forum") {
             forumPosts.value.push(post);
-          } else if (post.contentType === 'share') {
+          } else if (post.contentType === "share") {
             sharePosts.value.push(post);
           }
         });
         // 根據 postType 顯示相應的文章
         if (postType.value === "share") {
-          console.log('分享文章:', sharePosts.value);
+          console.log("分享文章:", sharePosts.value);
         } else if (postType.value === "post") {
-          console.log('論壇文章:', forumPosts.value);
+          console.log("論壇文章:", forumPosts.value);
         }
       })
       .catch((error) => {
-        console.error('取得貼文時出錯:', error.response ? error.response.data : error.message);
+        console.error(
+          "取得貼文時出錯:",
+          error.response ? error.response.data : error.message
+        );
       });
   },
   { immediate: true }
@@ -132,18 +166,28 @@ const removeBookmark = async (postId) => {
     await axiosapi.delete(`/collections/${userId}/${postId}`);
 
     if (postType.value === "share") {
-      sharePosts.value = sharePosts.value.filter(post => post.postId !== postId);
+      sharePosts.value = sharePosts.value.filter(
+        (post) => post.postId !== postId
+      );
     } else if (postType.value === "forum") {
-      forumPosts.value = forumPosts.value.filter(post => post.postId !== postId);
+      forumPosts.value = forumPosts.value.filter(
+        (post) => post.postId !== postId
+      );
     }
 
-    console.log('收藏已移除');
-    console.log('當前分享文章:', sharePosts.value);
-    console.log('當前論壇文章:', forumPosts.value);
+    console.log("收藏已移除");
+    console.log("當前分享文章:", sharePosts.value);
+    console.log("當前論壇文章:", forumPosts.value);
   } catch (error) {
-    console.error('移除收藏時發生錯誤:', error.response ? error.response.data : error.message);
+    console.error(
+      "移除收藏時發生錯誤:",
+      error.response ? error.response.data : error.message
+    );
   }
 };
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 </script>
 
 <style scoped>
