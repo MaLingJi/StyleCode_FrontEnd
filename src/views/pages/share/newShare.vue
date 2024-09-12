@@ -47,12 +47,13 @@
                     <!-- 新增或編輯單品表單 -->
                     <div v-if="showProductForm" class="product-form">
                         <div class="ts-input is-underlined">
-                            <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
+                            <input type="text" v-model="newProduct.productName" placeholder="商品名稱"
+                                @focus="showSuggestions = true" @blur="handleBlur" />
                         </div>
                         <!-- 搜索建議列表 -->
-                        <ul v-if="filteredProductSuggestions.length" class="suggestion-list">
-                            <li v-for="(suggestion, index) in filteredProductSuggestions" :key="index"
-                                @click="selectProductSuggestion(suggestion)">
+                        <ul v-if="showSuggestions && filteredSuggestions.length > 0" class="suggestions">
+                            <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
+                                @click="selectSuggestion(suggestion)" class="suggestion-item">
                                 {{ suggestion.productName }}
                             </li>
                         </ul>
@@ -136,17 +137,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
-// import { useProductStore } from '@/stores/product';
 
 const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 const router = useRouter();
 const userStore = useUserStore();
-// const productStore = useProductStore();
 
 const postTitle = ref('');
 const contentText = ref('');
@@ -165,7 +164,9 @@ const editingIndex = ref(null);
 const showProductForm = ref(false);
 
 const products = ref([]); // 存储所有商品数据
-const filteredProductSuggestions = ref([]); // 存储过滤后的商品建议
+
+const showSuggestions = ref(false);
+const productSuggestions = ref([]);
 
 // 存儲單品資料
 const productTags = ref([]);
@@ -308,40 +309,87 @@ onMounted(() => {
         });
 });
 
-function updateProductSuggestions() {
+async function fetchProductSuggestions() {
+  const subcategoryId = newProduct.value.subcategoryId;
+  if (!subcategoryId) {
+    productSuggestions.value = [];
+    return;
+  }
+
+  try {
+    const response = await axiosapi.get(`/products/subcategory/${subcategoryId}`);
+    productSuggestions.value = response.data;
+  } catch (error) {
+    console.error('Error fetching product suggestions:', error);
+  }
+}
+
+const filteredSuggestions = computed(() => {
+  if (!newProduct.value.productName) {
+    // 如果输入框为空，显示前四个商品
+    return productSuggestions.value.slice(0, 4);
+  }
+
   const query = newProduct.value.productName.toLowerCase();
+  return productSuggestions.value.filter(product =>
+    product.productName.toLowerCase().includes(query)
+  );
+});
 
-  if (!query) {
-    // 输入框为空时，显示前四个商品
-    filteredProductSuggestions.value = products.value.slice(0, 4);
-  } else {
-    // 过滤符合查询条件的商品
-    const filteredProducts = products.value.filter(product =>
-      product.subcategoryId === newProduct.value.subcategoryId &&
-      product.productName.toLowerCase().includes(query)
-    );
 
-    if (filteredProducts.length > 0) {
-      filteredProductSuggestions.value = filteredProducts.slice(0, 4);
+// function updateProductSuggestions() {
+//     const query = newProduct.value.productName.toLowerCase();
+
+//     if (!query) {
+//         // 输入框为空时，显示前四个商品
+//         filteredProductSuggestions.value = products.value.slice(0, 4);
+//     } else {
+//         // 过滤符合查询条件的商品
+//         const filteredProducts = products.value.filter(product =>
+//             product.subcategoryId === newProduct.value.subcategoryId &&
+//             product.productName.toLowerCase().includes(query)
+//         );
+
+//         if (filteredProducts.length > 0) {
+//             filteredProductSuggestions.value = filteredProducts.slice(0, 4);
+//         } else {
+//             // 找不到匹配项时，显示前四个商品
+//             filteredProductSuggestions.value = products.value.slice(0, 4);
+//         }
+//     }
+// }
+
+function selectSuggestion(suggestion) {
+  newProduct.value.productName = suggestion.productName;
+  showSuggestions.value = false;
+}
+
+function handleBlur() {
+  // 设置一个延迟，让点击事件有时间触发
+  setTimeout(() => {
+    showSuggestions.value = false;
+  }, 100);
+}
+
+watch(
+  () => newProduct.value.subcategoryId,
+  (newValue) => {
+    if (newValue) {
+      fetchProductSuggestions();
     } else {
-      // 找不到匹配项时，显示前四个商品
-      filteredProductSuggestions.value = products.value.slice(0, 4);
+      productSuggestions.value = [];
     }
   }
-}
+);
 
-function selectProductSuggestion(suggestion) {
-  newProduct.value.productName = suggestion.productName;
-  filteredProductSuggestions.value = [];
-
-  // 如果存在输入框的引用，主动让其失去焦点
-  const inputElement = document.querySelector('input[v-model="newProduct.productName"]');
-  if (inputElement) {
-    inputElement.blur();
+watch(
+  () => newProduct.value.productName,
+  (newValue) => {
+    if (newValue) {
+      showSuggestions.value = true;
+    }
   }
-}
-
-watch(() => newProduct.value.productName, updateProductSuggestions);
+);
 
 function handleFileUpload(event) {
     const files = Array.from(event.target.files); // 获取多个文件
@@ -576,25 +624,22 @@ p {
     /* 滑鼠移入時顯示 */
 }
 
-.suggestion-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    max-height: 150px;
-    overflow-y: auto;
-    background-color: white;
-    position: absolute;
-    z-index: 1000;
+.suggestions {
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 5px;
+  background-color: white;
+  list-style-type: none;
+  padding-left: 0;
 }
 
-.suggestion-list li {
-    padding: 8px;
-    cursor: pointer;
+.suggestion-item {
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
-.suggestion-list li:hover {
-    background-color: #f0f0f0;
+.suggestion-item:hover {
+  background-color: #eee;
 }
 </style>

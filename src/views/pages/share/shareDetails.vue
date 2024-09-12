@@ -250,7 +250,7 @@ onMounted(() => {
             likeCount.value = post.value.likes.length;
             // console.log("collectionCount: ", collectionCount.value);
             userPhoto.value = `${userPhotoPath}${post.value.userPhoto}`;
-            // console.log(userPhoto.value);
+            console.log("userPhoto: ", userPhoto.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);
