@@ -37,7 +37,7 @@
 
     <a-comment class="new-comment">
       <template #avatar>
-        <a-avatar src="/public/MDFK.png" />
+        <a-avatar src="/public/MDFK-removebg-preview.png" />
       </template>
       <template #content>
         <a-form-item>

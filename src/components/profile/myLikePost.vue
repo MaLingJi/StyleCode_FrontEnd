@@ -16,44 +16,41 @@
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
   <div class="ts-container has-top-spaced">
-    <div
-      class="ts-grid is-3-columns is-relaxed is-stretched"
-      v-if="postType === 'share'"
-    >
-    <div class="column" v-for="(post, index) in sharePosts" :key="index">
-      <div class="share-card">
-        <div class="ts-icon is-bookmark-icon is-huge bookmark" @click.stop="removeBookmark(post.postId)"></div>
+    <div class="ts-grid is-3-columns is-relaxed is-stretched" v-if="postType === 'share'">
+      <div class="column" v-for="(post, index) in sharePosts" :key="index">
+        <div class="share-card">
+          <div class="ts-icon is-bookmark-icon is-huge bookmark" @click.stop="removeBookmark(post.postId)"></div>
           <!-- ^書籤按鈕^ -->
           <div class="share-image" @click="navigateToPost(post.postId)">
-            <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" alt="Share Image" /> />
-        </div>
-        <div class="share-info">
-          <h3>{{ post.userName }}</h3>
-          <div class="ts-grid is-spaced-between">
-            <p class="column">{{ post.postTitle }}</p>
-            <div class="ts-grid share-icons column">
+            <img
+              :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
+              alt="Share Image" /> />
+          </div>
+          <div class="share-info">
+            <h3>{{ post.userName }}</h3>
+            <!-- <div class="ts-grid is-spaced-between"> -->
+            <p>{{ post.postTitle }}</p>
+            <div class="ts-grid share-icons column ">
               <div class="column">
                 <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
               </div>
               <div class="column">
                 <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
               </div>
-                </div>
-              </div>
             </div>
+            <!-- </div> -->
           </div>
         </div>
       </div>
     </div>
-    <!-------- 論 壇 主 要 頁 面 -------->
-    <div v-if="postType === 'forum'">
+  </div>
+  <!-------- 論 壇 主 要 頁 面 -------->
+  <div v-if="postType === 'forum'">
     <div class="ts-box is-horizontal" v-for="(post, index) in forumPosts" :key="index">
-      <div
-        class="ts-icon is-bookmark-icon is-huge column bookmark"
-        @click="removeBookmark(post.postId)"
-      ></div>
+      <div class="ts-icon is-bookmark-icon is-huge column bookmark" @click="removeBookmark(post.postId)"></div>
       <div class="ts-image is-covered" @click="navigateToPost(post.postId)">
-        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" alt="Post Image" />
+        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'"
+          width="150" height="100%" alt="Post Image" />
       </div>
       <div class="ts-content right-side">
         <div class="ts-grid is-spaced-between">
@@ -66,11 +63,11 @@
           </div>
           <div class="column">
             <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
-            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -83,7 +80,7 @@ const userId = Number(useUserStore().userId);
 const postType = ref("share");
 const sharePosts = ref([]);  // 存儲分享區文章
 const forumPosts = ref([]);  // 存儲論壇文章
-const path = import.meta.env.VITE_POST_IMAGE_URL; 
+const path = import.meta.env.VITE_POST_IMAGE_URL;
 const router = useRouter();
 
 const navigateToPost = (postId) => {
@@ -102,10 +99,10 @@ watch(
     sharePosts.value = [];
     forumPosts.value = [];
     axiosapi
-    .get(`/collections/post/${userId}`)
-    .then((response) => {
-      const posts = response.data;
-      // console.log('獲取的貼文:', posts); 
+      .get(`/collections/post/${userId}`)
+      .then((response) => {
+        const posts = response.data;
+        // console.log('獲取的貼文:', posts); 
         posts.forEach(post => {
           if (post.contentType === 'forum') {
             forumPosts.value.push(post);
@@ -127,19 +124,19 @@ watch(
   { immediate: true }
 ); //確保元件載入時也會執行一次
 
-  //取消收藏
-  const removeBookmark = async (postId) => {
-    console.log(`要刪除的 postId: ${postId}`); 
+//取消收藏
+const removeBookmark = async (postId) => {
+  console.log(`要刪除的 postId: ${postId}`);
   try {
     // console.log(`刪除請求: /collections/${userId}/${postId}`);
     await axiosapi.delete(`/collections/${userId}/${postId}`);
-    
+
     if (postType.value === "share") {
-      sharePosts.value = sharePosts.value.filter(post => post.postId  !== postId);
+      sharePosts.value = sharePosts.value.filter(post => post.postId !== postId);
     } else if (postType.value === "forum") {
-      forumPosts.value = forumPosts.value.filter(post => post.postId  !== postId);
+      forumPosts.value = forumPosts.value.filter(post => post.postId !== postId);
     }
-    
+
     console.log('收藏已移除');
     console.log('當前分享文章:', sharePosts.value);
     console.log('當前論壇文章:', forumPosts.value);
@@ -151,7 +148,8 @@ watch(
 
 <style scoped>
 .share-card {
-  width: 250px; /* 設置固定寬度 */
+  width: 250px;
+  /* 設置固定寬度 */
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -167,14 +165,16 @@ watch(
 
 .share-image {
   width: 100%;
-  height: 300px; /* 設置固定高度 */
+  height: 300px;
+  /* 設置固定高度 */
   overflow: hidden;
 }
 
 .share-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+  object-fit: cover;
+  /* 確保圖片填滿容器並保持比例 */
 }
 
 .share-info {
@@ -200,40 +200,43 @@ watch(
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .ts-box {
   height: 150px;
   position: relative;
 }
+
 .right-side {
   width: 100%;
 }
+
 .margin-right {
   margin-right: 10px;
 }
-.is-heart-icon {
-  color: pink;
-}
-.is-bookmark-icon {
-  color: cornflowerblue;
-}
+
 .bookmark {
   position: absolute;
   right: 10px;
   top: -10px;
 }
+
 .edit-button:hover {
   cursor: pointer;
   color: #0050b3;
 }
+
 .share-edit-button:hover {
   cursor: pointer;
   color: cornflowerblue;
   background-color: #d6d6d6;
 }
+
 .icons {
   font-size: 18px;
 }
+
 .share-icons {
   font-size: 16px;
+  margin-top: 10px;
 }
 </style>

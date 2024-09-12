@@ -12,10 +12,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in cartItems" style="vertical-align: middle;">
+                <tr class="carttr" v-for="item in cartItems">
                     <td>{{ item.productName }}</td>
-                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))"
-                            style="width: 100px; height: 100px;" /></td>
+                    <td><img :src="getImageUrl(findImgUrl(item.productDetailsId))" class="cartimage" /></td>
                     <td>{{ formatCurrency(item.productPrice) }}</td>
                     <td>
                         <div>
@@ -39,7 +38,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="6" style="text-align: right;">購物車：{{ cartItems.length }} 件</th>
+                    <th colspan="6" class="cartsummary">購物車：{{ cartItems.length }} 件</th>
                 </tr>
             </tfoot>
         </table>
@@ -54,7 +53,9 @@ import { onMounted } from 'vue';
 import useUserStore from "@/stores/user.js"
 import { watch } from 'vue';
 import Swal from 'sweetalert2';
+import { useCart } from '@/services/cartService';
 
+const { fetchCartCount } = useCart();
 const props = defineProps(['cartItems']);
 const emit = defineEmits(['update:carItems']);
 const stockStatus = ref(new Map());
@@ -66,7 +67,8 @@ const cauculate = (item) => {
 };
 
 const updateParent = () => {
-    emit('update:carItems', [...props.cartItems]);
+    emit('update:carItems', [...props.cartItems]); //更新到母組件
+    fetchCartCount(user) //為了及時更新購物車上數字
 }
 
 const increaseQuantity = (item) => {
@@ -177,7 +179,7 @@ const removeItem = (item) => {
     }
     )
 }
-
+//設定狀態用來判斷庫存
 onMounted(async () => {
     props.cartItems.forEach(item => {
         stockStatus.value.set(item.productDetailsId, false);
@@ -193,7 +195,7 @@ watch(() => props.cartItems, (newItems) => {
     }
 }, { immediate: true });
 
-
+//調用取得照片名稱API(productID去找)
 const loadPhotos = async (items) => {
     for (const item of items) {
         try {
@@ -221,28 +223,41 @@ const findImgUrl = (productDetailsId) => {
     return photo ? photo.url : null;
 }
 // 把找到的商品名稱路徑加上全域路徑
+// 路徑為8080 但會在商品後端API改成C:// 
 const getImageUrl = (imageName) => {
     const path = import.meta.env.VITE_PRODUCT_IMAGE_URL;
     if (imageName) {
         return `${path}${imageName}`;
     }
     return "../../../public/No_image.png";
+    //沒有的話回傳這個頁面
 };
 
 
 </script>
 
-<style>
-.custom-number-input {
+<style scoped>
+.carttr {
+    vertical-align: middle;
+}
 
-    /* 設置寬度 */
+.cartimage {
+    width: 100px;
+    height: 100px;
+}
+
+.custom-number-input {
     width: 50px;
-    /* 您可以根據需要調整這個值 */
+    text-align: center;
 }
 
 .custom-number-input::-webkit-inner-spin-button,
 .custom-number-input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+.cartsummary {
+    text-align: right;
 }
 </style>

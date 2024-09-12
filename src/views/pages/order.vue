@@ -1,7 +1,7 @@
 <template>
     <!DOCTYPE html>
-    <html class="is-secondary" style="width: 900px;">
-    <div class="ts-container" style="margin-top: 10px;">
+    <html class="is-secondary html-container">
+    <div class="ts-container container-margin">
         <div class="ts-selection is-fluid">
             <label class="item">
                 <input type="radio" name="language" value="1" v-model="status" />
@@ -95,7 +95,7 @@ import Swal from 'sweetalert2';
 
 const status = ref(1);
 const orders = ref([]);
-const expandedOrderId = ref(null);
+const expandedOrderId = ref(null);//用來展開收起
 const orderDetails = ref([]);
 const user = useUserStore().userId;
 const router = useRouter()
@@ -116,18 +116,20 @@ watch(status, () => {
         .catch(error => {
             console.error('cant load orders' + error);
         });
-}, { immediate: true }); // 确保组件加载时也会执行一次
+}, { immediate: true }); // 確保加載時執行一次
 
+//加工金額
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' }).format(amount);
 };
 
+//加工日期 把T換成空白
 const formatDate = (dateString) => {
     if (!dateString) return ''
     return dateString.replace('T', ' ').split('.')[0]
 }
 
-
+//取得od判斷展開收起
 const toggleOrderDetails = orderId => {
     if (expandedOrderId.value === orderId) {
         expandedOrderId.value = null;
@@ -170,7 +172,15 @@ const refund = (order) => {
 
 </script>
 
-<style>
+<style scoped>
+.html-container {
+    width: 900px;
+}
+
+.container-margin {
+    margin-top: 10px;
+}
+
 .ts-table th,
 .ts-table td,
 .ts-table tr {

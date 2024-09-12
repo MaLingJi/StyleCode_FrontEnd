@@ -108,6 +108,7 @@
       <div class="ts-divider"></div>
       <div class="ts-content is-tertiary">
         <div class="ts-wrap is-end-aligned">
+          <button class="ts-button" @click="updateFields">快捷輸入</button>
           <button class="ts-button" @click="callCreate">確定</button>
           <button class="ts-button is-outlined" data-dialog="createCardModal">
             取消
@@ -142,6 +143,15 @@ const userInput = reactive({
   securityCode: "",
   billingAddress: "",
 });
+
+const updateFields = () => {
+  userInput.holderName = "郭子綺";
+  userInput.cardNumber = "3577 5432 4236 1455";
+  userInput.expirationDate = "12/26";
+  userInput.securityCode = "452";
+  userInput.billingAddress = "高雄市前金區中正四路211號8樓之1";
+};
+
 // 處理格式化信用卡號碼
 const formattedCardNumber = computed({
   get: () => {
@@ -196,74 +206,103 @@ const formatExpirationDate = (event: Event) => {
 };
 
 ///////////// 新增信用卡
-function callCreate() {
-  console.log(userInput);
-  axiosapi
-    .post(`/member/creditCard/${userStore.userId}`, userInput)
-    .then(function (response) {
-      if (response.data.success) {
-        (
-          document.getElementById("createCardModal") as HTMLDialogElement
-        ).close();
-        Swal.fire({
-          text: response.data.message,
-          icon: "success",
-          confirmButtonText: "確認",
-          allowOutsideClick: false,
-        }).then(function () {
-          callFindcard();
-        });
-      } else {
-        (
-          document.getElementById("createCardModal") as HTMLDialogElement
-        ).close();
-        // 如果操作不成功
-        Swal.fire({
-          text: response.data.message || "操作失敗，請稍後再試。",
-          icon: "error",
-          confirmButtonText: "確認",
-        });
-      }
-    })
-    .catch((error) => {
-      (document.getElementById("createCardModal") as HTMLDialogElement).close();
-      console.error("Error creating credit card:", error);
-      Swal.fire({
-        text: "系統錯誤，請稍後再試。",
+async function callCreate() {
+  try {
+    console.log(userInput);
+    (document.getElementById("createCardModal") as HTMLDialogElement).close();
+
+    Swal.fire({
+      title: "處理中...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const response = await axiosapi.post(
+      `/member/creditCard/${userStore.userId}`,
+      userInput
+    );
+    Swal.close();
+    if (response.data.success) {
+      await Swal.fire({
+        text: response.data.message,
+        icon: "success",
+        confirmButtonText: "確認",
+        confirmButtonColor: "rgb(35 40 44)",
+        allowOutsideClick: false,
+      });
+      callFindcard();
+    } else {
+      // 如果操作不成功
+      await Swal.fire({
+        text: response.data.message || "操作失敗，請稍後再試。",
         icon: "error",
+        confirmButtonColor: "rgb(35 40 44)",
         confirmButtonText: "確認",
       });
+      (document.getElementById("createCardModal") as HTMLDialogElement).show();
+    }
+  } catch (error) {
+    console.error("Error creating credit card:", error);
+    await Swal.fire({
+      text: "系統錯誤，請稍後再試。",
+      icon: "error",
+      confirmButtonColor: "rgb(35 40 44)",
+      confirmButtonText: "確認",
     });
+    (document.getElementById("createCardModal") as HTMLDialogElement).show();
+  }
 }
 
 ///////////// 顯示信用卡
 
-function callFindcard() {
-  axiosapi
-    .get(`/member/creditCard/${userStore.userId}`)
-    .then(function (response) {
-      if (response.data.success) {
-        if (
-          Array.isArray(response.data.cardList) &&
-          response.data.cardList.length > 0
-        ) {
-          cards.value = response.data.cardList.map((card: any) => {
-            const cleanCardNumber = card.cardNumber.replace(/\s+/g, "");
-            const formattedCardNumber = cleanCardNumber.replace(
-              /\d{12}(\d{4})/,
-              "**** **** **** $1"
-            );
-            const cardType = getCardType(cleanCardNumber);
-            return { ...card, cardNumber: formattedCardNumber, type: cardType };
-          });
-        }
-      } else {
-        console.error("無法取得卡片資料:", response.data.message);
+async function callFindcard() {
+  Swal.fire({
+    title: "讀取中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+  try {
+    const response = await axiosapi.get(
+      `/member/creditCard/${userStore.userId}`
+    );
+    Swal.close();
+    if (response.data.success) {
+      if (
+        Array.isArray(response.data.cardList) &&
+        response.data.cardList.length > 0
+      ) {
+        cards.value = response.data.cardList.map((card: any) => {
+          const cleanCardNumber = card.cardNumber.replace(/\s+/g, "");
+          const formattedCardNumber = cleanCardNumber.replace(
+            /\d{12}(\d{4})/,
+            "**** **** **** $1"
+          );
+          const cardType = getCardType(cleanCardNumber);
+          return { ...card, cardNumber: formattedCardNumber, type: cardType };
+        });
       }
-    })
-    .catch((error) => {
-      console.error("取得卡片資料時發生錯誤:", error);
+    } else {
+      console.error("無法取得卡片資料:", response.data.message);
+      Swal.fire({
+        text: "取得卡片資料時發生錯誤:" + response.data.message,
+        icon: "error",
+        confirmButtonColor: "rgb(35 40 44)",
+        confirmButtonText: "確認",
+      });
+    }
+  } catch (error) {
+    console.error("取得卡片資料時發生錯誤:", error);
+    Swal.fire({
+      text: "取得卡片資料時發生錯誤:" + error,
+      icon: "error",
+      confirmButtonColor: "rgb(35 40 44)",
+      confirmButtonText: "確認",
     });
+  }
 }
 
 ///////////// 刪除信用卡
@@ -281,9 +320,17 @@ function deleteCard(cardId) {
     cancelButtonColor: "#9e9e9e",
   }).then((result) => {
     if (result.isConfirmed) {
+      Swal.fire({
+        title: "處理中...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
       axiosapi
         .delete(`/member/creditCard/${userStore.userId}/${cardId}`)
         .then(function (response) {
+          Swal.close();
           if (response.data.success) {
             cards.value = cards.value.filter((card) => card.cardId !== cardId);
             Swal.fire({

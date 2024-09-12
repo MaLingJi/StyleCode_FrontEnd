@@ -1,7 +1,7 @@
 <template>
   <div class="ts-content">
     <h3 class="ts-header">會員管理</h3>
-    <div class="ts-grid is-relaxed is-3-columns has-top-spaced-large">
+    <div class="ts-grid is-relaxed is-2-columns has-top-spaced-large">
       <div class="column">
         <div class="ts-box">
           <div class="ts-content">
@@ -36,7 +36,7 @@
       <div class="ts-content is-dense">
         <div class="ts-grid is-spaced-between">
           <div class="ts-header is-heavy">會員清單</div>
-          <div class="ts-input is-solid">
+          <div class="ts-input is-solid search-input">
             <input
               type="text"
               placeholder="搜尋Email"
@@ -47,6 +47,7 @@
         </div>
       </div>
       <div class="ts-divider"></div>
+      <div class="table-container">
       <table class="ts-table is-basic">
         <thead>
           <tr>
@@ -82,8 +83,9 @@
           </tr>
         </tbody>
       </table>
+    </div>
       <div class="ts-divider"></div>
-      <div class="ts-content page-bar">
+      <div class="ts-content page-bar is-center-aligned">
         <div class="ts-pagination is-center-aligned">
           <Paginate
             :page-count="pageCount"
@@ -144,7 +146,7 @@ const searchQuery = ref("");
 //今日註冊變數
 const todayRegistrations = ref(0);
 
-// 格式化日期的輔助方法
+// 格式化日期
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(); // 根據需要調整格式
 };
@@ -293,7 +295,7 @@ const sortIconClass = computed(() => {
 
 // 處理按下 Enter 鍵
 const handleEnterKey = () => {
-  callFindUsers(); // 傳入頁碼和搜尋字串
+  callFindUsers(); // 搜尋字串
 };
 
 // 處理頁面變化
@@ -301,18 +303,22 @@ function handlePageChange(page) {
   callFindUsers(page);
 }
 
-// 如果需要，您可以添加這些方法來處理首頁和尾頁
-function goToFirstPage() {
-  callFindUsers(1);
-}
+onMounted(async function () {
+  Swal.fire({
+    title: "讀取中...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
-function goToLastPage() {
-  callFindUsers(pageCount.value);
-}
-
-onMounted(function () {
-  callFindUsers();
-  fetchTodayRegistrations();
+  try {
+    await Promise.all([callFindUsers(), fetchTodayRegistrations()]);
+  } catch (error) {
+    console.error("Error during initialization:", error);
+  } finally {
+    Swal.close();
+  }
 });
 </script>
 
@@ -333,5 +339,66 @@ ul {
 }
 .ts-input {
   width: 50%;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .ts-grid.is-relaxed.is-3-columns {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .column {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ts-table {
+    width: 100%;
+    min-width: 600px; /* 设置一个最小宽度，确保所有列都能显示 */
+  }
+
+  .search-input {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .ts-pagination {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+  }
+
+  .ts-pagination .item {
+    display: inline-block;
+  }
+}
+
+/* 更小屏幕的额外调整 */
+@media (max-width: 480px) {
+  .ts-header {
+    font-size: 1.2rem;
+  }
+
+  .ts-box {
+    padding: 0.5rem;
+  }
+
+  .ts-table th,
+  .ts-table td {
+    padding: 0.5rem;
+  }
+
+  select {
+    width: 80px;
+    font-size: 0.8rem;
+  }
 }
 </style>
