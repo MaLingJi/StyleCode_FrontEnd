@@ -26,14 +26,13 @@
                   {{ cartItemCount }}
                 </span>
               </RouterLink>
-              <div class="notification-container">
-              <button class="ts-text is-undecorated action-icon width-30" @click="toggleNotificationPopover">
-                <span class="ts-icon is-spinning is-bell-icon is-big"></span>
-                <span class="ts-badge is-negative is-small notification-badge" v-if="unreadCount > 0">{{ unreadCount
+              <button class="ts-text is-undecorated action-icon width-30" popovertarget="noti-popup">
+                <!-- @click="clearNotifications" -->
+                <span class="ts-icon is-spinning is-bell-icon is-big"></span><span
+                  class="ts-badge is-negative is-small notification-badge" v-if="unreadCount > 0">{{ unreadCount
                   }}</span>
               </button>
-              <div class="ts-popover ts-menu noti-popver" id="noti-popup"
-                v-if="userStore.isLogedin && isNotificationPopoverOpen">
+              <div class="ts-popover ts-menu noti-popver" id="noti-popup" v-if="userStore.isLogedin" popover>
                 <div class="ts-content has-dark is-dense">
                   <div class="">通知</div>
                 </div>
@@ -73,7 +72,6 @@
                   <div @click="toNotificationList">前往通知列表</div>
                 </div>
               </div>
-            </div>
               <a class="ts-text is-undecorated action-icon" data-dropdown="user-dropdown"
                 v-if="userStore.isLogedin"><span class="ts-icon is-spinning is-user-icon is-big"></span></a>
               <div class="ts-dropdown" id="user-dropdown" v-if="userStore.isLogedin">
@@ -215,7 +213,6 @@ onMounted(function () {
     intervalId = setInterval(callFindNotification, intervalTime);
     fetchCartCount(userStore.userId);
   }
-  document.addEventListener('click', handleOutsideClick);
 });
 
 onUnmounted(function () {
@@ -239,7 +236,6 @@ const toggleMobileMenu = () => {
   }
 };
 
-
 // 關閉移動端選單的函數
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
@@ -250,9 +246,6 @@ const closeMobileMenu = () => {
 const handleOutsideClick = (event) => {
   if (isMobileMenuOpen.value && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-menu-toggle')) {
     closeMobileMenu();
-  }
-  if (isNotificationPopoverOpen.value && !event.target.closest('#noti-popup') && !event.target.closest('[data-notification-toggle]')) {
-    isNotificationPopoverOpen.value = false;
   }
 };
 
@@ -275,15 +268,6 @@ watch(
     }
   }
 );
-
-//響應式
-const isNotificationPopoverOpen = ref(false);
-
-
-const toggleNotificationPopover = (event) => {
-  event.stopPropagation(); // 防止事件冒泡
-  isNotificationPopoverOpen.value = !isNotificationPopoverOpen.value;
-};
 </script>
 
 <style scoped>
@@ -371,11 +355,6 @@ const toggleNotificationPopover = (event) => {
   border-bottom: none;
 }
 
-.notification-container {
-  position: relative;
-  display: inline-block;
-}
-
 @media (max-width: 1024px) {
   .nav-link {
     padding: 10px 15px;
@@ -384,19 +363,6 @@ const toggleNotificationPopover = (event) => {
 
   .logo-link {
     margin-right: 20px;
-  }
-
-  .mobile-nav {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 90px;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 999;
   }
 }
 
@@ -420,34 +386,8 @@ const toggleNotificationPopover = (event) => {
   }
 
   .mobile-nav {
-    top: 70px;
-    /* 調整為與 nav-placeholder 相同的高度 */
-  }
-
-  .mobile-nav {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 90px;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 999;
-  }
-
-  .noti-popver {
-    position: fixed;
     top: 70px; /* 調整為與 nav-placeholder 相同的高度 */
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-height: calc(100vh - 70px);
-    overflow-y: auto;
-    margin-top: 0;
   }
-
 }
 
 @media (max-width: 480px) {
@@ -461,19 +401,6 @@ const toggleNotificationPopover = (event) => {
 
   .action-icon {
     margin: 0 5px;
-  }
-
-  .mobile-nav {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 90px;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 999;
   }
 }
 
@@ -496,22 +423,5 @@ const toggleNotificationPopover = (event) => {
 
 .unread-notification {
   color: rgb(48, 103, 205);
-}
-
-.notification-container {
-  position: relative;
-  display: inline-block;
-}
-
-.noti-popver {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 400px;
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  z-index: 1000;
-  margin-top: 10px;
 }
 </style>

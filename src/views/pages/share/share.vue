@@ -142,7 +142,7 @@ function callFind() {
 
 @media (max-width: 768px) {
   .share-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     padding: 15px;
   }
@@ -150,9 +150,13 @@ function callFind() {
 
 @media (max-width: 480px) {
   .share-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     padding: 10px;
+  }
+
+  .share-grid-item {
+    width: 100%;
   }
 }
 </style>
