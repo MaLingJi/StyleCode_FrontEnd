@@ -179,6 +179,8 @@ const sortProducts = () => {
   margin-bottom: 10px;
 }
 
+
+
 /* 定義產品列表的樣式，確保其填滿可用空間 */
 .product-list {
   flex-grow: 1;
@@ -228,6 +230,44 @@ const sortProducts = () => {
   background-size: 8px 8px;
 }
 
+/* 为卡片添加样式 */
+:deep(.product-card) {
+  background-color: white; /* 确保卡片背景为白色 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 添加轻微阴影 */
+  border-radius: 8px; /* 圆角边框 */
+  transition: all 0.3s ease; /* 添加过渡效果 */
+  width: 100%; /* 确保卡片填满列宽 */
+}
+:deep(.product-card:hover) {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* 悬停时增强阴影效果 */
+  transform: translateY(-5px); /* 悬停时轻微上浮 */
+}
 
+/* 调整页面背景色，增加与卡片的对比 */
+.shop-page-layout {
+  background-color: #f5f5f5; /* 浅灰色背景 */
+}
+
+.main-content {
+  padding: 20px 0; /* 增加主内容区域的上下内边距 */
+}
+
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .ts-grid.is-3-columns {
+    gap: 15px; /* 在smaller屏幕上减小间距 */
+  }
+
+  :deep(.product-card) {
+    border-radius: 6px; /* 稍微减小圆角 */
+  }
+}
+
+@media (max-width: 480px) {
+  .ts-grid.is-3-columns {
+    gap: 10px; /* 在最小屏幕上进一步减小间距 */
+  }
+}
 
 </style>
