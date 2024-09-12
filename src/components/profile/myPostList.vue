@@ -109,7 +109,7 @@
 
 <script setup>
 import axiosapi from "@/plugins/axios.js";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import useUserStore from "@/stores/user.js";
 import { useRouter } from "vue-router";
 
