@@ -35,21 +35,20 @@
               </RouterLink>
               <button
                 class="ts-text is-undecorated action-icon width-30"
-                popovertarget="noti-popup"
+                @click="toggleNotifications"
               >
-                <!-- @click="clearNotifications" -->
-                <span class="ts-icon is-spinning is-bell-icon is-big"></span
-                ><span
+                <span class="ts-icon is-spinning is-bell-icon is-big"></span>
+                <span
                   class="ts-badge is-negative is-small notification-badge"
                   v-if="unreadCount > 0"
                   >{{ unreadCount }}</span
                 >
               </button>
+
               <div
-                class="ts-popover ts-menu noti-popver"
-                id="noti-popup"
+                class="ts-popover ts-menu noti-popover"
+                :class="{ 'is-active': isNotificationOpen }"
                 v-if="userStore.isLogedin"
-                popover
               >
                 <div class="ts-content has-dark is-dense">
                   <div class="">通知</div>
@@ -230,20 +229,6 @@ async function callFindNotification() {
     console.error("Error fetching notifications:", error);
   }
 }
-
-// function getRelativeTime(dateString) {
-//   const date = new Date(dateString.replace(" ", "T"));
-//   const now = new Date();
-//   const difinSeconds = Math.floor((now - date) / 1000);
-
-//   if (difinSeconds < 60) return "剛剛";
-//   if (difinSeconds < 3600) return `${Math.floor(difinSeconds / 60)} 分鐘前`;
-//   if (difinSeconds < 86400) return `${Math.floor(difinSeconds / 3600)} 小時前`;
-//   if (difinSeconds < 2592000) return `${Math.floor(difinSeconds / 86400)} 天前`;
-//   if (difinSeconds < 3153600)
-//     return `${Math.floor(difinSeconds / 2592000)} 個月前`;
-//   return `${Math.floor(difinSeconds / 3153600)} 年前`;
-// }
 function readNotification(noid) {
   console.log("已讀");
   axiosapi
@@ -292,7 +277,7 @@ onUnmounted(function () {
     //卸載時清除，通知計時
     clearInterval(intervalId);
   }
-  document.removeEventListener("click", handleOutsideClick);
+  document.removeEventListener('click', closeNotificationsOutside);
 });
 
 // 控制移動端選單的狀態
@@ -343,6 +328,26 @@ watch(
     }
   }
 );
+
+//響應式  通知修改
+
+const isNotificationOpen = ref(false);
+
+function toggleNotifications() {
+  isNotificationOpen.value = !isNotificationOpen.value;
+  if (isNotificationOpen.value) {
+    document.addEventListener('click', closeNotificationsOutside);
+  } else {
+    document.removeEventListener('click', closeNotificationsOutside);
+  }
+}
+
+function closeNotificationsOutside(event) {
+  if (!event.target.closest('.noti-popover') && !event.target.closest('.action-icon')) {
+    isNotificationOpen.value = false;
+    document.removeEventListener('click', closeNotificationsOutside);
+  }
+}
 </script>
 
 <style scoped>
@@ -462,6 +467,13 @@ watch(
   .mobile-nav {
     top: 70px; /* 調整為與 nav-placeholder 相同的高度 */
   }
+
+  .noti-popover {
+    top: 70px;
+    right: 0;
+    width: 100%;
+    max-width: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -497,5 +509,21 @@ watch(
 
 .unread-notification {
   color: rgb(48, 103, 205);
+}
+
+.noti-popover {
+  display: none;
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  width: calc(100% - 20px);
+  max-width: 400px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.noti-popover.is-active {
+  display: block;
 }
 </style>
