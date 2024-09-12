@@ -33,6 +33,7 @@
                   {{ cartItemCount }}
                 </span>
               </RouterLink>
+              <div class="notification-container">
               <button
                 class="ts-text is-undecorated action-icon width-30"
                 @click="toggleNotifications"
@@ -108,6 +109,7 @@
                   <div @click="toNotificationList">前往通知列表</div>
                 </div>
               </div>
+            </div>
               <a
                 class="ts-text is-undecorated action-icon"
                 data-dropdown="user-dropdown"
@@ -444,6 +446,7 @@ function closeNotificationsOutside(event) {
   .logo-link {
     margin-right: 20px;
   }
+  
 }
 
 @media (max-width: 768px) {
@@ -470,7 +473,7 @@ function closeNotificationsOutside(event) {
 
   .noti-popover {
     top: 70px;
-    right: 0;
+    right: 10px;
     width: 100%;
     max-width: none;
   }
@@ -515,7 +518,6 @@ function closeNotificationsOutside(event) {
   display: none;
   position: fixed;
   top: 70px;
-  right: 10px;
   width: calc(100% - 20px);
   max-width: 400px;
   background-color: #fff;
@@ -525,5 +527,9 @@ function closeNotificationsOutside(event) {
 
 .noti-popover.is-active {
   display: block;
+}
+
+.notification-container {
+  position: relative;
 }
 </style>
