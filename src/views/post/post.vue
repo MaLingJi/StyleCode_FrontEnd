@@ -37,8 +37,8 @@
 
             <a-form-item>
             <div class="button-container">
-                <a-button @click="handleCancel" style="margin-right: 8px;">取消</a-button>
-                <a-button type="primary" html-type="submit">送出</a-button>
+                <a-button type="primary" html-type="submit" style="margin-right: 8px;">送出</a-button>
+                <a-button @click="handleCancel">取消</a-button>
             </div>
             </a-form-item>
         </a-form>
@@ -70,6 +70,10 @@ const previewTitle = ref('');
 const handleCancel = () => {
     previewVisible.value = false;
     previewTitle.value = '';
+    title.value = '';
+    description.value = '';
+    fileList.value = [];
+    router.push('/forum');
 };
 
 const handlePreview = async (file) => {
@@ -116,7 +120,7 @@ const handleSubmit = async () => {
             console.log('圖片已上傳:', imageResponse.data);
         }
 
-          // 提交後清空表單
+        // 提交後清空表單
         title.value = '';
         description.value = '';
         fileList.value = []; 
@@ -127,8 +131,8 @@ const handleSubmit = async () => {
         showConfirmButton: false,
         timer: 1000
         });
-          // 跳轉到論壇頁面
-        router.push({ name: 'forum-link' });
+        
+        router.push('/forum');
         } catch (error) {
         console.error('建立貼文時出錯:', error);
         alert('提交時字數或格式錯誤');
@@ -165,7 +169,7 @@ function getBase64(file) {
       transition: border-color 0.3s ease; /* 添加過渡效果 */
 }  
 .input-large:hover {
-      border-color: #1890ff; /* 滑鼠移入時變藍色 */
+      border-color: #ff8018; /* 滑鼠移入時變藍色 */
 }
 .input-large:focus {
       border-color: #1890ff; /* 按下去時變藍色 */
@@ -176,17 +180,32 @@ function getBase64(file) {
       border-color: #e8e8e8; /* 設置預設邊框顏色 */
       transition: border-color 0.3s ease; /* 添加過渡效果 */
       font-size: 20px; /* 設置字體大小 */
-}  
-.textarea:hover {
-      border-color: #ffa500; /* 滑鼠移入時變橘色 */
-}  
+}
 .textarea:focus {
-      border-color: #ffa500; /* 按下去時變橘色 */
-      box-shadow: 0 0 0 2px rgba(255, 166, 0, 0.2); /* 添加聚焦陰影 */
+    box-shadow: 0 0 0 2px rgba(255, 166, 0, 0.2); 
 }  
 .button-container {
       display: flex; /* 使用 flexbox 來排列按鈕 */
       justify-content: flex-end; /* 使按鈕靠右對齊 */
       margin-top: 16px; /* 按鈕上方間距 */
+}
+.button-container .ant-btn {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.button-container .ant-btn:hover {
+    background-color: black;
+    color: white;
+}
+.button-container .ant-btn-primary {
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+}
+.button-container .ant-btn-primary:hover {
+    background-color: white;
+    color: black;
 }
 </style>
