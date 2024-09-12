@@ -191,15 +191,30 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.share-grid-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .share-card {
-  width: 250px;
-  /* 設置固定寬度 */
+  width: 100%;
+  max-width: 250px;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .share-card:hover {
@@ -209,25 +224,30 @@ onMounted(() => {
 
 .share-image {
   width: 100%;
-  height: 300px;
-  /* 設置固定高度 */
+  padding-top: 100%; /* 1:1 寬高比 */
+  position: relative;
   overflow: hidden;
 }
 
 .share-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* 確保圖片填滿容器並保持比例 */
 }
 
 .share-info {
   padding: 12px;
   background-color: #f8f8f8;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .share-info h3 {
-  margin: 0;
+  margin: 0 0 8px 0;
   font-size: 1em;
   font-weight: bold;
   white-space: nowrap;
@@ -237,7 +257,7 @@ onMounted(() => {
 }
 
 .share-info p {
-  margin: 8px 0 0;
+  margin: 0 0 8px 0;
   font-size: 0.9em;
   color: #666;
   white-space: nowrap;
@@ -245,42 +265,75 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 
-.ts-box {
-  height: 150px;
-  position: relative;
-}
-
-.right-side {
-  width: 100%;
-}
-
-.margin-right {
-  margin-right: 10px;
+.share-icons {
+  font-size: 14px;
+  margin-top: auto;
 }
 
 .bookmark {
   position: absolute;
   right: 10px;
-  top: -10px;
+  top: 10px;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  padding: 5px;
 }
 
-.edit-button:hover {
-  cursor: pointer;
-  color: #0050b3;
+@media (max-width: 768px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .share-card {
+    max-width: none;
+  }
+
+  .share-info h3 {
+    font-size: 0.9em;
+  }
+
+  .share-info p {
+    font-size: 0.8em;
+  }
+
+  .share-icons {
+    font-size: 12px;
+  }
+
+  .bookmark {
+    font-size: 1.2em;
+    right: 5px;
+    top: 5px;
+  }
 }
 
-.share-edit-button:hover {
-  cursor: pointer;
-  color: cornflowerblue;
-  background-color: #d6d6d6;
-}
+@media (max-width: 480px) {
+  .share-grid {
+    gap: 8px;
+    padding: 8px;
+  }
 
-.icons {
-  font-size: 18px;
-}
+  .share-info {
+    padding: 8px;
+  }
 
-.share-icons {
-  font-size: 16px;
-  margin-top: 10px;
+  .share-info h3 {
+    font-size: 0.8em;
+  }
+
+  .share-info p {
+    font-size: 0.7em;
+  }
+
+  .share-icons {
+    font-size: 10px;
+  }
+
+  .bookmark {
+    font-size: 1em;
+  }
 }
 </style>

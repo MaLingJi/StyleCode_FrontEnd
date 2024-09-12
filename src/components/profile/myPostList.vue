@@ -178,11 +178,6 @@ onMounted(() => {
   justify-content: center;
 }
 
-.share-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
 .share-card {
   width: 100%;
   max-width: 250px;
@@ -192,12 +187,13 @@ onMounted(() => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .share-image {
   width: 100%;
-  height: 0;
-  padding-bottom: 100%; /* 创建一个正方形的容器 */
+  padding-top: 100%; /* 1:1 寬高比 */
   position: relative;
   overflow: hidden;
 }
@@ -214,10 +210,13 @@ onMounted(() => {
 .share-info {
   padding: 12px;
   background-color: #f8f8f8;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .share-info h3 {
-  margin: 0;
+  margin: 0 0 8px 0;
   font-size: 1em;
   font-weight: bold;
   white-space: nowrap;
@@ -226,51 +225,27 @@ onMounted(() => {
   color: #333;
 }
 
-.share-info p {
-  margin: 8px 0 0;
+.post-title {
   font-size: 0.9em;
   color: #666;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 4px;
 }
 
-.ts-box {
-  height: 150px;
-}
-
-.right-side {
-  width: 100%;
-}
-
-.margin-right {
-  margin-right: 10px;
-}
-
-.edit-button:hover {
-  cursor: pointer;
-  color: #0050b3;
-}
-
-.share-edit-button:hover {
-  cursor: pointer;
-  color: cornflowerblue;
-  background-color: #d6d6d6;
+.share-icons {
+  font-size: 14px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .share-edit-button {
   position: absolute;
   right: 10px;
   top: 10px;
-  background-color: #f0f0f0;
-}
-
-.icons {
-  font-size: 18px;
-}
-
-.share-icons {
-  font-size: 16px;
+  background-color: rgba(240, 240, 240, 0.8);
+  z-index: 1;
 }
 
 @media (max-width: 768px) {
@@ -288,12 +263,18 @@ onMounted(() => {
     font-size: 0.9em;
   }
 
-  .share-info p {
+  .post-title {
     font-size: 0.8em;
   }
 
   .share-icons {
-    font-size: 14px;
+    font-size: 12px;
+  }
+
+  .share-edit-button {
+    font-size: 0.8em;
+    right: 5px;
+    top: 5px;
   }
 }
 
