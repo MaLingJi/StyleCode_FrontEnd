@@ -8,7 +8,6 @@
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <!-- <div class="te-text">{{ productTags }}</div> -->
                     </div>
                     <div class="ts-divider"></div>
                     <div class="ts-text is-heavy is-big">標題</div>
@@ -48,8 +47,16 @@
                     <!-- 新增或編輯單品表單 -->
                     <div v-if="showProductForm" class="product-form">
                         <div class="ts-input is-underlined">
-                            <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
+                            <input type="text" v-model="newProduct.productName" placeholder="商品名稱"
+                                @focus="showSuggestions = true" @blur="handleBlur" />
                         </div>
+
+                        <ul v-if="showSuggestions && filteredSuggestions.length > 0" class="suggestions">
+                            <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
+                                @click="selectSuggestion(suggestion)" class="suggestion-item">
+                                {{ suggestion.productName }}
+                            </li>
+                        </ul>
 
                         <!-- 分類選擇 -->
                         <div class="ts-select is-underlined">
@@ -130,7 +137,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
@@ -164,6 +171,11 @@ const productTags = ref([]);
 const categories = ref([]);
 const subcategories = ref([]);
 const selectedCategoryId = ref(null);
+
+const products = ref([]); // 存储所有商品数据
+const showSuggestions = ref(false);
+const productSuggestions = ref([]);
+
 const newProduct = ref({
     productName: '',
     categoryId: null,
@@ -175,6 +187,7 @@ const newProduct = ref({
 function updateSubcategories() {
     const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
     subcategories.value = selectedCategory ? selectedCategory.subcategories : [];
+
     if (selectedCategory) {
         newProduct.value.categoryId = selectedCategory.categoryId;
         newProduct.value.categoryName = selectedCategory.categoryName;
@@ -292,6 +305,65 @@ onMounted(() => {
             console.error('Error fetching categories:', error);
         });
 });
+
+async function fetchProductSuggestions() {
+  const subcategoryId = newProduct.value.subcategoryId;
+  if (!subcategoryId) {
+    productSuggestions.value = [];
+    return;
+  }
+
+  try {
+    const response = await axiosapi.get(`/products/subcategory/${subcategoryId}`);
+    productSuggestions.value = response.data;
+  } catch (error) {
+    console.error('Error fetching product suggestions:', error);
+  }
+}
+
+const filteredSuggestions = computed(() => {
+  if (!newProduct.value.productName) {
+    // 如果输入框为空，显示前四个商品
+    return productSuggestions.value.slice(0, 4);
+  }
+
+  const query = newProduct.value.productName.toLowerCase();
+  return productSuggestions.value.filter(product =>
+    product.productName.toLowerCase().includes(query)
+  );
+});
+
+function selectSuggestion(suggestion) {
+  newProduct.value.productName = suggestion.productName;
+  showSuggestions.value = false;
+}
+
+function handleBlur() {
+  // 设置一个延迟，让点击事件有时间触发
+  setTimeout(() => {
+    showSuggestions.value = false;
+  }, 100);
+}
+
+watch(
+  () => newProduct.value.subcategoryId,
+  (newValue) => {
+    if (newValue) {
+      fetchProductSuggestions();
+    } else {
+      productSuggestions.value = [];
+    }
+  }
+);
+
+watch(
+  () => newProduct.value.productName,
+  (newValue) => {
+    if (newValue) {
+      showSuggestions.value = true;
+    }
+  }
+);
 
 // 確保顯示所有已存在且未被標記為刪除的圖片以及新上傳的圖片
 const filteredImages = computed(() => {
@@ -526,5 +598,24 @@ p {
 .ts-chip:hover .delete-tag {
     display: inline;
     /* 滑鼠移入時顯示 */
+}
+
+.suggestions {
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 5px;
+  background-color: white;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.suggestion-item {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #eee;
 }
 </style>

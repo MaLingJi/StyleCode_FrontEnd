@@ -94,7 +94,7 @@
                         <div class="ts-divider"></div>
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
-                            <span class="ts-chip" v-for="tag in tags" :key="tag">{{ tag.tagName }}</span>
+                            <span class="ts-chip" style="cursor: pointer" v-for="tag in tags" :key="tag" @click="searchTag(tag.tagName)">{{ tag.tagName }}</span>
                         </div>
 
                     </div>
@@ -111,6 +111,7 @@ import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
+// import { useProductStore } from '@/stores/product';
 
 const userStore = useUserStore();
 const productStore = useProductStore();
@@ -132,6 +133,10 @@ const isLightboxOpen = ref(false);
 const productTags = ref([]);
 const tags = ref([]);
 
+const searchTag = (tagName) => {
+    router.push({ name: 'share-link', query: { tag: tagName } });
+};
+
 const openLightbox = () => {
     isLightboxOpen.value = true;
 };
@@ -148,22 +153,9 @@ const toggleCollection = () => {
         .then(response => {
             isCollected.value = !isCollected.value;
             collectionCount.value += isCollected.value ? 1 : -1;
-
-            Swal.fire({
-                text: response.data,
-                icon: 'success',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         })
         .catch(error => {
             console.error('Error toggling collection:', error);
-            Swal.fire({
-                text: '操作失敗，請稍後重試。',
-                icon: 'error',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         });
 };
 
@@ -175,22 +167,9 @@ const toggleLike = () => {
         .then(response => {
             isLiked.value = !isLiked.value;
             likeCount.value += isLiked.value ? 1 : -1;
-
-            Swal.fire({
-                text: response.data,
-                icon: 'success',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         })
         .catch(error => {
             console.error('Error toggling like:', error);
-            Swal.fire({
-                text: '操作失敗，請稍後重試。',
-                icon: 'error',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         });
 };
 
@@ -271,7 +250,7 @@ onMounted(() => {
             likeCount.value = post.value.likes.length;
             // console.log("collectionCount: ", collectionCount.value);
             userPhoto.value = `${userPhotoPath}${post.value.userPhoto}`;
-            // console.log(userPhoto.value);
+            console.log("userPhoto: ", userPhoto.value);
         })
         .catch(error => {
             console.error('Error loading post:', error);

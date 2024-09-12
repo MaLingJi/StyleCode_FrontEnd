@@ -66,6 +66,8 @@ onMounted(() => {
 
   checkCollectionStatus();
   checkLikeStatus();
+
+  // console.log(props.post.postTags[0].tagName);
 });
 
 const checkCollectionStatus = () => {
@@ -103,22 +105,9 @@ const toggleCollection = () => {
   })
     .then(response => {
       isCollected.value = !isCollected.value;
-
-      Swal.fire({
-        text: response.data,
-        icon: 'success',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認',
-      });
     })
     .catch(error => {
       console.error('Error toggling collection:', error);
-      Swal.fire({
-        text: '操作失敗，請稍後重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認',
-      });
     });
 };
 
@@ -129,22 +118,9 @@ const toggleLike = () => {
   })
     .then(response => {
       isLiked.value = !isLiked.value;
-
-      Swal.fire({
-        text: response.data,
-        icon: 'success',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認',
-      });
     })
     .catch(error => {
       console.error('Error toggling like:', error);
-      Swal.fire({
-        text: '操作失敗，請稍後重試。',
-        icon: 'error',
-        confirmButtonColor: 'rgb(35 40 44)',
-        confirmButtonText: '確認',
-      });
     });
 };
 

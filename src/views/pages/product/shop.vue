@@ -63,10 +63,10 @@ import CategoryMenu from "@/components/product/CategoryMenu.vue";
 import ProductCard from "@/components/product/ProductCard.vue";
 import { useProductStore } from '@/stores/product';
 import Swal from "sweetalert2";
-import { setup } from "naive-ui/es/radio/src/use-radio";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 
 // 使用 Pinia 來存儲和管理產品相關的狀態
 const productStore = useProductStore();
@@ -86,14 +86,6 @@ const handleSearch = async () => {
 
 
 onMounted(async () => {
-
-  // Swal.fire({
-  //   title: '讀取中...',
-  //   allowOutsideClick: false,
-  //   didOpen: () => {
-  //     Swal.showLoading();
-  //   }
-  // });
 
   try {
     // 從 API 獲取所有分類數據
