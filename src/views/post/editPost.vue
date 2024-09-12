@@ -1,10 +1,10 @@
 <template>
     <div class="edit-container">
         <div class="post-form-wrapper">
-            <h1>編輯文章</h1>
+            <h1><EditOutlined/> 編輯文章</h1>
             <div>
                 <label for="title">標題:</label>
-                <input type="text" id="title" v-model="post.postTitle" disabled />
+                <input type="text" id="title" v-model="post.postTitle" disabled class="title-input"/>
             </div>
             <div>
                 <H3><label for="content">內容:</label></H3>
@@ -35,8 +35,8 @@
                 </a-modal>
             </div>
             <div class="button-container">
-                <button class="update-button" @click="updatePost">更新文章</button>
-                <button class="delete-button" @click="deletePost">刪除文章</button>
+                <button class="update-button" @click="updatePost"><EditOutlined/>更新文章</button>
+                <button class="delete-button" @click="deletePost"><DeleteOutlined/> 刪除文章</button>
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
-import { PlusOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined,EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import Swal from 'sweetalert2'
 
 const route = useRoute();
@@ -147,7 +147,7 @@ const handlePreview = async (file) => {
             confirmButtonColor: 'rgb(35 40 44)',
             cancelButtonText: '取消'
         });
-
+        
         if (result.isConfirmed) {
             // 如果用戶確認，執行更新操作
             try {
@@ -176,11 +176,19 @@ const handlePreview = async (file) => {
             router.push(`/post/${post.value.postId}`);
         } catch (error) {
             console.error('更新文章時發生錯誤:', error.response ? error.response.data : error);
-            Swal.fire({
-                icon: 'error',
-                title: '更新失敗!',
-                text: '編輯文章時發生錯誤，請確認字數和格式問題。',
-            });
+            if (error.response && error.response.data && error.response.data.message.includes('字串或二進位資料將會截斷')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '更新失敗!',
+                    text: '文章內容過長，請縮短文字再嘗試。',
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: '更新失敗!',
+                    text: '編輯文章時發生錯誤，請稍後再試。',
+                });
+            }
         }
     }
 };
@@ -249,20 +257,13 @@ function getBase64(file) {
     transition: border-color 0.3s ease; 
     font-size: 20px; 
 }
-.textarea:hover {
-    border-color: #ffa500; 
-}
-.textarea:focus {
-    border-color: #ffa500; 
-    box-shadow: 0 0 0 2px rgba(255, 166, 0, 0.2); 
-}
 .button-container {
     display: flex; 
     justify-content: flex-end; 
     margin-top: 16px; 
 }
 .update-button {
-    background-color: #1890ff; 
+    background-color: #000000; 
     color: white; 
     padding: 8px 16px; 
     border: none; 
@@ -271,11 +272,15 @@ function getBase64(file) {
     margin-left: 8px; 
 }
 .delete-button {
-    background-color: #ff4d4f; 
-    color: white; 
+    background-color: #cccbcbda; 
+    color: rgb(0, 0, 0); 
     padding: 8px 16px; 
     border: none; 
     border-radius: 4px; 
     cursor: pointer; 
+}
+.title-input {
+    width: 500px; 
+    font-size: 20px; 
 }
 </style>

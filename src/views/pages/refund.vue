@@ -77,8 +77,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="field">
-                    <textarea class="ts-textarea " v-model="refundReason" placeholder="請輸入退款理由..." rows="6"
+                <div class="field" style="margin: 5px;">
+                    <textarea class="ts-textarea " v-model="refundReason" style="padding: 5px;" placeholder="請輸入退款理由..." rows="6"
                         required></textarea>
                     <button class="ts-button is-primary" type="submit">提交退款申請</button>
                 </div>
@@ -138,7 +138,10 @@ const sendRefundApply = async (event) => {
                 .then((result) => {
                     // 確保 SweetAlert 結束後再跳轉
                     if (result.isConfirmed) {
-                        router.push('/secure/profile');
+                        router.push({
+                            name: 'profile-ling',
+                            params: { initialView: 'order' }
+                        });
                     }
                 })
         } else {

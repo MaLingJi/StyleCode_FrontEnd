@@ -21,14 +21,14 @@
             </template>
             <template #actions>
               <a-button 
-                type="primary" 
+                type="primary" style="background-color: #000000; color: #ffffff;"
                 v-if="!item.isEditing && item.userId === userId" 
-                @click="startEditing(item)">編輯</a-button>
+                @click="startEditing(item)"><EditOutlined/>編輯</a-button>
               <a-button 
-                type="primary" 
+                type="primary" style="background-color: #000000; color: #ffffff;"
                 v-if="item.isEditing" 
-                @click="() => saveComment(item.commentId, item.editContent)">保存</a-button>
-              <a-button class="delete-button" v-if="item.userId === userId" @click="() => deleteComment(item.commentId)">刪除</a-button>
+                @click="() => saveComment(item.commentId, item.editContent)"><SaveOutlined/>保存</a-button>
+              <a-button class="delete-button" v-if="item.userId === userId" @click="() => deleteComment(item.commentId)"><DeleteOutlined/>刪除</a-button>
             </template>
           </a-comment>
         </a-list-item>
@@ -51,7 +51,7 @@
           />
         </a-form-item>
         <a-form-item>
-          <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">
+          <a-button html-type="submit" :loading="submitting" type="primary" style="background-color: #000000; color: #ffffff;" @click="handleSubmit">
             新增評論
           </a-button>
         </a-form-item>
@@ -69,6 +69,7 @@ import 'dayjs/locale/zh-tw';
 import useUserStore from "@/stores/user.js";
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 
 dayjs.extend(relativeTime);// 使用相對時間插件
 dayjs.locale('zh-tw');// 設置語言為中文
@@ -130,6 +131,10 @@ const handleSubmit = async () => {
       router.push('/secure/login');
     });
     return;
+  }
+  // 沒輸入內容舊布新增
+  if (!newComment.value.trim()) {
+    return; 
   }
 
   submitting.value = true;
@@ -233,29 +238,5 @@ onMounted(async () => {
 }
 .new-comment {
   margin-top: 20px;
-}
-.edit-button {
-  background-color: #0a0a0a; /* 藍色背景 */
-  color: #fff; 
-  border: none; 
-  padding: 6px 12px; 
-  border-radius: 4px; 
-  cursor: pointer; /* 滑鼠指標樣式 */
-  transition: background-color 0.3s; 
-}
-.edit-button:hover {
-  background-color: #40a9ff; /* 滑鼠懸停時改變背景顏色 */
-}
-.delete-button {
-  background-color: #ff4d4f; 
-  color: #fff; 
-  border: none; 
-  padding: 6px 12px; 
-  border-radius: 4px; 
-  cursor: pointer; /* 滑鼠指標樣式 */
-  transition: background-color 0.3s; 
-}
-.delete-button:hover {
-  background-color: #ff7875; /* 滑鼠懸停時改變背景顏色 */
 }
 </style>
