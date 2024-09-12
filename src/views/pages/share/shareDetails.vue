@@ -53,9 +53,11 @@
                                 name: 'edit-share-link',
                                 params: { postId: route.params.postId }
                             }">
-                                <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯</div>
+                                <div class="ts-button" v-if="post.userId === userStore.userId" @click="editPost">編輯
+                                </div>
                             </RouterLink>
-                            <div class="ts-button" v-if="post.userId === userStore.userId" @click="deletePost(post.postId)">
+                            <div class="ts-button" v-if="post.userId === userStore.userId"
+                                @click="deletePost(post.postId)">
                                 刪除</div>
                         </div>
                         <div class="ts-grid is-middle-aligned">
@@ -74,8 +76,10 @@
                         <div v-if="productTags.length" class="product-tags-container">
                             <div class="product-card" v-for="productTag in productTags" :key="productTag.id">
                                 <div class="product-card-content">
-                                    <div class="product-name">{{ productTag.productName }}</div>
-                                    <!-- <div class="product-subcategory">{{ productTag.subcategoryName }}</div> -->
+                                    <div class="product-name" @click="navigateToProductDetails(productTag.productName)"
+                                        style="cursor: pointer;">
+                                        {{ productTag.productName }}
+                                    </div>
                                     <div v-if="productTag.categoryId && productTag.subcategoryId">
                                         <RouterLink :to="{
                                             name: 'shop-link',
@@ -94,7 +98,8 @@
                         <div class="ts-divider"></div>
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
-                            <span class="ts-chip" style="cursor: pointer" v-for="tag in tags" :key="tag" @click="searchTag(tag.tagName)">{{ tag.tagName }}</span>
+                            <span class="ts-chip" style="cursor: pointer" v-for="tag in tags" :key="tag"
+                                @click="searchTag(tag.tagName)">{{ tag.tagName }}</span>
                         </div>
 
                     </div>
@@ -111,7 +116,6 @@ import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
-// import { useProductStore } from '@/stores/product';
 
 const userStore = useUserStore();
 const productStore = useProductStore();
@@ -209,6 +213,30 @@ const setCurrentImage = (index) => {
     currentImageIndex.value = index;
 };
 
+const navigateToProductDetails = async (productName) => {
+    try {
+        // 发送 GET 请求，使用 productName 作为路径的一部分
+        const response = await axiosapi.get(`/products/search/${encodeURIComponent(productName)}`);
+
+        if (response.data.length > 0) {
+            // 遍历返回的商品列表
+            response.data.forEach(product => {
+                // console.log(product.productId)
+                // console.log(product.productName)
+                if (product.productName === productName) {
+                    // 如果商品名称匹配，跳转到商品详情页面
+                    const id = product.productId;
+                    router.push({ name: 'productDetails-link', params: { id } });
+                }
+            });
+        } else {
+            console.log('No matching product found in the store');
+        }
+    } catch (error) {
+        console.error('Error fetching product ID:', error);
+    }
+};
+
 onMounted(() => {
     const postId = route.params.postId;
 
@@ -235,7 +263,9 @@ onMounted(() => {
             } else {
                 console.error('Error checking collection status:', error);
             }
-        });
+        }); // productStore.searchProducts(productTag.productName);
+
+
 
     axiosapi.get(`/post/${postId}`)
         .then(response => {
