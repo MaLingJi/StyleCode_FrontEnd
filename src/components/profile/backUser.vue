@@ -48,42 +48,42 @@
       </div>
       <div class="ts-divider"></div>
       <div class="table-container">
-      <table class="ts-table is-basic">
-        <thead>
-          <tr>
-            <th>使用者名稱</th>
-            <th>電子郵件信箱</th>
-            <th class="hover" @click="toggleRole">
-              權限 ({{ displayRoleOptions[currentRoleIndex] }})
-            </th>
-            <th class="is-start-icon hover" @click="toggleSortOrder">
-              啟用日期<span :class="sortIconClass" class="margin-left"></span>
-            </th>
-            <!-- caret-up -->
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="" v-for="user in userList" :key="user.userId">
-            <td>{{ user.userName }}</td>
-            <td>
-              {{ user.userEmail }}
-            </td>
-            <td>
-              <select
-                @change="updateRole(user.userId, $event)"
-                class="ts-select is-solid"
-                v-model="user.permissions"
-              >
-                <option value="Member">一般會員</option>
-                <option value="Admin">管理員</option>
-                <!-- <option value="Admin">封鎖</option> -->
-              </select>
-            </td>
-            <td>{{ formatDate(user.createdTime) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <table class="ts-table is-basic">
+          <thead>
+            <tr>
+              <th>使用者名稱</th>
+              <th>電子郵件信箱</th>
+              <th class="hover" @click="toggleRole">
+                權限 ({{ displayRoleOptions[currentRoleIndex] }})
+              </th>
+              <th class="is-start-icon hover" @click="toggleSortOrder">
+                啟用日期<span :class="sortIconClass" class="margin-left"></span>
+              </th>
+              <!-- caret-up -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="" v-for="user in userList" :key="user.userId">
+              <td>{{ user.userName }}</td>
+              <td>
+                {{ user.userEmail }}
+              </td>
+              <td>
+                <select
+                  @change="updateRole(user.userId, $event)"
+                  class="ts-select is-solid"
+                  v-model="user.permissions"
+                >
+                  <option value="Member">一般會員</option>
+                  <option value="Admin">管理員</option>
+                  <!-- <option value="Admin">封鎖</option> -->
+                </select>
+              </td>
+              <td>{{ formatDate(user.createdTime) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="ts-divider"></div>
       <div class="ts-content page-bar is-center-aligned">
         <div class="ts-pagination is-center-aligned">
@@ -304,6 +304,7 @@ function handlePageChange(page) {
 }
 
 onMounted(async function () {
+  window.scrollTo(0, 0);
   Swal.fire({
     title: "讀取中...",
     allowOutsideClick: false,

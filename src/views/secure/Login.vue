@@ -96,7 +96,7 @@ import axiosapi from "@/plugins/axios.js";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
 import useUserStore from "@/stores/user.js";
-import { useCart } from '@/services/cartService';
+import { useCart } from "@/services/cartService";
 
 const { fetchCartCount } = useCart();
 const userEmail = ref("");
@@ -181,8 +181,8 @@ function login() {
         Swal.fire({
           text: response.data.message,
           icon: "success",
-          confirmButtonText: "確認",
-          confirmButtonColor: "rgb(35 40 44)",
+          showConfirmButton: false, // 不顯示確認按鈕
+          timer: 1000, // 1秒後自動關閉
           allowOutsideClick: false,
         }).then(function (result) {
           //使用者資訊存到localStorage
@@ -196,7 +196,7 @@ function login() {
           userStore.setPermissions(response.data.permissions);
           userStore.setLogedin(true);
           //購物車通知 使用者登出後再登入會再抓一次
-          fetchCartCount(userStore.userId)
+          fetchCartCount(userStore.userId);
           //跳轉首頁
           router.push({ path: "/" });
         });
