@@ -101,13 +101,16 @@
                   刪除
                 </div>
               </div>
+              <br>
               <div class="ts-grid is-middle-aligned">
-                <div class="ts-image">
-                  <img :src="userPhoto" width="40" />
+                <div class="ts-image is-covered is-circular is-bordered">
+                  <img :src="userPhoto" width="50" margin-top="0" />
                 </div>
                 <h3>{{ post.userName || "Unknown User" }}</h3>
               </div>
-              <h4 class="ts-header">{{ post.postTitle }}</h4>
+              <br>
+              <span class="ts-header is-heavy">{{ post.postTitle }}</span>
+              <span class="ts-text is-small">{{ post.contentText }}</span>
               <!-- <p>(Model資訊：174cm / MEN / 34歲 / 短髮)?</p> -->
               <p>
                 <i class="ts-icon is-clock-icon"></i>
@@ -232,7 +235,7 @@
 
       <div class="post-details">
         <div class="ts-grid is-middle-aligned">
-          <div class="ts-image user-avatar">
+          <div class="ts-image user-avatar is-circular is-bordered">
             <img :src="userPhoto" width="40" />
           </div>
           <h3>{{ post.userName || "Unknown User" }}</h3>
@@ -672,6 +675,10 @@ const touchEnd = () => {
   margin-top: 2rem;
 }
 
+.ts-box {
+  margin-top: 0;
+}
+
 .ts-table {
   width: 100%;
   margin-top: 1rem;
@@ -680,7 +687,7 @@ const touchEnd = () => {
 .ts-image img {
   max-width: 100%;
   height: auto;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   object-fit: cover;
 }
 
@@ -766,7 +773,12 @@ const touchEnd = () => {
 .ts-chip .ts-label {
   background-color: #9d7e7e;
   padding: 5px 5px;
+  /* margin: 2px 2px; */
   border-radius: 10px;
+}
+
+.ts-chip {
+  margin: 2px 2px;
 }
 
 .product-tags-container {
@@ -897,6 +909,10 @@ const touchEnd = () => {
   .user-avatar {
     width: 40px;
     height: 40px;
+  }
+
+  #userPhoto {
+    margin: 0;
   }
 }
 </style>

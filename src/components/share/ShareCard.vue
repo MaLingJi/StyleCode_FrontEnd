@@ -6,7 +6,7 @@
     <div class="share-info">
       <div class="user-info">
         <div class="user-avatar">
-          <div class="ts-image">
+          <div class="ts-image is-circular is-bordered">
             <img :src="userPhoto" width="40">
           </div>
         </div>
