@@ -49,6 +49,13 @@
                         <div class="ts-input is-underlined">
                             <input type="text" v-model="newProduct.productName" placeholder="商品名稱" />
                         </div>
+                        <!-- 搜索建議列表 -->
+                        <ul v-if="filteredProductSuggestions.length" class="suggestion-list">
+                            <li v-for="(suggestion, index) in filteredProductSuggestions" :key="index"
+                                @click="selectProductSuggestion(suggestion)">
+                                {{ suggestion.productName }}
+                            </li>
+                        </ul>
 
                         <!-- 分類選擇 -->
                         <div class="ts-select is-underlined">
@@ -129,15 +136,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
+// import { useProductStore } from '@/stores/product';
 
 const userPhotoPath = import.meta.env.VITE_USER_IMAGE_URL;
 const router = useRouter();
 const userStore = useUserStore();
+// const productStore = useProductStore();
 
 const postTitle = ref('');
 const contentText = ref('');
@@ -155,6 +164,9 @@ const editingIndex = ref(null);
 // 控制顯示/隱藏新增單品表單
 const showProductForm = ref(false);
 
+const products = ref([]); // 存储所有商品数据
+const filteredProductSuggestions = ref([]); // 存储过滤后的商品建议
+
 // 存儲單品資料
 const productTags = ref([]);
 
@@ -170,6 +182,10 @@ const newProduct = ref({
     subcategoryId: null,
     subcategoryName: ''
 });
+
+// const filterProductsBySubcategory = (subcategoryId, categoryId) => {
+//     productStore.fetchProductsBySubcategory(categoryId, subcategoryId);
+// };
 
 function updateSubcategories() {
     const selectedCategory = categories.value.find(category => category.categoryId === selectedCategoryId.value);
@@ -282,7 +298,50 @@ onMounted(() => {
         .catch(error => {
             console.error('Error fetching categories:', error);
         });
+
+    axiosapi.get('/products')
+        .then(response => {
+            products.value = response.data; // 将数据存储到 products 中
+        })
+        .catch(error => {
+            console.error('Error fetching products:', error);
+        });
 });
+
+function updateProductSuggestions() {
+  const query = newProduct.value.productName.toLowerCase();
+
+  if (!query) {
+    // 输入框为空时，显示前四个商品
+    filteredProductSuggestions.value = products.value.slice(0, 4);
+  } else {
+    // 过滤符合查询条件的商品
+    const filteredProducts = products.value.filter(product =>
+      product.subcategoryId === newProduct.value.subcategoryId &&
+      product.productName.toLowerCase().includes(query)
+    );
+
+    if (filteredProducts.length > 0) {
+      filteredProductSuggestions.value = filteredProducts.slice(0, 4);
+    } else {
+      // 找不到匹配项时，显示前四个商品
+      filteredProductSuggestions.value = products.value.slice(0, 4);
+    }
+  }
+}
+
+function selectProductSuggestion(suggestion) {
+  newProduct.value.productName = suggestion.productName;
+  filteredProductSuggestions.value = [];
+
+  // 如果存在输入框的引用，主动让其失去焦点
+  const inputElement = document.querySelector('input[v-model="newProduct.productName"]');
+  if (inputElement) {
+    inputElement.blur();
+  }
+}
+
+watch(() => newProduct.value.productName, updateProductSuggestions);
 
 function handleFileUpload(event) {
     const files = Array.from(event.target.files); // 获取多个文件
@@ -357,7 +416,7 @@ function submitPost() {
                 tagName: tag
             }))
         }
-        
+
     };
 
     console.log("postData", postData);
@@ -515,5 +574,27 @@ p {
 .ts-chip:hover .delete-tag {
     display: inline;
     /* 滑鼠移入時顯示 */
+}
+
+.suggestion-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    position: absolute;
+    z-index: 1000;
+}
+
+.suggestion-list li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestion-list li:hover {
+    background-color: #f0f0f0;
 }
 </style>

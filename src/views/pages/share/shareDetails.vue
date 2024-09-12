@@ -111,6 +111,7 @@ import { useProductStore } from '@/stores/product';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import useUserStore from "@/stores/user.js"
+// import { useProductStore } from '@/stores/product';
 
 const userStore = useUserStore();
 const productStore = useProductStore();
@@ -152,22 +153,9 @@ const toggleCollection = () => {
         .then(response => {
             isCollected.value = !isCollected.value;
             collectionCount.value += isCollected.value ? 1 : -1;
-
-            Swal.fire({
-                text: response.data,
-                icon: 'success',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         })
         .catch(error => {
             console.error('Error toggling collection:', error);
-            Swal.fire({
-                text: '操作失敗，請稍後重試。',
-                icon: 'error',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         });
 };
 
@@ -179,22 +167,9 @@ const toggleLike = () => {
         .then(response => {
             isLiked.value = !isLiked.value;
             likeCount.value += isLiked.value ? 1 : -1;
-
-            Swal.fire({
-                text: response.data,
-                icon: 'success',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         })
         .catch(error => {
             console.error('Error toggling like:', error);
-            Swal.fire({
-                text: '操作失敗，請稍後重試。',
-                icon: 'error',
-                confirmButtonColor: 'rgb(35 40 44)',
-                confirmButtonText: '確認',
-            });
         });
 };
 
