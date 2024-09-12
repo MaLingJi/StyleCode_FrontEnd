@@ -192,11 +192,18 @@
             v-for="(image, index) in filteredImages"
             :key="index"
             v-show="currentImageIndex === index"
+             @click="openLightbox"
           >
             <img :src="getImageUrl(image.imgUrl)" />
           </div>
         </transition-group>
       </div>
+
+      <div v-if="isLightboxOpen" class="lightbox" @click="closeLightbox">
+            <div class="lightbox-content">
+              <img :src="getImageUrl(currentImage)" />
+            </div>
+          </div>
 
       <div class="action-buttons">
         <button
