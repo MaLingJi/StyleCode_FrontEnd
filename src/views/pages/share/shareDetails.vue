@@ -94,7 +94,7 @@
                         <div class="ts-divider"></div>
                         <h5 class="ts-header">從標籤檢索搭配</h5>
                         <div class="ts-labels" v-if="tags.length">
-                            <span class="ts-chip" v-for="tag in tags" :key="tag">{{ tag.tagName }}</span>
+                            <span class="ts-chip" style="cursor: pointer" v-for="tag in tags" :key="tag" @click="searchTag(tag.tagName)">{{ tag.tagName }}</span>
                         </div>
 
                     </div>
@@ -131,6 +131,10 @@ const isLightboxOpen = ref(false);
 
 const productTags = ref([]);
 const tags = ref([]);
+
+const searchTag = (tagName) => {
+    router.push({ name: 'share-link', query: { tag: tagName } });
+};
 
 const openLightbox = () => {
     isLightboxOpen.value = true;

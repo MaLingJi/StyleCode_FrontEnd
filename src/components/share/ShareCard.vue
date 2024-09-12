@@ -70,6 +70,8 @@ onMounted(() => {
 
   checkCollectionStatus();
   checkLikeStatus();
+
+  // console.log(props.post.postTags[0].tagName);
 });
 
 const checkCollectionStatus = () => {
