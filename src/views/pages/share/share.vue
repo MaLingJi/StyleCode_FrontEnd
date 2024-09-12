@@ -38,11 +38,6 @@
   
   function callFind() {
       console.log("callFind");
-      Swal.fire({
-          text: "Loading......",
-          showConfirmButton: false,
-          allowOutsideClick: false,
-      });
       axiosapi.get("/post").then(function (response) {
           posts.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           console.log("posts.value: ", posts.value);
