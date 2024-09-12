@@ -1,6 +1,9 @@
 <template>
   <div class="ts-container ts-wrap is-middle-aligned" style="height: 70vh">
-    <div class="ts-content is-very-padded is-tertiary is-middle-aligned" style="width: 100%">
+    <div
+      class="ts-content is-very-padded is-tertiary is-middle-aligned"
+      style="width: 100%"
+    >
       <div class="ts-header is-huge is-heavy is-center-aligned">
         Google 登入成功！！
       </div>
@@ -16,7 +19,7 @@ import { onMounted } from "vue";
 import axiosapi from "@/plugins/axios.js";
 import { useRouter } from "vue-router";
 import useUserStore from "@/stores/user.js";
-import { useCart } from '@/services/cartService';
+import { useCart } from "@/services/cartService";
 
 const { fetchCartCount } = useCart();
 const router = useRouter();
@@ -37,7 +40,7 @@ onMounted(async () => {
     userStore.setLogedin(true);
     userStore.setThirdPartyLogin(true);
     //購物車通知 使用者登出後再登入會再抓一次
-    fetchCartCount(userStore.userId)
+    fetchCartCount(userStore.userId);
     //跳轉首頁
     setTimeout(() => {
       router.push({ path: "/" });
