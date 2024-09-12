@@ -4,7 +4,7 @@
             <div class="column is-fluid">
                 <div class="cell is-fluid is-vertical">
                     <div class="ts-grid">
-                        <div class="ts-image">
+                        <div class="ts-image is-circular is-bordered">
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
