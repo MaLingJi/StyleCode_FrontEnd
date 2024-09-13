@@ -76,30 +76,25 @@
               </template>
               <template #extra>
                 <div>
-                  <img v-if="item.images && item.images.length > 0" width="272" alt="Post Image" :src="`${path}${item.images[0].imgUrl}`" />
+                  <img v-if="item.images && item.images.length > 0" width="272"  alt="Post Image" :src="`${path}${item.images[0].imgUrl}`" />
                 </div>
               </template>
               <router-link :to="`/post/${item.postId}`">
-                <a-list-item-meta :description="item.contentText">
-                  <template #avatar>
-                    <div style="display: flex; align-items: center;">
-                      <a-avatar :src="item.avatar" style="margin-right: 8px;" />
-                      <span style="font-weight: bold;">{{ item.userName }}</span> 
-                    </div>
-                  </template>
-                  <template #title>
-                    {{ item.postTitle }}
-                  </template>
-                  <template #description>
-                    <div v-if="item.contentText.length <= 20">
-                      {{ item.contentText }}
-                    </div>
-                    <div v-else>
-                      {{ item.contentText.slice(0, 20) + '...' }}
-                    </div>
-                  </template>
-                </a-list-item-meta>
-              </router-link>
+              <a-list-item-meta>
+                <template #avatar>
+                  <div style="display: flex; align-items: center;">
+                    <a-avatar :src="item.avatar" style="margin-right: 8px;" />
+                    <span style="font-weight: bold;">{{ item.userName }}</span> 
+                  </div>
+                </template>
+                <template #title>
+                  {{ item.postTitle }}
+                </template>
+                <template #description>
+                  {{ item.contentText.length > 30 ? item.contentText.slice(0, 50) + '...' : item.contentText }}
+                </template>
+              </a-list-item-meta>
+            </router-link>
             </a-list-item>
           </template>
         </a-list>
@@ -278,8 +273,8 @@ const commentPost = (id) => {
 
 <style scoped>
 img {
-  width: 250px;
-  height: 250px; /* 最大高度限制 */
+  width: 150px;
+  height: 180px; /* 最大高度限制 */
   object-fit: cover;
   object-position: center;
   border-radius: 10px; 
@@ -346,6 +341,10 @@ img {
 }
 /* 响应式设计 */
 @media (max-width: 768px) {
+  img {
+    width: 150px; 
+    height: 150px; 
+  }
   .container {
     padding: 10px;
   }
@@ -408,6 +407,10 @@ img {
 }
 
 @media (max-width: 480px) {
+  img {
+    width: 100px; 
+    height: 100px; 
+  }
   :deep(.ant-list-item-meta-title) {
     font-size: 14px;
   }
