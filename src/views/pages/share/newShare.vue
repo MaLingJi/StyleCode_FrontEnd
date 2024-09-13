@@ -1,46 +1,168 @@
 <template>
     <div class="ts-container has-vertically-spaced-large">
         <div class="ts-grid">
+            <!-- 主要內容欄 -->
             <div class="column is-fluid">
                 <div class="cell is-fluid is-vertical">
+                    <!-- 用戶資訊 -->
                     <div class="ts-grid">
                         <div class="ts-image">
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>
-                        <!-- <div class="te-text">{{ productTags }}</div> -->
                     </div>
                     <div class="ts-divider"></div>
+                    
+                    <!-- 標題輸入 -->
                     <div class="ts-text is-heavy is-big">標題</div>
                     <div class="ts-input is-solid">
                         <textarea v-model="postTitle" placeholder="請輸入文章標題"></textarea>
                     </div>
+                    
+                    <!-- 內容輸入 -->
                     <div class="ts-text is-heavy is-big">內容</div>
                     <div class="ts-input is-solid">
                         <textarea v-model="contentText" placeholder="請輸入文章內容"></textarea>
                     </div>
-                    <div class="ts-text is-heavy is-big">上傳圖片</div>
-                    <div class="ts-file">
-                        <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" multiple />
-                    </div>
+                    
+                    <!-- 移動端佈局：單品分享、標籤和圖片上傳 -->
+                    <div class="mobile-only">
+                        <!-- 單品分享部分 -->
+                        <div class="product-section">
+                            <div class="ts-text is-heavy is-big">單品分享</div>
+                            <!-- 單品表單和列表（與桌面版相同） -->
+                            <div v-if="showProductForm" class="product-form">
+                                <div class="ts-input is-underlined">
+                                    <input type="text" v-model="newProduct.productName" placeholder="商品名稱"
+                                        @focus="showSuggestions = true" @blur="handleBlur" />
+                                </div>
+                                <!-- 搜索建議列表 -->
+                                <ul v-if="showSuggestions && filteredSuggestions.length > 0" class="suggestions">
+                                    <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
+                                        @click="selectSuggestion(suggestion)" class="suggestion-item">
+                                        {{ suggestion.productName }}
+                                    </li>
+                                </ul>
 
-                    <div class="image-previews">
-                        <div v-for="(image, index) in imageFiles" :key="index" class="image-preview"
-                            @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
-                            <img :src="image.previewUrl" alt="Preview Image" />
-                            <div class="image-controls" v-if="hoverIndexImages === index">
-                                <i class="ts-icon is-pen-to-square-icon" @click="editImage(index)"></i>
-                                <i class="ts-icon is-trash-can-icon" @click="removeImage(index)"></i>
+                                <!-- 分類選擇 -->
+                                <div class="ts-select is-underlined">
+                                    <select v-model="selectedCategoryId" @change="updateSubcategories">
+                                        <option value="">請選擇分類</option>
+                                        <option v-for="category in categories" :key="category.categoryId"
+                                            :value="category.categoryId">
+                                            {{ category.categoryName }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- 子分類選擇 -->
+                                <div class="ts-select is-underlined" v-if="subcategories.length > 0">
+                                    <select v-model="newProduct.subcategoryId">
+                                        <option value="">請選擇子分類</option>
+                                        <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId"
+                                            :value="subcategory.subcategoryId">
+                                            {{ subcategory.subcategoryName }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="ts-wrap is-center-aligned">
+                                    <button class="ts-button is-primary" @click="isEditing ? updateProduct() : addProduct()">
+                                        {{ isEditing ? '更新' : '新增' }}
+                                    </button>
+                                    <button class="ts-button is-secondary" @click="cancelProductForm">取消</button>
+                                </div>
+                            </div>
+
+                            <!-- 顯示已新增的單品 -->
+                            <div class="product-list" v-if="productTags.length">
+                                <div class="ts-card" v-for="(product, index) in productTags" :key="index"
+                                    @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
+                                    <div class="ts-content is-center-aligned">
+                                        <p>商品: {{ product.productName }}</p>
+                                        <p>分類: {{ product.subcategoryName }}</p>
+
+                                        <!-- 編輯與刪除按鈕 -->
+                                        <div class="product-controls" v-if="hoverIndexImages === index">
+                                            <button class="edit-button" @click="editProduct(index)">
+                                                <span class="ts-icon is-pen-to-square-icon"></span>
+                                            </button>
+                                            <button class="delete-button" @click="deleteProduct(index)">
+                                                <span class="ts-icon is-trash-can-icon"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <!-- 新增按鈕 -->
+                            <div v-if="!showProductForm">
+                                <button class="ts-button" @click="startAddProduct">+ 新增單品</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 標籤部分 -->
+                        <div class="tags-section">
+                            <div class="ts-text is-heavy is-big">標籤</div>
+                            <div class="ts-input is-underlined">
+                                <input type="text" placeholder="搜尋標籤…" v-model="inputTagValue" @blur="addTag" />
+                            </div>
+                            <div v-for="(tag, index) in tags" :key="index" class="ts-chip is-dense is-outlined"
+                                @mouseover="hoverIndexTags = index" @mouseleave="hoverIndexTags = null">
+                                <span class="ts-label">
+                                    {{ tag }}
+                                </span>
+                                <!-- 叉叉按鈕 -->
+                                <button v-if="hoverIndexTags === index" class="delete-tag" @click="removeTag(index)">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 圖片上傳部分 -->
+                        <div class="image-upload-section">
+                            <div class="ts-text is-heavy is-big">上傳圖片</div>
+                            <div class="ts-file">
+                                <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" multiple />
+                            </div>
+                            <div class="image-previews">
+                                <div v-for="(image, index) in imageFiles" :key="index" class="image-preview"
+                                    @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
+                                    <img :src="image.previewUrl" alt="Preview Image" />
+                                    <div class="image-controls" v-if="hoverIndexImages === index">
+                                        <i class="ts-icon is-pen-to-square-icon" @click="editImage(index)"></i>
+                                        <i class="ts-icon is-trash-can-icon" @click="removeImage(index)"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
+                    
+                    <!-- 桌面端佈局：圖片上傳 -->
+                    <div class="desktop-only">
+                        <div class="ts-text is-heavy is-big">上傳圖片</div>
+                        <div class="ts-file">
+                            <input class="ts-input" type="file" @change="handleFileUpload" accept="image/*" multiple />
+                        </div>
+                        <div class="image-previews">
+                            <div v-for="(image, index) in imageFiles" :key="index" class="image-preview"
+                                @mouseover="hoverIndexImages = index" @mouseleave="hoverIndexImages = null">
+                                <img :src="image.previewUrl" alt="Preview Image" />
+                                <div class="image-controls" v-if="hoverIndexImages === index">
+                                    <i class="ts-icon is-pen-to-square-icon" @click="editImage(index)"></i>
+                                    <i class="ts-icon is-trash-can-icon" @click="removeImage(index)"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <br>
                     <button class="ts-button" @click="submitPost">送出文章</button>
                 </div>
-                <!-- <div>{{ categories }}</div> -->
             </div>
-            <div class="column is-3-wide">
+            
+            <!-- 桌面端佈局：單品分享和標籤 -->
+            <div class="column is-3-wide desktop-only">
                 <div class="cell is-vertical">
                     <div class="ts-text is-heavy is-big">單品分享</div>
 
@@ -67,7 +189,6 @@
                                     {{ category.categoryName }}
                                 </option>
                             </select>
-
                         </div>
 
                         <!-- 子分類選擇 -->
@@ -130,7 +251,6 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -641,5 +761,31 @@ p {
 
 .suggestion-item:hover {
   background-color: #eee;
+}
+
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none;
+    }
+    
+    .mobile-only {
+        display: block;
+    }
+    
+    .product-section,
+    .tags-section,
+    .image-upload-section {
+        margin-top: 2rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .desktop-only {
+        display: block;
+    }
+    
+    .mobile-only {
+        display: none;
+    }
 }
 </style>
