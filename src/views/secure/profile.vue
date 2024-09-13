@@ -1,9 +1,9 @@
 <template>
- <div class="ts-app-layout is-fullscreen responsive-layout">
+  <div class="ts-app-layout is-fullscreen responsive-layout">
     <div class="cell sidebar" :class="{ 'is-active': isSidebarOpen }">
       <div class="ts-content is-center-aligned">
         <div class="ts-wrap is-vertical is-compact is-middle-aligned">
-          <div class="ts-image is-circular">
+          <div class="ts-image is-circular image-wrapper">
             <img :src="userPhoto" width="80" data-dialog="updatePhotoModal" />
           </div>
           <div class="ts-header">{{ userDetail?.userName }}</div>
@@ -30,7 +30,8 @@
             v-if="!userStore.isThirdPartyLogin"
             class="item"
             data-dialog="updatePwdModal"
-          >修改密碼</a>
+            >修改密碼</a
+          >
         </div>
       </div>
       <!-- 商城 -->
@@ -62,15 +63,26 @@
           </div>
         </div>
         <div class="ts-menu is-dense is-small" style="opacity: 0.8">
-          <a href="#!" class="item" @click="switchComps(myPostList)">我的文章</a>
-          <a href="#!" class="item" @click="switchComps(myLikePost)">收藏文章</a>
+          <a href="#!" class="item" @click="switchComps(myPostList)"
+            >我的文章</a
+          >
+          <a href="#!" class="item" @click="switchComps(myLikePost)"
+            >收藏文章</a
+          >
         </div>
       </div>
     </div>
-    <div class="sidebar-hint" :class="{ 'is-hidden': isSidebarOpen }" @click="toggleSidebar">
+    <div
+      class="sidebar-hint"
+      :class="{ 'is-hidden': isSidebarOpen }"
+      @click="toggleSidebar"
+    >
       <span class="ts-icon is-chevron-right-icon"></span>
     </div>
-    <div class="cell is-fluid is-scrollable is-secondary main-content" @click="closeSidebarOnMobile">
+    <div
+      class="cell is-fluid is-scrollable is-secondary main-content"
+      @click="closeSidebarOnMobile"
+    >
       <div class="ts-container is-narrow has-vertically-padded-large">
         <component
           v-if="userDetail"
@@ -98,7 +110,7 @@
       <div class="ts-divider"></div>
       <div class="ts-content is-center-aligned">
         <div class="ts-wrap is-vertical is-compact is-middle-aligned">
-          <div class="ts-image is-circular">
+          <div class="ts-image is-circular image-wrapper-big">
             <img :src="photoPreview" width="200" @click="clickFileInput" />
           </div>
           <div class="ts-content">
@@ -226,7 +238,15 @@
 </template>
 
 <script setup>
-import { shallowRef, ref, onMounted, onUnmounted, reactive, computed, watch } from "vue";
+import {
+  shallowRef,
+  ref,
+  onMounted,
+  onUnmounted,
+  reactive,
+  computed,
+  watch,
+} from "vue";
 import { useRoute } from "vue-router";
 import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
@@ -254,7 +274,6 @@ const photo = ref(null);
 const pwdMessage = ref("");
 const pwdFomatMsg = ref("");
 
-
 function switchComps(comp) {
   console.log("Switching to component:", comp);
   if (typeof comp === "string") {
@@ -274,7 +293,6 @@ function switchComps(comp) {
       default:
         currentComp.value = userProfile;
     }
-    
   } else {
     currentComp.value = comp;
   }
@@ -547,7 +565,7 @@ function cancelChange() {
 ///////////////////////////// 其他 /////////////////////////////
 
 onMounted(function () {
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
   handleResize(); // 初始化時調用一次
   console.log("Current auth header:", axiosapi.defaults.headers.authorization);
   showData(userStore.userId);
@@ -557,11 +575,10 @@ onMounted(function () {
   if (route.params.initialView) {
     switchComps(route.params.initialView);
   }
-
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
   if (photoPreview.value) {
     URL.revokeObjectURL(photoPreview.value); // 釋放臨時 URL
   }
@@ -599,12 +616,11 @@ const toggleSidebar = () => {
 const closeSidebarOnMobile = (event) => {
   if (window.innerWidth <= 768 && isSidebarOpen.value) {
     // 确保点击的不是侧边栏本身
-    if (!event.target.closest('.sidebar')) {
+    if (!event.target.closest(".sidebar")) {
       isSidebarOpen.value = false;
     }
   }
 };
-
 
 // 監聽窗口大小變化
 const handleResize = () => {
@@ -614,12 +630,27 @@ const handleResize = () => {
     isSidebarOpen.value = false;
   }
 };
-
 </script>
 
-
-
 <style scoped>
+.image-wrapper-big {
+  width: 200px; /* 設置為你想要的大小 */
+  height: 200px; /* 保持與寬度相同，以確保是圓形 */
+  overflow: hidden; /* 確保超出部分被裁剪 */
+}
+.image-wrapper {
+  width: 80px; /* 設置為你想要的大小 */
+  height: 80px; /* 保持與寬度相同，以確保是圓形 */
+  overflow: hidden; /* 確保超出部分被裁剪 */
+}
+
+.image-wrapper img,
+.image-wrapper-big img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 這會讓圖片填滿容器，同時保持其比例 */
+  object-position: center; /* 這會讓圖片居中 */
+}
 .responsive-layout {
   display: flex;
   min-height: 100vh;
@@ -646,7 +677,6 @@ const handleResize = () => {
   transition: margin-left 0.3s ease;
 }
 
-
 .sidebar-hint {
   display: none;
   position: fixed;
@@ -663,7 +693,6 @@ const handleResize = () => {
   transition: opacity 0.3s ease, transform 0.3s ease;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
 }
-
 
 .sidebar-hint .ts-icon {
   font-size: 24px;

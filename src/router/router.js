@@ -18,6 +18,7 @@ import comment from "@/views/post/comment.vue";
 import postContent from "@/views/post/postContent.vue"
 import editPost from "@/views/post/editPost.vue"
 import reportPost from "@/views/post/reportPost.vue"
+import postset from "@/components/profile/postset.vue"
 import LoginSuccess from "@/views/secure/LoginSuccess.vue";
 
 import checkPaying from "@/views/pages/checkPaying.vue";
@@ -49,13 +50,13 @@ const routes = [
   { name: "longin-ling", path: "/secure/login", component: Login},
   { name: "register-ling", path: "/secure/register", component: Register},
   { name: "profile-ling", path: "/secure/profile/:initialView?", component: profile ,  props: true, meta: { requiresAuth: true }},
-  
+  { name: "postset-link", path: "/post/admin", component: postset},
   { name: "comment-link", path: "/comment/:id", component: comment},
   { name: "editPost-link", path: "/editPost/:id", component: editPost, meta: { requiresAuth: true }},
   { name: "postContent-link", path: "/post/:id", component: postContent },
   { name: "post-link", path: "/post", component: post, meta: { requiresAuth: true } },
   { name: "reportPost-link", path: "/report/;id", component: reportPost },
-  { name: "LoginSuccess-link", path: "/LoginSuccess", component: LoginSuccess},
+  { name: "LoginSuccess-link", path: "/LoginSuccess", component: LoginSuccess },
   
   
   { name: "refund-link", path: "/refund/:orderId", component: refund},

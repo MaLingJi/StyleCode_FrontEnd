@@ -90,7 +90,7 @@
             ></div>
             <!-- ^編輯按鈕^ -->
           </div>
-          <p>{{ post.contentText }}</p>
+          <p>{{ post.contentText.slice(0, 30) }}...</p> 
           <div class="ts-grid icons">
             <div class="column">
               <span class="ts-icon is-heart-icon margin-right"></span
