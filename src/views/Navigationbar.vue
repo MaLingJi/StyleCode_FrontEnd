@@ -24,7 +24,7 @@
                 class="ts-text is-undecorated action-icon width-30"
                 to="/cart"
                 ><span
-                  class="ts-icon is-spinning is-cart-shopping-icon is-big"
+                  class="ts-icon is-cart-shopping-icon is-big"
                 ></span>
                 <span
                   class="ts-badge is-negative is-small notification-badge"
@@ -38,7 +38,7 @@
                   class="ts-text is-undecorated action-icon width-30"
                   @click="toggleNotifications"
                 >
-                  <span class="ts-icon is-spinning is-bell-icon is-big"></span>
+                  <span class="ts-icon  is-bell-icon is-big"></span>
                   <span
                     class="ts-badge is-negative is-small notification-badge"
                     v-if="unreadCount > 0"
@@ -115,7 +115,7 @@
                 class="ts-text is-undecorated action-icon"
                 data-dropdown="user-dropdown"
                 v-if="userStore.isLogedin"
-                ><span class="ts-icon is-spinning is-user-icon is-big"></span
+                ><span class="ts-icon is-user-icon is-big"></span
               ></a>
               <div
                 class="ts-dropdown"
