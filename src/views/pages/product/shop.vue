@@ -249,7 +249,7 @@ const sortProducts = () => {
 @media (max-width: 768px) {
   .ts-grid.is-3-columns {
     gap: 15px; /* 在smaller屏幕上减小间距 */
-    padding: 0 15px;
+    padding: 15px;
   }
 
   :deep(.product-card) {
@@ -276,12 +276,18 @@ const sortProducts = () => {
     padding: 15px;
   }
 
+
   .search-input {
     width: 100%;
   }
 
   .main-content {
-    padding-top: 0;
+    padding-top: 15px;
+  }
+
+  .column.is-13-wide {
+    padding-left: 30px;
+    padding-right: 0;
   }
 
 }
