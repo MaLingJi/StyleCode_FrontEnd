@@ -293,40 +293,6 @@ const sortProducts = () => {
   :deep(.product-card p) {
     font-size: 0.9em;
   }
-
-  .ts-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .ts-box {
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 0;
-  }
-  
-  .column.is-16-wide {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .ts-content {
-    padding: 15px;
-  }
-
-  .search-input {
-    width: 100%;
-  }
-
-  .main-content {
-    padding-top: 15px;
-  }
-
-  .column.is-13-wide {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
 }
 
 @media (max-width: 480px) {
