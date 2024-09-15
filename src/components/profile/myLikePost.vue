@@ -38,6 +38,7 @@
                 <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
               </div>
             </div>
+            <p>創建時間: {{ formatDate(post.createdAt) }}</p>
             <!-- </div> -->
           </div>
         </div>
@@ -63,6 +64,10 @@
           </div>
           <div class="column">
             <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+          </div>
+        </div>
+        <div class="post-dates">
+          <div class="creation-date">創建時間: {{ formatDate(post.createdAt) }}
           </div>
         </div>
       </div>
@@ -143,6 +148,10 @@ const removeBookmark = async (postId) => {
   } catch (error) {
     console.error('移除收藏時發生錯誤:', error.response ? error.response.data : error.message);
   }
+};
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 };
 </script>
 
@@ -239,4 +248,40 @@ const removeBookmark = async (postId) => {
   font-size: 16px;
   margin-top: 10px;
 }
+@media (max-width: 768px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .share-card {
+    max-width: none;
+  }
+
+  .share-info h3 {
+    font-size: 0.9em;
+  }
+
+  .share-info p {
+    font-size: 0.8em;
+  }
+
+  .share-icons {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .share-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .share-info {
+    padding: 8px;
+  }
+}
+
 </style>

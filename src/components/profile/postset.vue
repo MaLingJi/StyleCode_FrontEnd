@@ -58,6 +58,7 @@
                                 </div>
                             </div>
                             <p>創建時間: {{ formatDate(post.createdAt) }}</p> <!-- 顯示創建時間 -->
+                            <p v-if="post.deletedAt">刪除時間: {{ formatDate(post.deletedAt) }}</p> <!-- 顯示刪除時間 -->
                         </div>
                         <!-- <div class="ts-icon is-circular is-trash-icon is-large share-delete-button" @click.stop="deletePost(post.postId)">
                         </div> -->
@@ -89,7 +90,10 @@
                                 <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
                             </div>
                         </div>
-                        <p>創建時間: {{ formatDate(post.createdAt) }}</p> <!-- 顯示創建時間 -->
+                        <div class="post-dates">
+                        <div class="creation-date">創建時間: {{ formatDate(post.createdAt) }}</div>
+                        <div class="deletion-date" v-if="post.deletedAt">刪除時間: {{ formatDate(post.deletedAt) }}</div>
+                        </div>
                         <!-- <div class="ts-icon is-circular is-trash-icon is-large share-delete-button" @click.stop="deletePost(post.postId)">
                         </div> -->
                     </div>
@@ -217,8 +221,8 @@ const deletePost = (postId) => {
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-}
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
 </script>
 
 <style scoped>
@@ -294,10 +298,14 @@ text-overflow: ellipsis;
 
 .ts-box {
 height: 150px;
+min-height: 150px;
 }
 
 .right-side {
 width: 100%;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
 }
 
 .margin-right {
@@ -330,6 +338,28 @@ font-size: 18px;
 font-size: 16px;
 }
 
+.post-dates {
+font-size: 0.8em;
+color: #666;
+  margin-top: 5px;
+}
+
+.creation-date, .deletion-date {
+margin-bottom: 2px;
+}
+
+.ts-header {
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+p {
+overflow: hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+}
 @media (max-width: 768px) {
 .share-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -356,13 +386,57 @@ font-size: 16px;
 
 @media (max-width: 480px) {
 .share-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 8px;
     padding: 8px;
 }
 
 .share-info {
     padding: 8px;
+}
+.forum-post {
+    flex-direction: column;
+    min-height: 280px; 
+}
+
+.right-side {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.post-title {
+    font-size: 0.9em;
+    margin-bottom: 3px;
+}
+
+.post-content {
+    font-size: 0.8em;
+    margin-bottom: 3px;
+    max-height: 2.4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.icons {
+    font-size: 0.75em;
+    margin-bottom: 3px;
+}
+
+.post-dates {
+    font-size: 0.65em; 
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto; 
+}
+
+.creation-date, .deletion-date {
+    white-space: normal; 
+    word-break: break-all; 
 }
 }
 

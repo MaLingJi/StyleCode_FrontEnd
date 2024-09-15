@@ -15,7 +15,7 @@
     </div>
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
- <div class="ts-container has-top-spaced">
+  <div class="ts-container has-top-spaced">
     <div
       class="share-grid"
       v-if="postType === 'share'"
@@ -45,6 +45,7 @@
             </div>
               </div>
             </div>
+            <p>創建時間: {{ formatDate(post.createdAt) }}</p>
           </div>
         </div>
       </div>
@@ -71,6 +72,10 @@
             </div>
             <div class="column">
               <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            </div>
+          </div>
+            <div class="post-dates">
+          <div class="creation-date">創建時間: {{ formatDate(post.createdAt) }}
             </div>
           </div>
         </div>
@@ -116,11 +121,13 @@ watch(
         console.log('Posts:', posts.value); // 打印所有的帖子数据
         // 遍歷所有文章
         response.data.forEach(post => {
+          if (!post.deletedAt) {
           if (post.contentType === 'forum') {
             forumposts.value.push(post);
           } else if (post.contentType === 'share') {
             shareposts.value.push(post);
           }
+        }
         });
         console.log('論壇文章:', forumposts.value); // 打印論壇文章
         console.log('分享文章:', shareposts.value); // 打印分享文
@@ -131,6 +138,10 @@ watch(
   },
   { immediate: true } // 確保元件加載時也會執行一次
 );
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
 </script>
 
 <style scoped>
@@ -268,7 +279,7 @@ watch(
 
 @media (max-width: 480px) {
   .share-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 8px;
     padding: 8px;
   }
