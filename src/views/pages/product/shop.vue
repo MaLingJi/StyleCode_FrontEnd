@@ -255,7 +255,7 @@ const sortProducts = () => {
   :deep(.product-card) {
     border-radius: 6px; /* 稍微减小圆角 */
   }
-  
+
   .ts-container {
     padding-left: 0;
     padding-right: 0;
@@ -276,27 +276,12 @@ const sortProducts = () => {
     padding: 15px;
   }
 
-
-  .filter-container {
-    flex-direction: column;
-  }
-
-  .sort-select {
-    width: 100% !important;
-    margin-bottom: 10px;
-  }
-
   .search-input {
     width: 100%;
   }
 
   .main-content {
     padding-top: 0;
-  }
-
-  .column.is-13-wide {
-    padding-left: 0;
-    padding-right: 0;
   }
 
 }
