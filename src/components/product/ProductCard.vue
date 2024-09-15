@@ -24,6 +24,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
 
+
 // 初始化路由器
 const router = useRouter();
 // 用於存儲懸停圖片 URL 的響應式引用
@@ -40,8 +41,8 @@ const props = defineProps({
 });
 
 const truncatedName = computed(() => {
-  return props.product.productName.length > 8 
-    ? props.product.productName.slice(0, 8) + '...' 
+  return props.product.productName.length > 12 
+    ? props.product.productName.slice(0, 12) + '...' 
     : props.product.productName;
 });
 
@@ -103,6 +104,8 @@ watch(() => props.product, () => {
   hoverImageUrl.value = ''; // 清空當前的懸停圖片 URL。這是為了確保在產品變化時，不會顯示舊產品的懸停圖片
   loadHoverImage(); // 調用這個函數來加載新產品的懸停圖片
 }, { deep: true });
+
+
 
 </script>
 
@@ -186,14 +189,15 @@ watch(() => props.product, () => {
 @media (max-width: 768px) {
   .product-card {
     max-width: 100%;
+    border-radius: 6px;
   }
 
   .ts-content h3 {
-    font-size: 1em;
+    font-size: 0.9em;
   }
 
   .ts-content p {
-    font-size: 0.9em;
+    font-size: 0.8em;
   }
 }
 </style>

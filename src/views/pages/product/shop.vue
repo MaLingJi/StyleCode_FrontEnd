@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="column is-13-wide">
-        <div class="ts-grid is-3-columns is-relaxed is-stretched">
+        <div class="product-grid">
           <div class="column" v-for="product in productStore.getPaginatedProducts" :key="product.productId">
             <!-- 使用 v-for 迴圈顯示每個商品，並使用 ProductCard 元件渲染每個商品 -->
             <ProductCard :product="product" style="cursor: pointer" />
@@ -148,6 +148,13 @@ const sortProducts = () => {
 </script>
 
 <style scoped>
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
 .ts-pagination {
   margin-top: 20px;
   display: flex;
@@ -247,13 +254,44 @@ const sortProducts = () => {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .ts-grid.is-3-columns {
-    gap: 15px; /* 在smaller屏幕上减小间距 */
-    padding: 15px;
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 0 15px;
+  }
+
+  .product-column {
+    width: 100%;
   }
 
   :deep(.product-card) {
     border-radius: 6px; /* 稍微减小圆角 */
+  }
+
+  :deep(.product-card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :deep(.product-card .image-container) {
+    padding-bottom: 100%; /* 保持 1:1 的寬高比 */
+  }
+
+  :deep(.product-card .product-info) {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  :deep(.product-card h3) {
+    font-size: 1em;
+    margin-bottom: 5px;
+  }
+
+  :deep(.product-card p) {
+    font-size: 0.9em;
   }
 
   .ts-container {
@@ -261,41 +299,12 @@ const sortProducts = () => {
     padding-right: 0;
   }
 
-  .ts-box {
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 0;
-  }
-
-  .column.is-16-wide {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .ts-content {
-    padding: 15px;
-  }
-
-
-  .search-input {
-    width: 100%;
-  }
-
-  .main-content {
-    padding-top: 15px;
-  }
-
-  .column.is-13-wide {
-    padding-left: 30px;
-    padding-right: 0;
-  }
-
 }
 
 @media (max-width: 480px) {
-  .ts-grid.is-3-columns {
-    gap: 10px; /* 在最小屏幕上进一步减小间距 */
-  }
+  .product-grid {
+    gap: 10px;
+  }   
 }
 
 </style>

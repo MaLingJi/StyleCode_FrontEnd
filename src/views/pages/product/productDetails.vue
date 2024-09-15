@@ -110,7 +110,7 @@
 
       <h1 class="ts-header is-large">{{ product.productName }}</h1>
       <p class="ts-text is-large price">
-        NT$ {{ selectedDetail ? selectedDetail.price : " " }}
+        NT$ {{ product.price }}
       </p>
 
        <!-- 顏色和尺寸選擇 -->
