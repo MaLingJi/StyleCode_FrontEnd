@@ -41,7 +41,7 @@ const props = defineProps({
 });
 
 const truncatedName = computed(() => {
-  return props.product.productName.length > 12 
+  return props.product.productName.length > 12  
     ? props.product.productName.slice(0, 12) + '...' 
     : props.product.productName;
 });
@@ -189,15 +189,14 @@ watch(() => props.product, () => {
 @media (max-width: 768px) {
   .product-card {
     max-width: 100%;
-    border-radius: 6px;
   }
 
   .ts-content h3 {
-    font-size: 0.9em;
+    font-size: 1em;
   }
 
   .ts-content p {
-    font-size: 0.8em;
+    font-size: 0.9em;
   }
 }
 </style>
