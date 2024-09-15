@@ -13,14 +13,14 @@
     </div>
       <!-- 產品信息容器 -->
     <div class="ts-content">
-      <h3>{{ product.productName }}</h3>
+      <h3 :title="product.productName">{{ truncatedName }}</h3>
       <p>價格: ${{ product.price }}</p> 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
 
@@ -38,6 +38,13 @@ const props = defineProps({
     required: true
   }
 });
+
+const truncatedName = computed(() => {
+  return props.product.productName.length > 8 
+    ? props.product.productName.slice(0, 8) + '...' 
+    : props.product.productName;
+});
+
 
 // 獲取圖片 URL 的函數
 const getImageUrl = (imageName) => {
@@ -105,7 +112,7 @@ watch(() => props.product, () => {
   transition: all 0.3s ease;
   border: 2px solid transparent;
   width: 100%;
-  max-width: 500px;
+  /* max-width: 500px; */
   margin: 0 auto;
 }
 
@@ -164,6 +171,9 @@ watch(() => props.product, () => {
   margin: 0 0 10px 0;
   font-size: 1.1em;
   transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 產品價格樣式 */
@@ -171,5 +181,19 @@ watch(() => props.product, () => {
   margin: 0;
   color: #666;
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .product-card {
+    max-width: 100%;
+  }
+
+  .ts-content h3 {
+    font-size: 1em;
+  }
+
+  .ts-content p {
+    font-size: 0.9em;
+  }
 }
 </style>

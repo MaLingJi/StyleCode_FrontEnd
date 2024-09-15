@@ -249,11 +249,41 @@ const sortProducts = () => {
 @media (max-width: 768px) {
   .ts-grid.is-3-columns {
     gap: 15px; /* 在smaller屏幕上减小间距 */
+    padding: 0 15px;
   }
 
   :deep(.product-card) {
     border-radius: 6px; /* 稍微减小圆角 */
   }
+
+  .ts-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .ts-box {
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+  }
+
+  .column.is-16-wide {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .ts-content {
+    padding: 15px;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .main-content {
+    padding-top: 0;
+  }
+
 }
 
 @media (max-width: 480px) {
