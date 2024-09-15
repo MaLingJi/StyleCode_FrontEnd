@@ -152,11 +152,97 @@
             </div>
             
             <!-- 桌面端佈局：單品分享和標籤 -->
-            <div class="column is-3-wide desktop-only">
+            <div class="column is-3-wide">
                 <div class="cell is-vertical">
-                    <!-- 保持原有的桌面版單品分享和標籤部分不變 -->
-                    <!-- ... 保持原有的桌面版代碼 ... -->
+                    <div class="ts-text is-heavy is-big">單品分享</div>
+
+                    <!-- 新增或編輯單品表單 -->
+                    <div v-if="showProductForm" class="product-form">
+                        <div class="ts-input is-underlined">
+                            <input type="text" v-model="newProduct.productName" placeholder="商品名稱"
+                                @focus="showSuggestions = true" @blur="handleBlur" />
+                        </div>
+
+                        <ul v-if="showSuggestions && filteredSuggestions.length > 0" class="suggestions">
+                            <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
+                                @click="selectSuggestion(suggestion)" class="suggestion-item">
+                                {{ suggestion.productName }}
+                            </li>
+                        </ul>
+
+                        <!-- 分類選擇 -->
+                        <div class="ts-select is-underlined">
+                            <select v-model="selectedCategoryId" @change="updateSubcategories">
+                                <option value="">請選擇分類</option>
+                                <option v-for="category in categories" :key="category.categoryId"
+                                    :value="category.categoryId">
+                                    {{ category.categoryName }}
+                                </option>
+                            </select>
+
+                        </div>
+
+                        <!-- 子分類選擇 -->
+                        <div class="ts-select is-underlined" v-if="subcategories.length > 0">
+                            <select v-model="newProduct.subcategoryId">
+                                <option value="">請選擇子分類</option>
+                                <option v-for="subcategory in subcategories" :key="subcategory.subcategoryId"
+                                    :value="subcategory.subcategoryId">
+                                    {{ subcategory.subcategoryName }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="ts-wrap is-center-aligned">
+                            <button class="ts-button is-primary" @click="isEditing ? updateProduct() : addProduct()">
+                                {{ isEditing ? '更新' : '新增' }}
+                            </button>
+                            <button class="ts-button is-secondary" @click="cancelProductForm">取消</button>
+                        </div>
+                    </div>
+
+                    <!-- 顯示已新增的單品 -->
+                    <div class="product-list" v-if="productTags.length">
+                        <div class="ts-card" v-for="(product, index) in productTags" :key="index"
+                            @mouseover="hoverIndexProduct = index" @mouseleave="hoverIndexProduct = null">
+                            <div class="ts-content is-center-aligned">
+                                <p>商品: {{ product.productName }}</p>
+                                <p>分類: {{ product.subcategoryName }}</p>
+
+                                <!-- 編輯與刪除按鈕 -->
+                                <div class="product-controls" v-if="hoverIndexProduct === index">
+                                    <button class="edit-button" @click="editProduct(index)">
+                                        <span class="ts-icon is-pen-to-square-icon"></span>
+                                    </button>
+                                    <button class="delete-button" @click="deleteProduct(index)">
+                                        <span class="ts-icon is-trash-can-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <!-- 新增按鈕 -->
+                    <div v-if="!showProductForm">
+                        <button class="ts-button" @click="startAddProduct">+ 新增單品</button>
+                    </div>
+
+                    <div class="ts-text is-heavy is-big">標籤</div>
+                    <div class="ts-input is-underlined">
+                        <input type="text" placeholder="搜尋標籤…" v-model="inputTagValue" @blur="addTag" />
+                    </div>
+                    <div v-for="(tag, index) in tags" :key="index" class="ts-chip is-dense is-outlined"
+                        @mouseover="hoverIndexTags = index" @mouseleave="hoverIndexTags = null">
+                        <span class="ts-label">
+                            {{ tag }}
+                        </span>
+                        <!-- 叉叉按鈕 -->
+                        <button v-if="hoverIndexTags === index" class="delete-tag" @click="removeTag(index)">
+                            &times;
+                        </button>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
