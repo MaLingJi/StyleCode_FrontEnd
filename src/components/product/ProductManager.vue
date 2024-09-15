@@ -292,7 +292,7 @@ function handlePageChange(page) {
     if (result.isConfirmed) {
       try {
         await axiosapi.delete(`/admin/products/${productId}`,{
-          // headers: { Authorization: `Bearer ${userStore.userToken}` }
+          headers: { Authorization: `Bearer ${userStore.userToken}` }
         });
         await fetchProducts();
         Swal.fire({
