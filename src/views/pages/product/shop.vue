@@ -262,8 +262,8 @@ const sortProducts = () => {
   }
 
   .filter-container {
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 5px;
+    margin-bottom: 5px;
   }
 
   .filter-controls {
@@ -280,7 +280,7 @@ const sortProducts = () => {
   .sort-select select,
   .search-input input {
     width: 100%;
-    padding: 8px;
+    padding: 5px;
   }
 
   :deep(.product-card) {
