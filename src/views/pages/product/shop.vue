@@ -255,17 +255,32 @@ const sortProducts = () => {
 /* 响应式调整 */
 @media (max-width: 768px) {
   .product-grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 0 15px;
+    gap: 10px;
+    padding: 0 10px;
   }
 
-  .product-column {
+  .filter-container {
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  .filter-controls {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sort-select,
+  .search-input {
     width: 100%;
+    margin-bottom: 10px;
   }
 
-  :deep(.product-card) {
-    border-radius: 6px; /* 稍微减小圆角 */
+  .sort-select select,
+  .search-input input {
+    width: 100%;
+    padding: 8px;
   }
 
   :deep(.product-card) {
@@ -279,26 +294,40 @@ const sortProducts = () => {
   }
 
   :deep(.product-card .product-info) {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    padding: 10px;
   }
 
   :deep(.product-card h3) {
-    font-size: 1em;
+    font-size: 0.9em;
     margin-bottom: 5px;
   }
 
   :deep(.product-card p) {
-    font-size: 0.9em;
+    font-size: 0.8em;
+  }
+
+  .ts-container,
+  .column.is-16-wide,
+  .column.is-13-wide {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .ts-box {
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+  }
+
+  .ts-content {
+    padding: 10px;
   }
 }
 
 @media (max-width: 480px) {
-    .product-grid {
-    gap: 10px;
+  .product-grid {
+    gap: 8px;
+    padding: 0 8px;
   }
 }
-
 </style>
