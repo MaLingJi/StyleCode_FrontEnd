@@ -1,11 +1,11 @@
 <template>
     <div class="ts-grid header-title is-middle-aligned is-spaced-between">
         <div class="ts-header is-huge is-heavy">所有文章</div>
-        <!-- <a-input-search
+        <a-input-search
             v-model:value="searchValue"
             placeholder="輸入關鍵字搜索"
             style="width: 200px; margin-left: 20px;"
-            @search="onSearch"/> -->
+            @search="onSearch"/>
     </div>
     
     <div class="ts-container" style="margin-top: 10px">
@@ -38,7 +38,7 @@
         <div v-if="postType === 'share'">
             <h2>分享文章</h2>
             <div class="share-grid">
-                <div class="share-grid-item" v-for="post in sortedSharePosts" :key="post.postId">
+                <div class="share-grid-item" v-for="post in filteredSharePosts" :key="post.postId">
                     <div class="share-card" @click="viewPost(post)">
                         <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost(post)"></div>
                         <div class="share-image">
@@ -65,14 +65,14 @@
                     </div>
                 </div>
             </div>
-            <div v-if="sortedSharePosts.length === 0">沒有分享文章</div>
+            <div v-if="filteredSharePosts.length === 0">沒有分享文章</div>
         </div>
 
         <!-------- 論壇區主頁面 -------->
         <div v-if="postType === 'forum'">
             <h2>論壇文章</h2>
-            <div v-if="sortedForumPosts.length > 0">
-                <div class="ts-box is-horizontal" v-for="post in sortedForumPosts" :key="post.postId">
+            <div v-if="filteredForumPosts.length > 0">
+                <div class="ts-box is-horizontal" v-for="post in filteredForumPosts" :key="post.postId">
                     <div class="ts-image is-covered">
                         <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" width="150" height="100%" />
                     </div>
@@ -99,7 +99,7 @@
                     </div>
                 </div>
             </div>
-            <div v-if="sortedForumPosts.length === 0">沒有論壇文章</div>
+            <div v-if="filteredForumPosts.length === 0">沒有論壇文章</div>
         </div>
     </div>
 </template>
@@ -165,6 +165,24 @@ const sortedForumPosts = computed(() => {
     });
 });
 
+const filteredSharePosts = computed(() => {
+    if (!searchValue.value) return sortedSharePosts.value;
+    const keyword = searchValue.value.toLowerCase();
+    return sortedSharePosts.value.filter(post => 
+        post.postTitle.toLowerCase().includes(keyword) ||
+        post.contentText.toLowerCase().includes(keyword)
+    );
+});
+
+const filteredForumPosts = computed(() => {
+    if (!searchValue.value) return sortedForumPosts.value;
+    const keyword = searchValue.value.toLowerCase();
+    return sortedForumPosts.value.filter(post => 
+        post.postTitle.toLowerCase().includes(keyword) ||
+        post.contentText.toLowerCase().includes(keyword)
+    );
+});
+
 const viewPost = (post) => {
     if (post.contentType === 'share') {
         router.push({ name: 'shareDetails-link', params: { postId: post.postId } });
@@ -174,35 +192,9 @@ const viewPost = (post) => {
         console.error('未知的內容類型:', post.contentType);
     }
 }
-
-const onSearch = async () => {
-    try {
-        let response;
-        if (postType.value === 'share') {
-            response = await axiosapi.get('/post/type', {
-                params: {
-                    contentType: 'share',
-                    keyword: searchValue.value,
-                },
-            });
-        } else if (postType.value === 'forum') {
-            response = await axiosapi.get('/post/type', {
-                params: {
-                    contentType: 'forum',
-                    keyword: searchValue.value,
-                },
-            });
-        } else {
-            response = await axiosapi.get('/post/type', {
-                params: {
-                    keyword: searchValue.value,
-                },
-            });
-        }
-        listData.value = response.data;
-    } catch (error) {
-        console.error('搜索失敗:', error.response ? error.response.data : error.message);
-    }
+// 不依靠api搜尋
+const onSearch = () => {
+    console.log('正在尋找:', searchValue.value);
 };
 
 const deletePost = (postId) => {
