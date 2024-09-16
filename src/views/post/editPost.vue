@@ -220,7 +220,7 @@ const handlePreview = async (file) => {
                 timer: 1000, 
                 showConfirmButton: false 
             });
-            router.push('/posts');
+            router.push('/forum');
         } catch (error) {
             console.error('刪除貼文時出錯:', error);
         }

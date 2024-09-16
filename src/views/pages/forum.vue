@@ -49,7 +49,7 @@
           item-layout="vertical"
           size="large"
           :pagination="pagination"
-          :data-source="listData"
+          :data-source="filteredListData"
         >
           <template #footer>
             <div class="ts-checklist">
@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axiosapi from "@/plugins/axios.js"; 
 import { StarOutlined, StarFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
@@ -128,6 +128,16 @@ const pagination = ref({
 
 onMounted(() => {
   callFind(); // 加載獲取所有文章
+});
+
+const filteredListData = computed(() => {
+  if (!searchValue.value) {
+    return listData.value;
+  }
+  const keyword = searchValue.value.toLowerCase();
+  return listData.value.filter(post => 
+    post.postTitle.toLowerCase().includes(keyword)
+  );
 });
 
 async function callFind() {
@@ -157,19 +167,9 @@ async function callFind() {
     console.error("發現錯誤:", error.response ? error.response.data : error.message);
   }
 }
-
-const onSearch = async () => {
-  try {
-    const response = await axiosapi.get('/post/type', {
-      params: {
-        contentType: 'forum',
-        keyword: searchValue.value,
-      },
-    });
-    listData.value = response.data;
-  } catch (error) {
-    console.error('搜索失敗:', error.response ? error.response.data : error.message);
-  }
+//不依靠api尋找
+const onSearch = () => {
+  console.log('正在尋找:', searchValue.value);
 };
 
 const checkIfUserLiked = async (postId) => {

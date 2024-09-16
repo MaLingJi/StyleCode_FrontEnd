@@ -16,27 +16,17 @@
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
   <div class="ts-container has-top-spaced">
-    <div class="share-grid" v-if="postType === 'share'">
-      <div
-        class="share-grid-item"
-        v-for="post in shareposts"
-        :key="post.postId"
-      >
-        <div class="share-card" @click="viewPost(post)">
-          <div
-            class="ts-icon is-circular is-pen-icon is-large share-edit-button"
-            @click.stop="viewPost(post)"
-          ></div>
-          <!-- ^編輯按鈕^ -->
-          <div class="share-image">
-            <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
-            <img
-              :src="
-                post.images && post.images.length > 0
-                  ? `${path}/${post.images[0].imgUrl}`
-                  : '/default-image.png'
-              "
-            />
+    <div
+      class="share-grid"
+      v-if="postType === 'share'"
+    >
+    <div class="share-grid-item" v-for="post in shareposts" :key="post.postId">
+      <div class="share-card" @click="viewPost(post)">
+        <div class="ts-icon is-circular is-pen-icon is-large share-edit-button" @click.stop="viewPost(post)"></div>
+      <!-- ^編輯按鈕^ -->
+      <div class="share-image">
+        <!-- 動態綁定圖片網址，如果沒有圖片就顯示預設圖片 -->
+        <img :src="post.images && post.images.length > 0 ? `${path}/${post.images[0].imgUrl}` : '/default-image.png'" />
           </div>
           <div class="share-info">
             <!-- 動態綁定用戶名稱 -->
@@ -57,6 +47,7 @@
                 </div>
               </div>
             </div>
+            <p>創建時間: {{ formatDate(post.createdAt) }}</p>
           </div>
         </div>
       </div>
@@ -97,8 +88,11 @@
               >{{ post.likes.length }}
             </div>
             <div class="column">
-              <span class="ts-icon is-bookmark-icon margin-right"></span
-              >{{ post.collections.length }}
+              <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+            </div>
+          </div>
+            <div class="post-dates">
+          <div class="creation-date">創建時間: {{ formatDate(post.createdAt) }}
             </div>
           </div>
         </div>
@@ -143,12 +137,14 @@ watch(
         posts.value = response.data;
         console.log("Posts:", posts.value); // 打印所有的帖子数据
         // 遍歷所有文章
-        response.data.forEach((post) => {
-          if (post.contentType === "forum") {
+        response.data.forEach(post => {
+          if (!post.deletedAt) {
+          if (post.contentType === 'forum') {
             forumposts.value.push(post);
           } else if (post.contentType === "share") {
             shareposts.value.push(post);
           }
+        }
         });
         console.log("論壇文章:", forumposts.value); // 打印論壇文章
         console.log("分享文章:", shareposts.value); // 打印分享文
@@ -159,9 +155,10 @@ watch(
   },
   { immediate: true } // 確保元件加載時也會執行一次
 );
-onMounted(() => {
-  window.scrollTo(0, 0);
-});
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
 </script>
 
 <style scoped>
@@ -280,7 +277,7 @@ onMounted(() => {
 
 @media (max-width: 480px) {
   .share-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 8px;
     padding: 8px;
   }
