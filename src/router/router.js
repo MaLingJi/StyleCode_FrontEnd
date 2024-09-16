@@ -88,7 +88,7 @@ router.beforeEach((to, from, next) => {
   const requiredPermission = to.meta.requiredPermission
 
   if (requiresAuth && !isAuthenticated) {
-    next('/secure/login')
+    next('/403')
   }else if (requiredPermission && userStore.permissions !== requiredPermission){
     next('/403')
   } else {

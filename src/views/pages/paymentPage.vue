@@ -26,7 +26,9 @@
         <div class="action-buttons">
             <button class="ts-button" @click="lpPayment">LinePay</button>
         </div>
-
+        <div class="action-buttons">
+            <button class="ts-button" @click="ecPayment">EcPay</button>
+        </div>
     </div>
 
     </html>
@@ -101,6 +103,56 @@ const lpPayment = async () => {
 
     };
 }
+
+const ecPayment = async () => {
+    try {
+        const paymentData = {
+            totalAmounts: totalAmount.value,
+            status: 0, // 假設 0 表示未支付狀態
+            userId: user,
+            orderDate: new Date().toISOString()
+        };
+        console.log('ECPay Payment Data:', JSON.stringify(paymentData, null, 2));
+        
+        const response = await axiosapi.post('/order/ecpay', paymentData);
+        
+        console.log('ECPay payment initiation response:', response.data);
+
+        if (response.data) {
+            Swal.fire({
+                title: '確認付款',
+                text: '您確定要進行 ECPay 付款嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'rgb(35 40 44)',
+                cancelButtonColor: '#9e9e9e',
+                confirmButtonText: '確認付款',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 使用 innerHTML 方式加載 ECPay 表單
+                    const formContainer = document.createElement('div');
+                    formContainer.innerHTML = response.data;
+                    document.body.appendChild(formContainer);
+
+                    // 自動提交表單
+                    const form = formContainer.querySelector('form');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error('ECPay form not found in the response');
+                    }
+                }
+            });
+        } else {
+            console.error('Failed to get ECPay payment form');
+        }
+    } catch (error) {
+        console.error('Failed to initiate ECPay payment:', error);
+        Swal.fire('錯誤', '無法處理 ECPay 付款請求', 'error');
+    }
+};
+
 
 const toggleOrderDetails = () => {
     showOrderDetails.value = !showOrderDetails.value;
