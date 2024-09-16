@@ -31,7 +31,7 @@
         <tr>
           <th>商品名稱</th>
           <th>價格</th>
-          <th>分類</th>
+          <!-- <th>分類</th> -->
           <th>子分類</th>
           <th>操作</th>
         </tr>
@@ -40,7 +40,7 @@
         <tr v-for="product in paginatedProducts" :key="product.productId">
           <td>{{ product.productName }}</td>
           <td>{{ product.price }}</td>
-          <td>{{ product.categoryName }}</td>
+          <!-- <td>{{ product.categoryName }}</td> -->
           <td>{{ product.subcategoryName }}</td>
           <td>
             <button @click="editProduct(product)" class="ts-button is-small">
