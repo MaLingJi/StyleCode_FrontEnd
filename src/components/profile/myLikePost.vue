@@ -52,6 +52,7 @@
                 >{{ post.collections.length }}
               </div>
             </div>
+            <p>創建時間: {{ formatDate(post.createdAt) }}</p>
             <!-- </div> -->
           </div>
         </div>
@@ -92,8 +93,11 @@
             >{{ post.likes.length }}
           </div>
           <div class="column">
-            <span class="ts-icon is-bookmark-icon margin-right"></span
-            >{{ post.collections.length }}
+            <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
+          </div>
+        </div>
+        <div class="post-dates">
+          <div class="creation-date">創建時間: {{ formatDate(post.createdAt) }}
           </div>
         </div>
       </div>
@@ -188,6 +192,10 @@ const removeBookmark = async (postId) => {
 onMounted(() => {
   window.scrollTo(0, 0);
 });
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
 </script>
 
 <style scoped>
@@ -328,12 +336,44 @@ onMounted(() => {
     font-size: 0.7em;
   }
 
-  .share-icons {
-    font-size: 10px;
+.share-icons {
+  font-size: 16px;
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .share-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
   }
 
-  .bookmark {
-    font-size: 1em;
+  .share-card {
+    max-width: none;
+  }
+
+  .share-info h3 {
+    font-size: 0.9em;
+  }
+
+  .share-info p {
+    font-size: 0.8em;
+  }
+
+  .share-icons {
+    font-size: 14px;
   }
 }
+
+@media (max-width: 480px) {
+  .share-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .share-info {
+    padding: 8px;
+  }
+}
+
 </style>
