@@ -182,7 +182,7 @@ const { cartItemCount, fetchCartCount, updateCartCount } = useCart();
 const userStore = useUserStore();
 const notifications = ref([]);
 const unreadCount = ref(0); //未讀通知數
-const intervalTime = 10000; //每隔10秒
+const intervalTime = 2000; //每隔2秒
 let intervalId; //儲存 setInterval 的 ID
 
 ///////////////////////////// 登出 /////////////////////////////

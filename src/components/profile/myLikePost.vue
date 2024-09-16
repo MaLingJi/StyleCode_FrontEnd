@@ -336,9 +336,10 @@ const formatDate = (dateString) => {
     font-size: 0.7em;
   }
 
-.share-icons {
-  font-size: 16px;
-  margin-top: 10px;
+  .share-icons {
+    font-size: 16px;
+    margin-top: 10px;
+  }
 }
 @media (max-width: 768px) {
   .share-grid {
