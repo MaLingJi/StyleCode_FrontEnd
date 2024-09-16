@@ -69,6 +69,7 @@ const routes = [
   { name: "shop-link", path: "/shop/:categoryId?/:subcategoryId?", component: Shop },
   { name: "productDetails-link", path: '/product/:id', component: productDetails ,  props: true },
   { name: 'addProduct', path: '/addproduct',component: addProduct},
+  
 ];
 
 

@@ -108,7 +108,6 @@ const ecPayment = async () => {
     try {
         const paymentData = {
             totalAmounts: totalAmount.value,
-            status: 0, // 假設 0 表示未支付狀態
             userId: user,
             orderDate: new Date().toISOString()
         };
