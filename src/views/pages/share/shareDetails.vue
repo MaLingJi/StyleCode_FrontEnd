@@ -531,7 +531,13 @@ const deletePost = (postId) => {
       axiosapi
         .delete(`/post/${postId}`)
         .then((response) => {
-          Swal.fire("已刪除!", "這篇文章已經被刪除.", "success");
+          
+          Swal.fire({
+            text: '已刪除!',
+            icon: 'success',
+            confirmButtonColor: 'rgb(35 40 44)',
+            confirmButtonText: '確認',
+        });
           // 這裡可以根據情況重定向到文章列表頁或其他頁面
           router.push("/share"); // 假設你有一個文章列表頁面
         })
