@@ -16,26 +16,16 @@
   </div>
   <!-------- 分 享 區 主 要 頁 面 -------->
   <div class="ts-container has-top-spaced">
-    <div
-      class="ts-grid is-3-columns is-relaxed is-stretched"
-      v-if="postType === 'share'"
-    >
+    <div class="ts-grid is-3-columns is-relaxed is-stretched" v-if="postType === 'share'">
       <div class="column" v-for="(post, index) in sharePosts" :key="index">
         <div class="share-card">
-          <div
-            class="ts-icon is-bookmark-icon is-huge bookmark"
-            @click.stop="removeBookmark(post.postId)"
-          ></div>
+          <div class="ts-icon is-bookmark-icon is-huge bookmark" @click.stop="removeBookmark(post.postId)"></div>
           <!-- ^書籤按鈕^ -->
           <div class="share-image" @click="navigateToPost(post.postId)">
-            <img
-              :src="
-                post.images && post.images.length > 0
-                  ? `${path}/${post.images[0].imgUrl}`
-                  : '/default-image.png'
-              "
-              alt="Share Image"
-            />
+            <img :src="post.images && post.images.length > 0
+                ? `${path}/${post.images[0].imgUrl}`
+                : '/default-image.png'
+              " alt="Share Image" />
             />
           </div>
           <div class="share-info">
@@ -44,12 +34,10 @@
             <p>{{ post.postTitle }}</p>
             <div class="ts-grid share-icons column">
               <div class="column">
-                <span class="ts-icon is-heart-icon margin-right"></span
-                >{{ post.likes.length }}
+                <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
               </div>
               <div class="column">
-                <span class="ts-icon is-bookmark-icon margin-right"></span
-                >{{ post.collections.length }}
+                <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
               </div>
             </div>
             <p>創建時間: {{ formatDate(post.createdAt) }}</p>
@@ -61,26 +49,13 @@
   </div>
   <!-------- 論 壇 主 要 頁 面 -------->
   <div v-if="postType === 'forum'">
-    <div
-      class="ts-box is-horizontal"
-      v-for="(post, index) in forumPosts"
-      :key="index"
-    >
-      <div
-        class="ts-icon is-bookmark-icon is-huge column bookmark"
-        @click="removeBookmark(post.postId)"
-      ></div>
+    <div class="ts-box is-horizontal" v-for="(post, index) in forumPosts" :key="index">
+      <div class="ts-icon is-bookmark-icon is-huge column bookmark" @click="removeBookmark(post.postId)"></div>
       <div class="ts-image is-covered" @click="navigateToPost(post.postId)">
-        <img
-          :src="
-            post.images && post.images.length > 0
-              ? `${path}/${post.images[0].imgUrl}`
-              : '/default-image.png'
-          "
-          width="150"
-          height="100%"
-          alt="Post Image"
-        />
+        <img :src="post.images && post.images.length > 0
+            ? `${path}/${post.images[0].imgUrl}`
+            : '/default-image.png'
+          " width="150" height="100%" alt="Post Image" />
       </div>
       <div class="ts-content right-side">
         <div class="ts-grid is-spaced-between">
@@ -89,8 +64,7 @@
         <p>{{ post.contentText }}</p>
         <div class="ts-grid icons">
           <div class="column">
-            <span class="ts-icon is-heart-icon margin-right"></span
-            >{{ post.likes.length }}
+            <span class="ts-icon is-heart-icon margin-right"></span>{{ post.likes.length }}
           </div>
           <div class="column">
             <span class="ts-icon is-bookmark-icon margin-right"></span>{{ post.collections.length }}
@@ -193,8 +167,8 @@ onMounted(() => {
   window.scrollTo(0, 0);
 });
 const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 };
 </script>
 
@@ -232,7 +206,8 @@ const formatDate = (dateString) => {
 
 .share-image {
   width: 100%;
-  padding-top: 100%; /* 1:1 寬高比 */
+  padding-top: 100%;
+  /* 1:1 寬高比 */
   position: relative;
   overflow: hidden;
 }
@@ -341,6 +316,7 @@ const formatDate = (dateString) => {
     margin-top: 10px;
   }
 }
+
 @media (max-width: 768px) {
   .share-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -376,5 +352,4 @@ const formatDate = (dateString) => {
     padding: 8px;
   }
 }
-
 </style>
