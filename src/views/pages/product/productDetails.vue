@@ -209,7 +209,7 @@ const getImageUrl = (imageName) => {
   if (imageName) {
     return `${path}${imageName}`;
   }
-  return "../../../public/No_image.png"; // 若無圖片則返回預設圖片
+  return "/No_image.png"; // 若無圖片則返回預設圖片
 };
 
 // 計算當前顯示的圖片 URL

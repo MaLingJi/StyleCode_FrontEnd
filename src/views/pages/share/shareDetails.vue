@@ -404,7 +404,7 @@ const getImageUrl = (imageName) => {
   if (imageName) {
     return `${path}${imageName}`;
   }
-  return "../../../public/No_image.png";
+  return "/No_image.png";
 };
 
 const filteredImages = computed(() => {

@@ -54,7 +54,7 @@ const getImageUrl = (imageName) => {
     return `${path}${imageName}`;
   }
     // 如果沒有圖片，返回默認的 "無圖片" 圖像
-  return '../../../public/loading.gif';
+  return '/loading.gif';
 };
 
 // 導航到產品詳情頁的函數

@@ -56,10 +56,10 @@ onMounted(() => {
     if (validImages.length > 0) {
       imgUrl.value = `${path}${validImages[0].imgUrl}`;
     } else {
-      imgUrl.value = "../../../public/No_image.png";
+      imgUrl.value = "/No_image.png";
     }
   } else {
-    imgUrl.value = "../../../public/No_image.png";
+    imgUrl.value = "/No_image.png";
   }
 
   userPhoto.value = `${userPhotoPath}${props.post.userPhoto}`;
