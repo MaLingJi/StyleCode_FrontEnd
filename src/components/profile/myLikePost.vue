@@ -100,6 +100,30 @@ const navigateToPost = (postId) => {
   }
 };
 
+const fetchCollections = async () => {
+  try {
+    const response = await axiosapi.get(`/collections/post/${userId}`);
+    const posts = response.data;
+
+    const validPosts = posts.filter(post => !post.deletedAt);
+
+    sharePosts.value = [];
+    forumPosts.value = [];
+    validPosts.forEach((post) => {
+      if (post.contentType === "forum") {
+        forumPosts.value.unshift(post);
+      } else if (post.contentType === "share") {
+        sharePosts.value.push(post);
+      }
+    });
+
+    console.log("分享文章:", sharePosts.value);
+    console.log("論壇文章:", forumPosts.value);
+  } catch (error) {
+    console.error("取得貼文時出錯:",error.response ? error.response.data : error.message);
+  }
+};
+
 //寫法參考 page/order.vue
 watch(
   postType,
@@ -107,31 +131,7 @@ watch(
     // 清空數組
     sharePosts.value = [];
     forumPosts.value = [];
-    axiosapi
-      .get(`/collections/post/${userId}`)
-      .then((response) => {
-        const posts = response.data;
-        // console.log('獲取的貼文:', posts);
-        posts.forEach((post) => {
-          if (post.contentType === "forum") {
-            forumPosts.value.push(post);
-          } else if (post.contentType === "share") {
-            sharePosts.value.push(post);
-          }
-        });
-        // 根據 postType 顯示相應的文章
-        if (postType.value === "share") {
-          console.log("分享文章:", sharePosts.value);
-        } else if (postType.value === "post") {
-          console.log("論壇文章:", forumPosts.value);
-        }
-      })
-      .catch((error) => {
-        console.error(
-          "取得貼文時出錯:",
-          error.response ? error.response.data : error.message
-        );
-      });
+    fetchCollections();
   },
   { immediate: true }
 ); //確保元件載入時也會執行一次

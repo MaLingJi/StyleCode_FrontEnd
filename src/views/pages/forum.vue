@@ -237,7 +237,7 @@ const collectPost = async (id) => {
       confirmButtonText: '請去登入',
     }).then((result) => {
       if (result.isConfirmed) {
-        router.push('/secure/login'); 
+        router.unshift('/secure/login'); 
       }
     });
     return;
