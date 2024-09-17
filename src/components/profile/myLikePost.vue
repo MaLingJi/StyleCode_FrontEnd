@@ -113,7 +113,7 @@ const fetchCollections = async () => {
       if (post.contentType === "forum") {
         forumPosts.value.unshift(post);
       } else if (post.contentType === "share") {
-        sharePosts.value.push(post);
+        sharePosts.value.unshift(post);
       }
     });
 
