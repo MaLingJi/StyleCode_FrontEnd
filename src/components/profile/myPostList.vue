@@ -140,9 +140,9 @@ watch(
         response.data.forEach(post => {
           if (!post.deletedAt) {
           if (post.contentType === 'forum') {
-            forumposts.value.push(post);
+            forumposts.value.unshift(post);
           } else if (post.contentType === "share") {
-            shareposts.value.push(post);
+            shareposts.value.unshift(post);
           }
         }
         });
