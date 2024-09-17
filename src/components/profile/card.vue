@@ -193,7 +193,13 @@ const formatExpirationDate = (event: Event) => {
 
   // 當長度大於 2 時，插入 /
   if (value.length > 2) {
-    value = value.slice(0, 2) + "/" + value.slice(2, 4);
+    let month = parseInt(value.slice(0, 2), 10);
+    let year = value.slice(2, 4);
+
+    if (month > 12) {
+      month = 12;
+    }
+    value = String(month).padStart(2, "0") + "/" + year;
   }
 
   // 更新輸入框的值並保持光標位置

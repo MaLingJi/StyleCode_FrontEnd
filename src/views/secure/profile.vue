@@ -330,28 +330,9 @@ async function showData(userId) {
     } else {
       console.error(response.data.message);
     }
-  } catch (error) {}
-  axiosapi
-    .get(`/member/profile/${userId}`)
-    .then(function (response) {
-      console.log("response.data", response.data);
-      if (response.data.success !== false) {
-        console.log("response.data.userDetail", response.data.userDetail);
-        userDetail.value = response.data.userDetail;
-        if (isUrl(response.data.userDetail.userPhoto)) {
-          userPhoto.value = response.data.userDetail.userPhoto;
-          photoPreview.value = response.data.userDetail.userPhoto;
-        } else {
-          userPhoto.value = photoPath + response.data.userDetail.userPhoto;
-          photoPreview.value = photoPath + response.data.userDetail.userPhoto;
-        }
-      } else {
-        console.error(response.data.message);
-      }
-    })
-    .catch(function (error) {
-      console.error("Error fetching user details:", error);
-    });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+  }
 }
 
 function isUrl(string) {
