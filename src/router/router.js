@@ -5,33 +5,33 @@ import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
 import Forbidden from "@/views/Forbidden.vue";
 import Login from "@/views/secure/Login.vue";
-import Forum from "@/views/pages/forum.vue";
-import backstage from "@/views/pages/backstage.vue";
-import share from "@/views/pages/share/share.vue";
-import Register from "@/views/secure/register.vue";
-import cart from "@/views/pages/cart.vue";
-import order from "@/views/pages/order.vue";
-import newShare from "@/views/pages/share/newShare.vue";
-import editShare from "@/views/pages/share/editShare.vue";
-import post from "@/views/post/post.vue";
-import comment from "@/views/post/comment.vue";
-import postContent from "@/views/post/postContent.vue"
-import editPost from "@/views/post/editPost.vue"
-import reportPost from "@/views/post/reportPost.vue"
-import postset from "@/components/profile/postset.vue"
+import Forum from "@/views/pages/Forum.vue";
+import backstage from "@/views/pages/Backstage.vue";
+import share from "@/views/pages/share/Share.vue";
+import Register from "@/views/secure/Register.vue";
+import cart from "@/views/pages/Cart.vue";
+import order from "@/views/pages/Order.vue";
+import newShare from "@/views/pages/share/NewShare.vue";
+import editShare from "@/views/pages/share/EditShare.vue";
+import post from "@/views/post/Post.vue";
+import comment from "@/views/post/Comment.vue";
+import postContent from "@/views/post/PostContent.vue"
+import editPost from "@/views/post/EditPost.vue"
+import reportPost from "@/views/post/ReportPost.vue"
+import postset from "@/components/profile/Postset.vue"
 import LoginSuccess from "@/views/secure/LoginSuccess.vue";
 
-import checkPaying from "@/views/pages/checkPaying.vue";
-import profile from "@/views/secure/profile.vue";
-import shareDetails from "@/views/pages/share/shareDetails.vue";
-import refund from "@/views/pages/refund.vue";
-import refundReview from "@/views/pages/refundReview.vue";
+import checkPaying from "@/views/pages/CheckPaying.vue";
+import profile from "@/views/secure/Profile.vue";
+import shareDetails from "@/views/pages/share/ShareDetails.vue";
+import refund from "@/views/pages/Refund.vue";
+import refundReview from "@/views/pages/RefundReview.vue";
 
-import paymentPage from "@/views/pages/paymentPage.vue";
+import paymentPage from "@/views/pages/PaymentPage.vue";
 
-import productDetails from '@/views/pages/product/productDetails.vue';
-import addProduct from "@/components/product/addProduct.vue";
-import Shop from "@/views/pages/product/shop.vue";
+import productDetails from '@/views/pages/product/ProductDetails.vue';
+import addProduct from "@/components/product/AddProduct.vue";
+import Shop from "@/views/pages/product/Shop.vue";
 const routes = [
   { name: "home-link", path: "/", component: Home },
   { name: "404-link", path: "/:pathMatch(.*)*", component: NotFound },

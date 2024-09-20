@@ -26,9 +26,9 @@
         <div class="action-buttons">
             <button class="ts-button" @click="lpPayment">LinePay</button>
         </div>
-        <div class="action-buttons">
+        <!-- <div class="action-buttons">
             <button class="ts-button" @click="ecPayment">EcPay</button>
-        </div>
+        </div> -->
     </div>
 
     </html>

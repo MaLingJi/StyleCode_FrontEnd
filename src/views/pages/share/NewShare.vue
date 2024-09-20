@@ -6,7 +6,7 @@
                 <div class="cell is-fluid is-vertical">
                     <!-- 用戶資訊 -->
                     <div class="ts-grid">
-                        <div class="ts-image">
+                        <div class="ts-image is-circular is-bordered">
                             <img :src="userPhoto" width="40">
                         </div>
                         <div class="ts-header">{{ userName }}</div>

@@ -6,7 +6,7 @@
     <div class="share-info">
       <div class="user-info">
         <div class="user-avatar">
-          <div class="ts-image">
+          <div class="ts-image is-circular is-bordered">
             <img :src="userPhoto" width="40">
           </div>
         </div>
@@ -50,16 +50,16 @@ const isLiked = ref(false);
 
 onMounted(() => {
   if (props.post && props.post.images && props.post.images.length > 0) {
-    // 過濾掉 deletedAt 不為 null 的圖片
+    
     const validImages = props.post.images.filter(image => !image.deletedAt);
 
     if (validImages.length > 0) {
       imgUrl.value = `${path}${validImages[0].imgUrl}`;
     } else {
-      imgUrl.value = "../../../public/No_image.png";
+      imgUrl.value = "/No_image.png";
     }
   } else {
-    imgUrl.value = "../../../public/No_image.png";
+    imgUrl.value = "/No_image.png";
   }
 
   userPhoto.value = `${userPhotoPath}${props.post.userPhoto}`;

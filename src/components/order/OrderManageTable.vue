@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <div class="table-container"  style="height: 479px; width: 100%;">
-            <table class="ts-table" >
+        <div class="table-container" style="height: 479px; width: 100%;">
+            <table class="ts-table " >
                 <thead>
                     <tr>
                         <th>名稱</th>

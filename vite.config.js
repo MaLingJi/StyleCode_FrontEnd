@@ -7,7 +7,7 @@ import { createStyleImportPlugin, AntdResolve } from 'vite-plugin-style-import';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue(),  
     vueJsx(),
     createStyleImportPlugin({
       resolves: [AntdResolve()],
@@ -25,10 +25,16 @@ export default defineConfig({
       },
     },
   },
-  // 添加環境變數的配置
-  define: {
-    // 'process.env': {
-    //   VITE_POST_IMAGE_URL: process.env.VITE_POST_IMAGE_URL,
-    // },
-  },
+  // server: {
+  //   host: '0.0.0.0',
+  //   port: 5173,
+  //   hmr: {
+  //     host: 'stylecode.online',  // 您的公共 IP 或域名
+  //     port: 5173,       // 與 server 的端口一致
+  //     protocol: 'wss',   // 或者 'wss' 如果您使用 HTTPS
+  //   }
+  // },
+  build: {
+    chunkSizeWarningLimit: 1000,  // 將警告限制設為 1000 kB
+  }
 });

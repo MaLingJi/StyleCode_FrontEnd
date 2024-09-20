@@ -274,7 +274,7 @@ const sortProducts = () => {
   .sort-select,
   .search-input {
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
 
   .sort-select select,

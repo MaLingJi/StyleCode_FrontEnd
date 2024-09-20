@@ -92,16 +92,16 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import AddProduct from "@/components/product/addProduct.vue";
+import AddProduct from "@/components/product/AddProduct.vue";
 import CategoryManager from "@/components/product/CategoryManager.vue";
 import SubcategoryManager from "@/components/product/SubcategoryManager.vue";
 import ProductManager from "@/components/product/ProductManager.vue";
 import ProductDetailManager from "@/components/product/ProductDetailManager.vue";
 import OrderManagement from "@/components/order/OrderManage.vue";
-import refundReview from "./refundReview.vue";
-import backUser from "@/components/profile/backUser.vue";
-import postwebset from "@/components/profile/postwebset.vue";
-import postset from "@/components/profile/postset.vue"
+import refundReview from "./RefundReview.vue";
+import backUser from "@/components/profile/BackUser.vue";
+import postwebset from "@/components/profile/Postwebset.vue";
+import postset from "@/components/profile/Postset.vue"
 
 import useUserStore from "@/stores/user.js";
 const userStore = useUserStore();

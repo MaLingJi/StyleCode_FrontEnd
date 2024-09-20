@@ -229,7 +229,7 @@ const getImageUrl = (imageName) => {
     if (imageName) {
         return `${path}${imageName}`;
     }
-    return "../../../public/No_image.png";
+    return "/No_image.png";
     //沒有的話回傳這個頁面
 };
 

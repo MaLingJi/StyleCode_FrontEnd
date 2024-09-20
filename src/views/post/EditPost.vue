@@ -144,6 +144,7 @@ const handlePreview = async (file) => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: '是的，更新!',
+            confirmButtonColor: 'rgb(35 40 44)',
             cancelButtonText: '取消'
         });
         
@@ -199,6 +200,7 @@ const handlePreview = async (file) => {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '是的，刪除!',
+        confirmButtonColor: 'rgb(35 40 44)',
         cancelButtonText: '取消'
     });
 

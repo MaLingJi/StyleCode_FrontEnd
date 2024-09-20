@@ -30,7 +30,7 @@
       <div class="column is-9-wide product-info">
         <h1 class="ts-header is-huge">{{ product.productName }}</h1>
         <p class="ts-text is-large price">
-          NT$ {{ selectedDetail ? selectedDetail.price : " " }}
+          NT$ {{ product.price }}
         </p>
         <div class="ts-divider"></div>
         <!-- 顏色和尺寸選擇 -->
@@ -209,7 +209,7 @@ const getImageUrl = (imageName) => {
   if (imageName) {
     return `${path}${imageName}`;
   }
-  return "../../../public/No_image.png"; // 若無圖片則返回預設圖片
+  return "/No_image.png"; // 若無圖片則返回預設圖片
 };
 
 // 計算當前顯示的圖片 URL

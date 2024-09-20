@@ -95,7 +95,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axiosapi from "@/plugins/axios.js";
 import { HeartFilled, HeartOutlined, StarFilled, StarOutlined, ShareAltOutlined, WarningOutlined,EditOutlined } from '@ant-design/icons-vue';
 import useUserStore from "@/stores/user.js";
-import comment from './comment.vue';
+import comment from './Comment.vue';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 

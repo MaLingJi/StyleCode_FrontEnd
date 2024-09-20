@@ -15,10 +15,10 @@
           <td>{{ card.cardNumber }}</td>
           <td class="is-end-aligned">
             <button
-              class="ts-button is-end-aligned is-negative"
+              class="ts-button is-end-aligned is-wide is-outlined"
               @click="deleteCard(card.cardId)"
             >
-              刪除
+              <span class="ts-icon is-trash-can-icon"></span>
             </button>
           </td>
         </tr>
@@ -343,6 +343,7 @@ function deleteCard(cardId) {
               text: response.data.message,
               icon: "success",
               confirmButtonText: "確認",
+              confirmButtonColor: "rgb(35 40 44)",
               allowOutsideClick: false,
             });
           } else {
@@ -350,6 +351,7 @@ function deleteCard(cardId) {
               text: response.data.message,
               icon: "warning",
               confirmButtonText: "確認",
+              confirmButtonColor: "rgb(35 40 44)",
               allowOutsideClick: false,
             });
           }

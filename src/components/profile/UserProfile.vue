@@ -161,6 +161,7 @@ async function callUpdate() {
         text: response.data.message,
         icon: "success",
         confirmButtonText: "確認",
+        confirmButtonColor: 'rgb(35 40 44)',
         allowOutsideClick: false,
         customClass: {
           container: "my-swal",
@@ -175,6 +176,7 @@ async function callUpdate() {
         text: response.data.message,
         icon: "warning",
         confirmButtonText: "確認",
+        confirmButtonColor: 'rgb(35 40 44)',
         allowOutsideClick: false,
         customClass: {
           container: "my-swal",
@@ -187,6 +189,7 @@ async function callUpdate() {
       text: "更新失敗，請稍後再試。" + error.message,
       icon: "error",
       confirmButtonText: "確認",
+      confirmButtonColor: 'rgb(35 40 44)',
       allowOutsideClick: false,
     });
     (document.getElementById("updateProfileModal") as HTMLDialogElement).show();
