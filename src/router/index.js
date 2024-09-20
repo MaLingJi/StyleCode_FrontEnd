@@ -28,7 +28,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import Comment from '@/components/Comment.vue';
-import backstage from '@/views/pages/backstage.vue'
+import backstage from '@/views/pages/Backstage.vue'
 // import Home from '@/views/Home.vue'
 
 

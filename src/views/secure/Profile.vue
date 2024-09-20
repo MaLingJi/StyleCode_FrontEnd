@@ -252,12 +252,12 @@ import axiosapi from "@/plugins/axios.js";
 import useUserStore from "@/stores/user.js";
 import Swal from "sweetalert2";
 
-import userProfile from "@/components/profile/userProfile.vue";
-import card from "@/components/profile/card.vue";
-import order from "../pages/order.vue";
-import notificationsList from "@/components/profile/notificationsList.vue";
-import myPostList from "@/components/profile/myPostList.vue";
-import myLikePost from "@/components/profile/myLikePost.vue";
+import userProfile from "@/components/profile/UserProfile.vue";
+import card from "@/components/profile/Card.vue";
+import order from "../pages/Order.vue";
+import notificationsList from "@/components/profile/NotificationsList.vue";
+import myPostList from "@/components/profile/MyPostList.vue";
+import myLikePost from "@/components/profile/MyLikePost.vue";
 
 const route = useRoute();
 const props = defineProps(["initialView"]);
